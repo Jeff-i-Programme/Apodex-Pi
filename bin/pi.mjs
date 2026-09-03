@@ -21,6 +21,7 @@ import {
 	readCodexAnalysisContext,
 } from "../.pi/lib/research-analysis-bridge.mjs";
 import { resolveResearchPiPaths } from "../.pi/lib/runtime-paths.mjs";
+import { extraSkillPathsForWorkspace } from "../.pi/lib/science-workspace.mjs";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const paths = resolveResearchPiPaths({ harnessRoot: packageRoot });
@@ -229,6 +230,7 @@ async function spawnCore(argv) {
 	const skillPaths = [
 		join(packageRoot, ".pi", "skills", "research-briefing"),
 		...config.resources.skills.map((configuredPath) => expandUserPath(configuredPath)),
+		...extraSkillPathsForWorkspace(workspace, packageRoot, process.env),
 	];
 	for (const skill of new Set(skillPaths)) {
 		if (existsSync(join(skill, "SKILL.md"))) args.push("--skill", skill);

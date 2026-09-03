@@ -109,6 +109,8 @@ $piArgs = @(
 
 练习题在 `G:\project\executable-world-examples`。已跑通 `verify_solutions`，分数 `1.0`。
 
+可选科学层（默认不改变上述入口）：工作区若是 Executable World / DiscoveryWorld / ScienceAgentBench，会额外挂上 typed-action 与科学代码闭环 skill。说明见 [docs/science-adapters.md](docs/science-adapters.md)。`RESEARCH_PI_SCIENCE=0` 可关。
+
 ```powershell
 cd G:\project\executable-world-examples
 .\run_research_pi_task.ps1 -Task verify_solutions

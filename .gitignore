@@ -24,3 +24,6 @@ node_modules
 /Codex科研场景反馈与改进.md
 /docs/research/
 /docs/testing/
+__pycache__/
+*.pyc
+
