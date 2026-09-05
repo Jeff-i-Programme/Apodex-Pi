@@ -1,6 +1,6 @@
 # Apodex-Pi
 
-本机 Windows 启动记录。Node 22、源码目录 `G:\project\A'po'de'x-Pi`、模型 Apodex 1.1。
+本机 Windows 启动记录。Node 22、源码目录 `G:\project\Apodex-Pi`、模型 Apodex 1.1。
 
 ## 依赖
 
@@ -17,7 +17,7 @@ git -c http.proxy= -c https.proxy= <command>
 ## 安装
 
 ```powershell
-cd G:\project\Research-Pi
+cd G:\project\Apodex-Pi
 npm install --ignore-scripts
 ```
 
