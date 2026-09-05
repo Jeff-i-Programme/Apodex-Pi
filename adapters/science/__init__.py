@@ -1,5 +1,5 @@
-# Science adapters for Research Pi
+# Science adapters for Research Pi.
 #
-# Opt-in. Default `pi` sessions are unchanged unless the workspace looks like
-# executable-world / DiscoveryWorld / ScienceAgentBench, or RESEARCH_PI_SCIENCE=1.
-# Set RESEARCH_PI_SCIENCE=0 to force the original skill set.
+# Loaded by default with the rest of the agent (typed-action method, named-output
+# program loop, measurement notebook). Set RESEARCH_PI_SCIENCE=0 only to compare
+# against the original Research Pi skill/tool set.

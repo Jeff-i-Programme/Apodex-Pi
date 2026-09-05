@@ -10,6 +10,7 @@ import {
 	defaultResearchPiConfig,
 	ensureResearchPiConfig,
 	readResearchPiConfig,
+	researchPiCoreSettings,
 	researchPiCredentialEnvironmentNames,
 	researchPiDeepSeekSearchEnabled,
 	researchPiEnvironment,
@@ -33,6 +34,29 @@ test("Research Pi config owns research runtime settings, not the Leader model ca
 	assert.equal(config.research.search.model, "deepseek-v4-flash");
 	assert.equal(config.ui.density, "balanced");
 	assert.equal(config.pi.settings.theme, "research-pi");
+});
+
+test("eval TPM env turns retry back on even if settings had it disabled", () => {
+	const previousGap = process.env.RESEARCH_PI_TPM_GAP_MS;
+	process.env.RESEARCH_PI_TPM_GAP_MS = "25000";
+	try {
+		const settings = researchPiCoreSettings({
+			pi: { settings: { retry: { enabled: false, maxRetries: 0, provider: { maxRetries: 0 } } } },
+			codex: defaultResearchPiConfig().codex,
+			research: defaultResearchPiConfig().research,
+			ui: defaultResearchPiConfig().ui,
+			diagnostics: defaultResearchPiConfig().diagnostics,
+			resources: {},
+			version: 2,
+		}, "0.84.2", { retry: { enabled: false, maxRetries: 0 } });
+		assert.equal(settings.retry.enabled, true);
+		assert.ok(settings.retry.maxRetries >= 8);
+		assert.ok(settings.retry.provider.maxRetries >= 5);
+		assert.ok(settings.retry.baseDelayMs >= 10_000);
+	} finally {
+		if (previousGap === undefined) delete process.env.RESEARCH_PI_TPM_GAP_MS;
+		else process.env.RESEARCH_PI_TPM_GAP_MS = previousGap;
+	}
 });
 
 test("partial runtime config merges over defaults and rejects ambiguous or secret fields", () => {

@@ -6,15 +6,16 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from typing import Any, Dict, List, Optional
 
 from measurement import oldest_key, outlier_name, record_measure
 
-INSTRUMENT_WORDS = (
-    "spectrometer", "microscope", "thermometer", "densitometer",
-    "phmeter", "ph meter", "radiation", "nutrient meter", "soil nutrient",
-    "proteomics", "radiocarbon", "radioisotope",
+_INSTRUMENT_RE = re.compile(
+    r"meter|scope|instrument|scanner|probe|analyzer|spectrom|sensor",
+    re.I,
 )
+_NOT_SAMPLE_RE = re.compile(r"\b(door|table|chair|floor|wall|sign)\b", re.I)
 
 
 def _name_of(o: Dict[str, Any]) -> str:
@@ -34,11 +35,15 @@ def _env(ui: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def _is_instrument(o: Dict[str, Any]) -> bool:
-    return any(w in _blob(o) for w in INSTRUMENT_WORDS)
+    return bool(_INSTRUMENT_RE.search(_blob(o)))
 
 
 def _is_door(o: Dict[str, Any]) -> bool:
     return "door" in _blob(o)
+
+
+def _is_key(o: Dict[str, Any]) -> bool:
+    return bool(re.search(r"\bkeys?\b", _name_of(o).lower()))
 
 
 def fill_use(action: Dict[str, Any], ui: Dict[str, Any]) -> Dict[str, Any]:
@@ -48,13 +53,25 @@ def fill_use(action: Dict[str, Any], ui: Dict[str, Any]) -> Dict[str, Any]:
     tools = [o for o in objs if _is_instrument(o)]
     a1 = action.get("arg1")
     a2 = action.get("arg2")
+    o1 = next((o for o in objs if o.get("uuid") == a1), None)
+    if o1 and _is_key(o1):
+        if a2 is not None:
+            o2 = next((o for o in objs if o.get("uuid") == a2), None)
+            if o2 and _is_door(o2):
+                return {"action": "OPEN", "arg1": a2}
+            return action
+        doors = [o for o in _env(ui) if _is_door(o)]
+        if len(doors) == 1:
+            return {"action": "OPEN", "arg1": doors[0]["uuid"]}
+        return action
     if a2 is not None:
-        o1 = next((o for o in objs if o.get("uuid") == a1), None)
         if o1 and not _is_instrument(o1) and tools:
             action["arg1"], action["arg2"] = tools[0]["uuid"], a1
         return action
-    o1 = next((o for o in objs if o.get("uuid") == a1), None)
-    others = [o for o in objs if o.get("uuid") != a1 and not _is_door(o) and "table" not in _name_of(o).lower()]
+    others = [
+        o for o in objs
+        if o.get("uuid") != a1 and not _is_door(o) and not _NOT_SAMPLE_RE.search(_name_of(o).lower())
+    ]
     if o1 and _is_instrument(o1):
         other = next((o for o in others if not _is_instrument(o)), None)
         if other:
@@ -157,12 +174,27 @@ class DwSession:
 
 def self_check() -> None:
     ui = {
-        "inventoryObjects": [{"uuid": 2, "name": "radiocarbon meter", "description": "a radiocarbon meter"}],
+        "inventoryObjects": [{"uuid": 2, "name": "handheld scanner", "description": "a field scanner"}],
         "accessibleEnvironmentObjects": [{"uuid": 1, "name": "sample", "description": "a rock"}],
-        "taskProgress": [{"description": "date the sample"}],
+        "taskProgress": [{"description": "measure the sample"}],
     }
     filled = fill_use({"action": "USE", "arg1": 2}, ui)
     assert filled.get("arg1") == 2 and filled.get("arg2") == 1, filled
+
+    key_ui = {
+        "inventoryObjects": [{"uuid": 7, "name": "brass key", "description": "a small key"}],
+        "accessibleEnvironmentObjects": [
+            {"uuid": 8, "name": "oak door", "description": "a locked door"},
+            {"uuid": 2, "name": "handheld scanner", "description": "a field scanner"},
+        ],
+    }
+    opened = fill_use({"action": "USE", "arg1": 7}, key_ui)
+    assert opened.get("action") == "OPEN" and opened.get("arg1") == 8, opened
+    opened2 = fill_use({"action": "USE", "arg1": 7, "arg2": 8}, key_ui)
+    assert opened2.get("action") == "OPEN" and opened2.get("arg1") == 8, opened2
+    # Do not rewrite USE(key) into USE(instrument, key).
+    assert fill_use({"action": "USE", "arg1": 7}, key_ui).get("action") == "OPEN"
+
     mem: Dict[str, Any] = {}
     record_measure(mem, key="1", name="a", vals=[100.0], text="100 years")
     record_measure(mem, key="2", name="b", vals=[10.0], text="10 years")

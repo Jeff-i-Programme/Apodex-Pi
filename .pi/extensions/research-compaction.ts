@@ -139,7 +139,11 @@ export default function (pi: ExtensionAPI) {
 			},
 			onError: (error) => {
 				compactionRunning = false;
-				if (ctx.hasUI) ctx.ui.notify(`Research compaction failed: ${error.message}`, "warning");
+				try {
+					if (ctx.hasUI) ctx.ui.notify(`Research compaction failed: ${error.message}`, "warning");
+				} catch {
+					process.stderr.write(`Research compaction failed: ${error instanceof Error ? error.message : String(error)}\n`);
+				}
 			},
 		});
 	});

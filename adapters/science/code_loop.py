@@ -56,8 +56,9 @@ def repair_hint(error: str, *, dataset_path: str = "", output_path: str = "") ->
     parts = []
     if "no module named" in el or any(p in el for p in HEAVY_PACKAGES):
         parts.append(
-            f"Do not pip-install heavy packages ({', '.join(HEAVY_PACKAGES)}). "
-            f"Rewrite using {FALLBACK_STACK} if those exist."
+            "Do not pip-install missing libraries. "
+            f"Rewrite using an already-available numeric/scientific stack "
+            f"({FALLBACK_STACK} when present)."
         )
     if "no such file" in el or "filenotfound" in el:
         if dataset_path:

@@ -1551,6 +1551,64 @@ test("an active Leader Session blocks silent takeover but explicit takeover adva
 	}
 });
 
+test("print mode takes over a busy Leader Session instead of swallowing the prompt", async () => {
+	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-print-takeover-"));
+	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
+	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	try {
+		const workspace = join(root, "workspace");
+		mkdirSync(workspace);
+		const runtime = await initializeResearchRuntime(workspace, { sessionId: "session-a", branchAnchorId: "leaf-a" });
+		const attachmentA = (await readRuntimeSnapshot(runtime)).attachments[0];
+		await startRuntimeActorActivation(runtime, RESEARCH_LEADER_ACTOR_ID, {
+			sessionId: "session-a",
+			attachmentEpoch: attachmentA.epoch,
+		});
+
+		const handlers = new Map();
+		const pi = {
+			on(name, handler) { handlers.set(name, handler); },
+			registerCommand() {},
+			registerTool() {},
+			registerMessageRenderer() {},
+			registerEntryRenderer() {},
+			sendMessage() {},
+			appendEntry() {},
+		};
+		researchRuntimeExtension(pi);
+		let aborted = false;
+		const ctx = {
+			cwd: workspace,
+			hasUI: false,
+			ui: {
+				setStatus() {},
+				notify() { throw new Error("print mode must not require UI notify"); },
+				setEditorText() { throw new Error("print mode must not restore an editor"); },
+			},
+			sessionManager: {
+				getSessionId: () => "session-print",
+				getLeafId: () => "leaf-print",
+				getBranch: () => [],
+			},
+			getContextUsage: () => ({ tokens: 0, contextWindow: 384_000, percent: 0 }),
+			isIdle: () => true,
+			abort() { aborted = true; },
+		};
+
+		await handlers.get("session_start")({ type: "session_start", reason: "new" }, ctx);
+		assert.equal((await readRuntimeSnapshot(runtime)).attachments[0].sessionId, "session-print");
+		const handled = await handlers.get("input")({ type: "input", text: "Reply with pong.", source: "cli" }, ctx);
+		assert.equal(handled, undefined);
+		await handlers.get("agent_start")({ type: "agent_start" }, ctx);
+		assert.equal(aborted, false);
+		assert.equal((await readRuntimeSnapshot(runtime)).attachments[0].sessionId, "session-print");
+	} finally {
+		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
+		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		rmSync(root, { recursive: true, force: true });
+	}
+});
+
 test("a cross-session transition reaches the next genuine user Delta and stays frozen through the run", async () => {
 	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-boundary-refresh-"));
 	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;

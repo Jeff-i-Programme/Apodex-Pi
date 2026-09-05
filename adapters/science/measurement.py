@@ -1,8 +1,23 @@
-"""Measurement notebook: oldest / outlier / contaminated from instrument readings."""
+"""Measurement notebook: oldest / outlier / contaminated from instrument readings.
+
+Labels come from the numbers and text you recorded, not from scene names.
+"""
 from __future__ import annotations
 
 import re
 from typing import Any, Dict, List, Optional
+
+_LABELED_NUM = re.compile(r"(?::|=)\s*([-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)")
+_ANY_NUM = re.compile(r"(?<![A-Za-z0-9])([-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)")
+_CONTAMINATED = re.compile(r"contaminat|adulterat|invalid sample", re.I)
+
+
+def nums_from_text(text: str) -> List[float]:
+    raw = text or ""
+    labeled = [float(x) for x in _LABELED_NUM.findall(raw)]
+    if labeled:
+        return labeled
+    return [float(x) for x in _ANY_NUM.findall(raw)][:8]
 
 
 def record_measure(
@@ -15,18 +30,16 @@ def record_measure(
 ) -> Dict[str, Any]:
     nums = list(vals or [])
     if not nums:
-        nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)\s*years", text or "", re.I)]
-    if not nums:
-        nums = [float(x) for x in re.findall(r":\s*(-?\d+\.\d+)", text or "")]
+        nums = nums_from_text(text or "")
     rec = {"name": name, "vals": nums, "text": (text or "")[:400]}
     memory.setdefault("measures", {})[str(key)] = rec
-    low = (text or "").lower()
-    if "contaminat" in low and key:
+    if _CONTAMINATED.search(text or "") and key:
         memory["contaminated_uuid"] = key
     return rec
 
 
 def oldest_key(memory: Dict[str, Any]) -> Optional[str]:
+    """Largest numeric reading (age, count, magnitude — not a scene name)."""
     best_k, best_age = None, -1.0
     for k, v in (memory.get("measures") or {}).items():
         vals = v.get("vals") or []

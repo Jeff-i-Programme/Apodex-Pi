@@ -21,7 +21,8 @@ import {
 	readCodexAnalysisContext,
 } from "../.pi/lib/research-analysis-bridge.mjs";
 import { resolveResearchPiPaths } from "../.pi/lib/runtime-paths.mjs";
-import { extraSkillPathsForWorkspace } from "../.pi/lib/science-workspace.mjs";
+import { defaultScienceSkillPaths, scienceLoopExtensionEnabled } from "../.pi/lib/science-workspace.mjs";
+import { applyHostPythonEnv, prependHostBinToPath, prependWorkspaceToPythonPath } from "../.pi/lib/host-shell.mjs";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const paths = resolveResearchPiPaths({ harnessRoot: packageRoot });
@@ -223,14 +224,17 @@ async function spawnCore(argv) {
 	if (sessionMode === "analysis") process.env.RESEARCH_PI_INITIAL_SESSION_MODE = "analysis";
 	if (fullAccess) process.env.RESEARCH_PI_FULL_ACCESS = "1";
 	if (process.env.RESEARCH_PI_TRACE === "1") process.env.PI_TRACE_DIR = paths.traceDir;
+	prependHostBinToPath(process.env);
+	prependWorkspaceToPythonPath(process.env, workspace);
+	applyHostPythonEnv(process.env);
 
 	const coreCli = join(packageRoot, "node_modules", "@earendil-works", "pi-coding-agent", "dist", "cli.js");
 	if (!existsSync(coreCli)) throw new Error(`Pinned Pi core is missing: ${coreCli}`);
 	const args = ["--no-skills", "--no-extensions", "--no-themes"];
 	const skillPaths = [
 		join(packageRoot, ".pi", "skills", "research-briefing"),
+		...defaultScienceSkillPaths(packageRoot, process.env),
 		...config.resources.skills.map((configuredPath) => expandUserPath(configuredPath)),
-		...extraSkillPathsForWorkspace(workspace, packageRoot, process.env),
 	];
 	for (const skill of new Set(skillPaths)) {
 		if (existsSync(join(skill, "SKILL.md"))) args.push("--skill", skill);
@@ -243,6 +247,7 @@ async function spawnCore(argv) {
 	const extensions = [
 		"project-boundary.ts",
 		"tool-activity.ts",
+		"tpm-pace.ts",
 		"research-config.ts",
 		"research-mode.ts",
 		"record-experiment.ts",
@@ -257,6 +262,9 @@ async function spawnCore(argv) {
 		"codex-watch.ts",
 		"codex-delegate.ts",
 	];
+	if (scienceLoopExtensionEnabled()) {
+		extensions.splice(extensions.indexOf("research-transition.ts"), 0, "science-loop.ts");
+	}
 	if (deepSeekSearchEnabled) extensions.splice(extensions.indexOf("deepseek-v4-pro-anchor.ts"), 0, "deepseek-web-search.ts");
 	for (const name of extensions) args.push("--extension", join(packageRoot, ".pi", "extensions", name));
 	if (process.env.RESEARCH_PI_TRACE === "1") {

@@ -62,7 +62,7 @@ node bin/pi.mjs --list-models apodex
 
 ## 启动
 
-bash 工具不读 `settings.json` 的 `shellPath`，只找 `C:\Program Files\Git\bin\bash.exe` 和 PATH。每次启动前把 Git Bash 放进 PATH。Windows 上沙箱不可用，必须 `--full-access`。
+Windows 上 Research Pi 启动时会探测 Git Bash（Program Files、常见自定义目录、`where bash.exe`，并跳过 WSL/WindowsApps 桩），写入 `settings.json` 的 `shellPath`，并把 Git `bin` 放到 PATH 前面。也可设 `RESEARCH_PI_SHELL`。Windows 上沙箱不可用，必须 `--full-access`。
 
 交互：
 
@@ -109,7 +109,7 @@ $piArgs = @(
 
 练习题在 `G:\project\executable-world-examples`。已跑通 `verify_solutions`，分数 `1.0`。
 
-可选科学层（默认不改变上述入口）：工作区若是 Executable World / DiscoveryWorld / ScienceAgentBench，会额外挂上 typed-action 与科学代码闭环 skill。说明见 [docs/science-adapters.md](docs/science-adapters.md)。`RESEARCH_PI_SCIENCE=0` 可关。
+科学闭环是默认能力（typed-action 提交纪律、指定产物程序循环、读数笔记本），与 Research Pi 原契约同时在线，不按工作区文件夹分流。说明见 [docs/science-adapters.md](docs/science-adapters.md)。对照原版设 `RESEARCH_PI_SCIENCE=0`。
 
 ```powershell
 cd G:\project\executable-world-examples

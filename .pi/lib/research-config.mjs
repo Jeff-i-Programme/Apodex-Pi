@@ -1,6 +1,7 @@
 import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveHostBash } from "./host-shell.mjs";
 
 const LIB_DIR = dirname(fileURLToPath(import.meta.url));
 export const RESEARCH_PI_DEFAULT_CONFIG_PATH = resolve(LIB_DIR, "../config.defaults.json");
@@ -227,7 +228,32 @@ export function researchPiCoreSettings(config, coreVersion, existing = {}) {
 		delete settings.enabledModels;
 	}
 	if (coreVersion) settings.lastChangelogVersion = coreVersion;
+	if (process.platform === "win32") {
+		const bash = resolveHostBash(process.env, settings.shellPath);
+		if (bash) settings.shellPath = bash;
+	}
+	applyEvalRetry(settings, process.env);
 	return settings;
+}
+
+function applyEvalRetry(settings, environment = process.env) {
+	const evalLike = Boolean(String(environment.RESEARCH_PI_TPM_GAP_MS || "").trim())
+		|| Boolean(String(environment.RESEARCH_PI_TPM_LIMIT || "").trim())
+		|| environment.RESEARCH_PI_FORCE_RETRY === "1";
+	if (!evalLike) return;
+	const current = plainObject(settings.retry) ? settings.retry : {};
+	const provider = plainObject(current.provider) ? current.provider : {};
+	settings.retry = {
+		...current,
+		enabled: true,
+		maxRetries: Math.max(Number(current.maxRetries) || 0, 8),
+		baseDelayMs: Math.max(Number(current.baseDelayMs) || 0, 10_000),
+		provider: {
+			...provider,
+			maxRetries: Math.max(Number(provider.maxRetries) || 0, 5),
+			maxRetryDelayMs: Math.max(Number(provider.maxRetryDelayMs) || 0, 90_000),
+		},
+	};
 }
 
 export function writeResearchPiAgentConfig(agentDir, config, options = {}) {

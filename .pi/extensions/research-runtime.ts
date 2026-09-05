@@ -970,10 +970,12 @@ export default function researchRuntimeExtension(pi: ExtensionAPI) {
 		// Resolve the requested role before touching Runtime. An initialization
 		// failure must never promote an Analysis Session through the default.
 		setSessionMode(provisionalPolicy, runtimeSessionProjectContext(ctx.sessionManager.getBranch(), provisionalPolicy) as ProjectContextMode);
+		const printMode = !ctx.hasUI;
 		const activeRuntime = await getRuntime(ctx, {
 			claim: provisionalPolicy === "project",
-			onlyIfUnattached: true,
-			reason: "first live Leader Session",
+			onlyIfUnattached: !printMode,
+			force: printMode && provisionalPolicy === "project",
+			reason: printMode ? "print-mode Leader Session" : "first live Leader Session",
 		});
 		let snapshot = await readRuntimeSnapshot(activeRuntime);
 		if (requestedInitialSessionMode === "analysis") {
@@ -1112,29 +1114,38 @@ export default function researchRuntimeExtension(pi: ExtensionAPI) {
 		if (event.source === "extension") return;
 		lastUserPrompt = event.text.trim();
 		if (/^\/runtime\s+analysis(?:\s|$)/.test(event.text.trim())) return;
+		let activeRuntime: RuntimeContext;
 		try {
-			const activeRuntime = await getRuntime(ctx, { claim: sessionInheritancePolicy === "project" });
-			attachmentLossNotified = false;
-			if (isAnalysisSession()) {
-				if (isProjectAwareSession()) {
-					const { view } = await refreshProjectView(ctx);
-					captureUserProjectDelta(view);
-				}
-			} else if (sessionInheritancePolicy === "project") {
-				startRuntimeMailboxWatch(activeRuntime, ctx);
-				let { snapshot, view } = await refreshProjectView(ctx);
-				if (await deliverOpenLeaderMessages(activeRuntime, snapshot, ctx, { triggerTurn: false })) {
-					({ snapshot, view } = await refreshProjectView(ctx));
-				}
-				captureUserProjectDelta(view);
-			}
+			activeRuntime = await getRuntime(ctx, { claim: sessionInheritancePolicy === "project" });
 		} catch (error) {
 			if (!(error instanceof RuntimeLeaderBusyError)) throw error;
-			if (ctx.hasUI) {
-				ctx.ui.setEditorText(event.text);
-				ctx.ui.notify(error.message, "warning");
+			if (!ctx.hasUI && sessionInheritancePolicy === "project") {
+				activeRuntime = await getRuntime(ctx, {
+					claim: true,
+					force: true,
+					reason: "print-mode takeover of busy Leader Session",
+				});
+			} else {
+				if (ctx.hasUI) {
+					ctx.ui.setEditorText(event.text);
+					ctx.ui.notify(error.message, "warning");
+				}
+				return { action: "handled" as const };
 			}
-			return { action: "handled" as const };
+		}
+		attachmentLossNotified = false;
+		if (isAnalysisSession()) {
+			if (isProjectAwareSession()) {
+				const { view } = await refreshProjectView(ctx);
+				captureUserProjectDelta(view);
+			}
+		} else if (sessionInheritancePolicy === "project") {
+			startRuntimeMailboxWatch(activeRuntime, ctx);
+			let { snapshot, view } = await refreshProjectView(ctx);
+			if (await deliverOpenLeaderMessages(activeRuntime, snapshot, ctx, { triggerTurn: false })) {
+				({ snapshot, view } = await refreshProjectView(ctx));
+			}
+			captureUserProjectDelta(view);
 		}
 	});
 
@@ -1171,10 +1182,19 @@ export default function researchRuntimeExtension(pi: ExtensionAPI) {
 		if (isAnalysisSession()) return;
 		const activeRuntime = await getRuntime(ctx);
 		const sessionId = ctx.sessionManager.getSessionId();
-		const attachment = runtimeActorAttachment(await readRuntimeSnapshot(activeRuntime), RESEARCH_LEADER_ACTOR_ID, sessionId);
+		let attachment = runtimeActorAttachment(await readRuntimeSnapshot(activeRuntime), RESEARCH_LEADER_ACTOR_ID, sessionId);
+		if (!attachment && !ctx.hasUI) {
+			await getRuntime(ctx, {
+				claim: true,
+				force: true,
+				reason: "print-mode Leader before agent start",
+			});
+			attachment = runtimeActorAttachment(await readRuntimeSnapshot(activeRuntime), RESEARCH_LEADER_ACTOR_ID, sessionId);
+		}
 		if (!attachment) {
 			ctx.abort();
 			if (ctx.hasUI) ctx.ui.notify("This is no longer the Leader Session; the agent run was stopped before further model work.", "warning");
+			else process.stderr.write("Research runtime: this print session is not the Leader Session; the agent run was stopped.\n");
 			return;
 		}
 		try {
@@ -1187,6 +1207,7 @@ export default function researchRuntimeExtension(pi: ExtensionAPI) {
 			if (!(error instanceof RuntimeAttachmentChangedError)) throw error;
 			ctx.abort();
 			if (ctx.hasUI) ctx.ui.notify("Leader Session ownership changed while this run was starting; no model work was allowed to begin.", "warning");
+			else process.stderr.write("Research runtime: Leader Session ownership changed while this print run was starting; no model work was allowed to begin.\n");
 		}
 	});
 
@@ -1253,18 +1274,30 @@ export default function researchRuntimeExtension(pi: ExtensionAPI) {
 
 	pi.on("context", async (event, ctx) => {
 		const activeRuntime = await getRuntime(ctx);
-		const snapshot = await readRuntimeSnapshot(activeRuntime);
+		let snapshot = await readRuntimeSnapshot(activeRuntime);
 		for (const message of snapshot.messages) {
 			if (message.status === "superseded") supersededMessageIds.add(message.id);
 		}
 		const sessionId = ctx.sessionManager.getSessionId();
 		if (!isAnalysisSession() && !runtimeActorAttachment(snapshot, RESEARCH_LEADER_ACTOR_ID, sessionId)) {
-			ctx.abort();
-			if (ctx.hasUI && !attachmentLossNotified) {
-				attachmentLossNotified = true;
-				ctx.ui.notify("Leader Session ownership moved to another Session; this run stopped at the next model boundary.", "warning");
+			if (!ctx.hasUI) {
+				await getRuntime(ctx, {
+					claim: true,
+					force: true,
+					reason: "print-mode Leader at context boundary",
+				});
+				snapshot = await readRuntimeSnapshot(activeRuntime);
 			}
-			return { messages: event.messages };
+			if (!isAnalysisSession() && !runtimeActorAttachment(snapshot, RESEARCH_LEADER_ACTOR_ID, sessionId)) {
+				ctx.abort();
+				if (ctx.hasUI && !attachmentLossNotified) {
+					attachmentLossNotified = true;
+					ctx.ui.notify("Leader Session ownership moved to another Session; this run stopped at the next model boundary.", "warning");
+				} else if (!ctx.hasUI) {
+					process.stderr.write("Research runtime: Leader Session ownership moved; this print run stopped at the next model boundary.\n");
+				}
+				return { messages: event.messages };
+			}
 		}
 		if (!isProjectAwareSession()) {
 			return {

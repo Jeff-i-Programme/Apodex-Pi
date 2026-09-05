@@ -15,6 +15,22 @@ This contract owns durable research, evidence, role, and authority invariants. T
 - Stop low-information patch loops. If repeated changes repair the same symptom without increasing discrimination, revisit the problem definition, hidden assumptions, or experimental design rather than accumulating workarounds.
 - Use a checkpoint only when rollback cost at a real decision boundary warrants it. Move toward cleanup, proportionate tests, reproduction, and stable delivery only after evidence supports the route or the user requests convergence.
 
+## Scientific instruments, hidden worlds, and named artifacts
+
+This section is always in force. It is not a separate agent, mode, or workspace type. The rest of this contract still owns hypotheses, evidence, Codex, and Project memory. Ordinary coding, notes, and research planning are unchanged: do not force environment actions or named-output loops onto those tasks.
+
+When the current observation is a hidden world, a typed action API, an instrument reading, or a program that must write a named result, completion is a **decision plus a verifiable artifact**. Looking, touring a map, or printing a table is not completion. Use every clause the current observation supports; ignore those it does not. Never from a memorized scene, character, coordinate, or practice-task name.
+
+- Act only through legal actions when the world is hidden. Observation alone scores nothing. Spend cheap probes before paid ones; prefer the listed action that splits several hypotheses when costs are equal. The same error or observation three times is not progress: change the probe.
+- An error reply is not fatal. Fix the call and continue. Validity is empirical, not a memorized trap list: duplicate payloads across sources have no unique value (keep one, flag the copy); a source that never repeats and only mints fresh junk is a generator (honeypot-like); a stated contamination/spam/leak limit is a hard gate — do not collect a source whose judged junk share is near that limit; misleading or unchecked fields must be verified or declared. A hard gate zeros the score even if the rest is right. Gated useful documents may still be bought in a package.
+- Submit through the wrapper and field names the brief lists (`ep.act("submit", {"plan": obj})` when the brief says `submit(plan)`). Flattening or renaming those fields is scored as an empty submission. Fill allocation fields from probes; a count with nothing allocated scores nothing. Prefer a wide lo/hi over a confident wrong point.
+- Submit a concrete result while budget remains, then refine if the environment returns feedback. Do not spend the episode only exploring; do not submit before a minimum validity check. If a scored result is zero or still names a failed gate/threshold and submissions remain, revise. The first scored submit is not the end.
+- After every environment action, take the world's required next step (tick/advance; pass through an opened barrier before opening another). Do not idle-wait while interactables are listed. Nearby but not reachable: go to that id first. Instrument then sample: hold the instrument, go to the sample, then USE. Do not teleport to an instrument already in inventory. Locked doors: matching key then OPEN, not USE. Closed containers: OPEN then take what is inside. Give: PUT to the person even if already talked.
+- Keep readings. Choose the next target from labels the instruments actually produced (extreme/oldest, statistical outlier, flagged invalid/contaminated) or from a place/alias the **current task** names. Place a marker only at that match.
+- When the deliverable is a scientific program: write a complete program, run it, and create the **exact named output file**. Exit 0 without that file is failure. Prefer `science_run_program` when the tool is available; feed stderr/`repair_hint` back and revise. Missing library: do not pip-install a heavy stack; rewrite with libraries already importable.
+- `science_note_measurement` is the working notebook of raw readings. It does not replace `record_experiment`. Call `record_experiment` only when a reading or run actually changes the research judgment.
+- These clauses compose. A single episode may need a typed action, a measurement note, and a program artifact.
+
 ## Evidence and Project memory
 
 - Separate work, observation, validity, interpretation, and decision. A successful command, commit, produced artifact, completed Codex turn, or training run proves that work occurred; it is not by itself scientific evidence.
