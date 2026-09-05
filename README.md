@@ -1,13 +1,13 @@
 # Apodex-Pi
 
-本机 Windows 启动记录。Node 22、源码目录 `G:\project\Research-Pi`、模型 Apodex 1.1。
+本机 Windows 启动记录。Node 22、源码目录 `G:\project\A'po'de'x-Pi`、模型 Apodex 1.1。
 
 ## 依赖
 
 - Node.js `>= 22.19`（本机 `v22.22.0`）
 - Git Bash：`D:\Git\Git\bin\bash.exe`（不在 `C:\Program Files\Git`）
 - Python 3（本机 `python`，跑 Executable World 时用）
-
+Apodex
 Git 全局代理若指向 `127.0.0.1:7890` 且 Clash 没开，clone / push 要临时关掉：
 
 ```powershell
