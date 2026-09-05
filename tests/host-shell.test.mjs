@@ -12,7 +12,7 @@ test("skips WSL and WindowsApps bash stubs", () => {
 
 test("candidate list prefers env override then Program Files Git", () => {
 	const paths = candidateBashPaths({
-		RESEARCH_PI_SHELL: "E:\\custom\\bash.exe",
+		APODEX_PI_SHELL: "E:\\custom\\bash.exe",
 		ProgramFiles: "C:\\Program Files",
 	});
 	assert.equal(paths[0], "E:\\custom\\bash.exe");
@@ -20,12 +20,12 @@ test("candidate list prefers env override then Program Files Git", () => {
 });
 
 test("resolveHostBash uses an existing candidate without requiring Program Files", () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-bash-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-bash-"));
 	try {
 		const bash = join(root, "Git", "bin", "bash.exe");
 		mkdirSync(join(root, "Git", "bin"), { recursive: true });
 		writeFileSync(bash, "");
-		assert.equal(resolveHostBash({ RESEARCH_PI_SHELL: bash }, ""), bash);
+		assert.equal(resolveHostBash({ APODEX_PI_SHELL: bash }, ""), bash);
 		assert.equal(isUsableBash(bash), true);
 	} finally {
 		rmSync(root, { recursive: true, force: true });
@@ -33,13 +33,13 @@ test("resolveHostBash uses an existing candidate without requiring Program Files
 });
 
 test("prependHostBinToPath updates Path and PATH together", () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-path2-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-path2-"));
 	try {
 		const bash = join(root, "Git", "bin", "bash.exe");
 		mkdirSync(join(root, "Git", "bin"), { recursive: true });
 		writeFileSync(bash, "");
 		const bin = join(root, "Git", "bin");
-		const env = { RESEARCH_PI_SHELL: bash, Path: "C:\\Windows\\System32", PATH: "C:\\Windows\\System32" };
+		const env = { APODEX_PI_SHELL: bash, Path: "C:\\Windows\\System32", PATH: "C:\\Windows\\System32" };
 		prependHostBinToPath(env);
 		assert.equal(env.Path.startsWith(bin), true);
 		assert.equal(env.PATH.startsWith(bin), true);

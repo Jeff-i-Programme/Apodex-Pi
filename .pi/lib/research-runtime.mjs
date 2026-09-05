@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { resolveCodexWorkspaceIdentity } from "./codex-jobs.mjs";
 import { withOwnerFileLock } from "./owner-file-lock.mjs";
 import { applyResearchStatePatch } from "./research-compact.mjs";
-import { researchPiStateRoot } from "./runtime-paths.mjs";
+import { apodexPiStateRoot } from "./runtime-paths.mjs";
 
 const LIB_DIR = dirname(fileURLToPath(import.meta.url));
 const HARNESS_ROOT = resolve(LIB_DIR, "../..");
@@ -16,7 +16,7 @@ export const RESEARCH_LEADER_ACTOR_ID = "research-leader";
 export const RUNTIME_MESSAGE_KIND = "research-runtime-message";
 export const RUNTIME_EVENT_ENTRY_KIND = "research-runtime-event";
 export const RUNTIME_SESSION_POLICY_ENTRY_KIND = "research-runtime-session-policy";
-export const DEFAULT_RESEARCH_RUNTIME_ROOT = join(researchPiStateRoot(HARNESS_ROOT), "runtime", "projects");
+export const DEFAULT_RESEARCH_RUNTIME_ROOT = join(apodexPiStateRoot(HARNESS_ROOT), "runtime", "projects");
 
 export class RuntimeAttachmentChangedError extends Error {
 	constructor(actorId) {
@@ -145,7 +145,7 @@ export function runtimeActorTarget(actor) {
 
 export async function resolveResearchRuntime(cwd, options = {}) {
 	const identity = await resolveCodexWorkspaceIdentity(cwd);
-	const runtimeRoot = resolve(options.runtimeRoot ?? process.env.RESEARCH_PI_RUNTIME_DIR ?? DEFAULT_RESEARCH_RUNTIME_ROOT);
+	const runtimeRoot = resolve(options.runtimeRoot ?? process.env.APODEX_PI_RUNTIME_DIR ?? DEFAULT_RESEARCH_RUNTIME_ROOT);
 	const projectDir = join(runtimeRoot, identity.projectKey);
 	return {
 		...identity,

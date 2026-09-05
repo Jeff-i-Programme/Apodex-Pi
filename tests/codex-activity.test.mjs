@@ -56,7 +56,7 @@ test("leaf completion projects as last activity, not job lifecycle completion", 
 			item: {
 				id: "tool-1",
 				type: "dynamicToolCall",
-				tool: "research_pi_host",
+				tool: "apodex_pi_host",
 				status: "completed",
 				success: true,
 			},
@@ -67,7 +67,7 @@ test("leaf completion projects as last activity, not job lifecycle completion", 
 	assert.equal(update.activity.threadId, "thread-root");
 	assert.equal(update.activity.category, "tool");
 	assert.equal(update.activity.status, "completed");
-	assert.equal(update.activity.summary, "research_pi_host · completed");
+	assert.equal(update.activity.summary, "apodex_pi_host · completed");
 	assert.equal(Object.hasOwn(update.activity, "jobStatus"), false);
 });
 
@@ -100,7 +100,7 @@ test("Codex collaboration events project internal subagents without creating Run
 });
 
 test("Codex activity cursor tails only new objective records", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-codex-activity-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-activity-"));
 	try {
 		const path = join(root, "events.jsonl");
 		writeFileSync(path, `${JSON.stringify({ timestamp: "2026-08-15T00:00:00.000Z", category: "lifecycle", summary: "Codex turn started" })}\n`);

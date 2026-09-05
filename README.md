@@ -24,7 +24,7 @@ npm install --ignore-scripts
 开发模式把配置和状态写在仓库的 `.pi/`，不要走全局 `~/.config`。
 
 ```powershell
-$env:RESEARCH_PI_DEV_MODE = "1"
+$env:APODEX_PI_DEV_MODE = "1"
 node bin/pi.mjs setup
 node bin/pi.mjs paths
 node bin/pi.mjs --version   # 0.84.2
@@ -34,7 +34,7 @@ node bin/pi.mjs --version   # 0.84.2
 
 ## 模型
 
-Research-Pi 用自己的 `.pi/agent/`，不会读 `~\.pi\agent`。把已有的 Apodex 配置拷过去：
+Apodex-Pi 用自己的 `.pi/agent/`，不会读 `~\.pi\agent`。把已有的 Apodex 配置拷过去：
 
 ```powershell
 Copy-Item $env:USERPROFILE\.pi\agent\models.json .pi\agent\models.json
@@ -56,18 +56,18 @@ Copy-Item $env:USERPROFILE\.pi\agent\models.json .pi\agent\models.json
 确认模型：
 
 ```powershell
-$env:RESEARCH_PI_DEV_MODE = "1"
+$env:APODEX_PI_DEV_MODE = "1"
 node bin/pi.mjs --list-models apodex
 ```
 
 ## 启动
 
-Windows 上 Research Pi 启动时会探测 Git Bash（Program Files、常见自定义目录、`where bash.exe`，并跳过 WSL/WindowsApps 桩），写入 `settings.json` 的 `shellPath`，并把 Git `bin` 放到 PATH 前面。也可设 `RESEARCH_PI_SHELL`。Windows 上沙箱不可用，必须 `--full-access`。
+Windows 上 Apodex Pi 启动时会探测 Git Bash（Program Files、常见自定义目录、`where bash.exe`，并跳过 WSL/WindowsApps 桩），写入 `settings.json` 的 `shellPath`，并把 Git `bin` 放到 PATH 前面。也可设 `APODEX_PI_SHELL`。Windows 上沙箱不可用，必须 `--full-access`。
 
 交互：
 
 ```powershell
-$env:RESEARCH_PI_DEV_MODE = "1"
+$env:APODEX_PI_DEV_MODE = "1"
 $env:Path = "D:\Git\Git\bin;" + $env:Path
 node bin/pi.mjs --workspace G:\project\your-project --full-access --provider apodex --model apodex-1.1
 ```
@@ -75,7 +75,7 @@ node bin/pi.mjs --workspace G:\project\your-project --full-access --provider apo
 非交互（`-p` 打印，`-a` 信任项目）。Prompt 用 `@文件` 传入，不要写单独的 `--`，0.84.2 会把它当成未知参数。
 
 ```powershell
-$env:RESEARCH_PI_DEV_MODE = "1"
+$env:APODEX_PI_DEV_MODE = "1"
 $env:Path = "D:\Git\Git\bin;" + $env:Path
 node bin/pi.mjs `
   --workspace G:\project\your-project `
@@ -109,11 +109,11 @@ $piArgs = @(
 
 练习题在 `G:\project\executable-world-examples`。已跑通 `verify_solutions`，分数 `1.0`。
 
-科学闭环是默认能力（typed-action 提交纪律、指定产物程序循环、读数笔记本），与 Research Pi 原契约同时在线，不按工作区文件夹分流。说明见 [docs/science-adapters.md](docs/science-adapters.md)。对照原版设 `RESEARCH_PI_SCIENCE=0`。
+科学闭环是默认能力（typed-action 提交纪律、指定产物程序循环、读数笔记本），与 Apodex Pi 原契约同时在线，不按工作区文件夹分流。说明见 [docs/science-adapters.md](docs/science-adapters.md)。对照原版设 `APODEX_PI_SCIENCE=0`。
 
 ```powershell
 cd G:\project\executable-world-examples
-.\run_research_pi_task.ps1 -Task verify_solutions
+.\run_apodex_pi_task.ps1 -Task verify_solutions
 ```
 
-脚本会设置 `RESEARCH_PI_DEV_MODE`、把 `D:\Git\Git\bin` 加入 PATH，并用 `--full-access` 调上面的 `bin/pi.mjs`。
+脚本会设置 `APODEX_PI_DEV_MODE`、把 `D:\Git\Git\bin` 加入 PATH，并用 `--full-access` 调上面的 `bin/pi.mjs`。

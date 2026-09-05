@@ -7,7 +7,7 @@ import {
 	RESEARCH_COMPACTION_SYSTEM_PROMPT,
 } from "../.pi/lib/research-compact.mjs";
 
-test("stable Research Pi prompt surfaces stay within explicit budgets", () => {
+test("stable Apodex Pi prompt surfaces stay within explicit budgets", () => {
 	const operatingContract = readFileSync(new URL("../.pi/APPEND_SYSTEM.md", import.meta.url), "utf8");
 	assert.ok(operatingContract.length <= 12_000, `operating contract grew to ${operatingContract.length} chars`);
 

@@ -5,12 +5,12 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { capabilityGrantSummary, listCapabilityGrants, resolveCapabilityContext } from "./host-capabilities.mjs";
 import { withOwnerFileLock } from "./owner-file-lock.mjs";
-import { researchPiStateRoot } from "./runtime-paths.mjs";
+import { apodexPiStateRoot } from "./runtime-paths.mjs";
 import {
 	codexPermissionProfile,
 	prepareBoundaryRuntime,
 	readGitIdentity,
-	researchPiFullAccessEnabled,
+	apodexPiFullAccessEnabled,
 	resolveExecutablePath,
 	resolveProjectRoot,
 	secretEnvironmentNames,
@@ -18,21 +18,21 @@ import {
 
 const LIB_DIR = dirname(fileURLToPath(import.meta.url));
 export const HARNESS_ROOT = resolve(LIB_DIR, "../..");
-export const RESEARCH_PI_STATE_ROOT = researchPiStateRoot(HARNESS_ROOT);
-export const DEFAULT_CODEX_JOB_ROOT = join(RESEARCH_PI_STATE_ROOT, "codex", "jobs");
+export const APODEX_PI_STATE_ROOT = apodexPiStateRoot(HARNESS_ROOT);
+export const DEFAULT_CODEX_JOB_ROOT = join(APODEX_PI_STATE_ROOT, "codex", "jobs");
 export const DEFAULT_CODEX_SCHEMA_PATH = join(HARNESS_ROOT, ".pi", "schemas", "codex-delegate-result.json");
 export const DEFAULT_CODEX_ADVISOR_SCHEMA_PATH = join(HARNESS_ROOT, ".pi", "schemas", "codex-advisor-result.json");
 export const CODEX_JOB_WORKER_PATH = join(LIB_DIR, "codex-job-worker.mjs");
-export const DEFAULT_CODEX_ADVISOR_MODEL = process.env.RESEARCH_PI_CODEX_ADVISOR_MODEL?.trim() || "gpt-5.6-sol";
-export const DEFAULT_CODEX_ADVISOR_REASONING_EFFORT = process.env.RESEARCH_PI_CODEX_ADVISOR_EFFORT?.trim() || "max";
-export const DEFAULT_CODEX_EXECUTOR_MODEL = process.env.RESEARCH_PI_CODEX_EXECUTOR_MODEL?.trim() || "gpt-5.6-sol";
-export const DEFAULT_CODEX_EXECUTOR_REASONING_EFFORT = process.env.RESEARCH_PI_CODEX_EXECUTOR_EFFORT?.trim() || "max";
+export const DEFAULT_CODEX_ADVISOR_MODEL = process.env.APODEX_PI_CODEX_ADVISOR_MODEL?.trim() || "gpt-5.6-sol";
+export const DEFAULT_CODEX_ADVISOR_REASONING_EFFORT = process.env.APODEX_PI_CODEX_ADVISOR_EFFORT?.trim() || "max";
+export const DEFAULT_CODEX_EXECUTOR_MODEL = process.env.APODEX_PI_CODEX_EXECUTOR_MODEL?.trim() || "gpt-5.6-sol";
+export const DEFAULT_CODEX_EXECUTOR_REASONING_EFFORT = process.env.APODEX_PI_CODEX_EXECUTOR_EFFORT?.trim() || "max";
 export const DEFAULT_CODEX_MODEL = DEFAULT_CODEX_EXECUTOR_MODEL;
 export const DEFAULT_CODEX_REASONING_EFFORT = DEFAULT_CODEX_EXECUTOR_REASONING_EFFORT;
-export const DEFAULT_CODEX_RETENTION_DAYS = Number.parseInt(process.env.RESEARCH_PI_CODEX_RETENTION_DAYS ?? "30", 10) || 30;
-export const DEFAULT_CODEX_KEEP_TERMINAL_JOBS = Number.parseInt(process.env.RESEARCH_PI_CODEX_KEEP_TERMINAL_JOBS ?? "200", 10) || 200;
+export const DEFAULT_CODEX_RETENTION_DAYS = Number.parseInt(process.env.APODEX_PI_CODEX_RETENTION_DAYS ?? "30", 10) || 30;
+export const DEFAULT_CODEX_KEEP_TERMINAL_JOBS = Number.parseInt(process.env.APODEX_PI_CODEX_KEEP_TERMINAL_JOBS ?? "200", 10) || 200;
 // App Server dynamic tools are fixed when a thread is created and cannot be
-// added by thread/resume. Bump this whenever the Research Pi dynamic tool set
+// added by thread/resume. Bump this whenever the Apodex Pi dynamic tool set
 // or its required schemas change so pre-existing threads refresh once.
 export const CODEX_DYNAMIC_TOOL_PROTOCOL_VERSION = 1;
 
@@ -172,8 +172,8 @@ export function buildDelegationPrompt({
 }) {
 	const role =
 		mode === "advisor"
-			? `You are the read-only research advisor collaborating with Research Pi. The question may be incomplete or tentative. Reconstruct its intent, evidence, and uncertainty; ask focused questions and jointly expand substantively different candidate explanations toward a working synthesis. Refine tentative ideas rather than defaulting to rebuttal, grading, or a verdict. Expose decision-relevant assumptions and distinguishing evidence. Do not modify files or external state.`
-			: `You are the execution subagent subordinate to Research Pi. Complete the task end to end rather than stopping at a plan. ${fullAccess ? "This job has explicit full host access" : "Inside the exact project boundary you may take necessary operations"}, including editing or deleting files, installing dependencies, committing, and starting, monitoring, or cancelling expensive experiments. Resolve non-blocking ambiguity and persist through failures. Verify exact destructive targets, but do not request another approval solely because an authorized action is destructive, long-running, or expensive.`;
+			? `You are the read-only research advisor collaborating with Apodex Pi. The question may be incomplete or tentative. Reconstruct its intent, evidence, and uncertainty; ask focused questions and jointly expand substantively different candidate explanations toward a working synthesis. Refine tentative ideas rather than defaulting to rebuttal, grading, or a verdict. Expose decision-relevant assumptions and distinguishing evidence. Do not modify files or external state.`
+			: `You are the execution subagent subordinate to Apodex Pi. Complete the task end to end rather than stopping at a plan. ${fullAccess ? "This job has explicit full host access" : "Inside the exact project boundary you may take necessary operations"}, including editing or deleting files, installing dependencies, committing, and starting, monitoring, or cancelling expensive experiments. Resolve non-blocking ambiguity and persist through failures. Verify exact destructive targets, but do not request another approval solely because an authorized action is destructive, long-running, or expensive.`;
 
 	const criteria = successCriteria.length > 0
 		? successCriteria.map((item) => `- ${item}`).join("\n")
@@ -183,20 +183,20 @@ export function buildDelegationPrompt({
 	const boundedContext = context.trim() || "No additional context was supplied. Inspect the workspace for what you need.";
 	const capabilityText = hostCapabilities.length > 0
 		? hostCapabilities.map((grant) => `- ${capabilityGrantSummary(grant)}`).join("\n")
-		: "- None. If host authority becomes necessary, call research_pi_host with the exact operation; its missing-grant path pauses for a Pi TUI decision instead of handing terminal commands to the user.";
+		: "- None. If host authority becomes necessary, call apodex_pi_host with the exact operation; its missing-grant path pauses for a Pi TUI decision instead of handing terminal commands to the user.";
 	const interaction = mode === "advisor"
-		? `Research Pi retains final responsibility for user intent, evidence interpretation, and research decisions; framing and hypothesis development are collaborative. Do not redefine the objective. Use consult_research_pi for a concise clarification or interpretation choice when it would materially improve shared understanding; you do not need to wait until progress is completely blocked. Avoid performative or repetitive questions.`
-		: `Research Pi owns research framing, evidence interpretation, and the next decision. Do not broaden the objective. Use consult_research_pi only when a missing research decision or user-owned fact materially blocks progress, not for implementation choices, progress, or in-project approval. If unresolved, submit a blocked outcome with the exact blocker and remaining work.`;
+		? `Apodex Pi retains final responsibility for user intent, evidence interpretation, and research decisions; framing and hypothesis development are collaborative. Do not redefine the objective. Use consult_apodex_pi for a concise clarification or interpretation choice when it would materially improve shared understanding; you do not need to wait until progress is completely blocked. Avoid performative or repetitive questions.`
+		: `Apodex Pi owns research framing, evidence interpretation, and the next decision. Do not broaden the objective. Use consult_apodex_pi only when a missing research decision or user-owned fact materially blocks progress, not for implementation choices, progress, or in-project approval. If unresolved, submit a blocked outcome with the exact blocker and remaining work.`;
 	const resultInstruction = mode === "advisor"
-		? `Use phase=commentary for intermediate updates. When ready to hand back, call submit_research_pi_result exactly once, then give a brief phase=final_answer acknowledgement. This is a continuation surface, not a verdict or review score: preserve shared understanding, candidate explanations, questions, evidence, uncertainty, and the useful next exchange.`
-		: `Use phase=commentary for brief updates and continue executing; never encode a plan, preamble, checkpoint, or future intent as a result. Call submit_research_pi_result exactly once only at success, a genuine blocker, or irrecoverable failure, then give a brief phase=final_answer acknowledgement. succeeded requires goal_satisfied=true and no remaining delegated work. Separate observation from interpretation and report validity limits.`;
+		? `Use phase=commentary for intermediate updates. When ready to hand back, call submit_apodex_pi_result exactly once, then give a brief phase=final_answer acknowledgement. This is a continuation surface, not a verdict or review score: preserve shared understanding, candidate explanations, questions, evidence, uncertainty, and the useful next exchange.`
+		: `Use phase=commentary for brief updates and continue executing; never encode a plan, preamble, checkpoint, or future intent as a result. Call submit_apodex_pi_result exactly once only at success, a genuine blocker, or irrecoverable failure, then give a brief phase=final_answer acknowledgement. succeeded requires goal_satisfied=true and no remaining delegated work. Separate observation from interpretation and report validity limits.`;
 
 	if (continuation) {
 		const continuationAuthority = fullAccess && mode !== "advisor"
 			? " This continuation now has explicit full host access; the project remains task scope but is no longer an OS sandbox."
 			: "";
-		return `<research_pi_continuation>
-Continue the same ${mode} role, mission, and dynamic-tool protocol from this Codex thread.${continuationAuthority} Research Pi still owns the objective and evidence judgment; do not reopen settled context unless freshness below requires it.
+		return `<apodex_pi_continuation>
+Continue the same ${mode} role, mission, and dynamic-tool protocol from this Codex thread.${continuationAuthority} Apodex Pi still owns the objective and evidence judgment; do not reopen settled context unless freshness below requires it.
 
 <mission>
 ${mission ?? "Unlabelled standalone delegation"}
@@ -219,16 +219,16 @@ ${boundedContext}
 </context_delta>
 
 ${resultInstruction}
-</research_pi_continuation>`;
+</apodex_pi_continuation>`;
 	}
 
 	const authority = fullAccess && mode !== "advisor"
-		? `This executor was explicitly launched with full host access. The project remains the task scope, but it is not an OS filesystem or command sandbox: host files, commands, network, Unix sockets, credentials, and external paths are available when genuinely required by the delegated task. Do not broaden the task or expose secrets. research_pi_host remains available for compatibility but is not required for ordinary host operations in this mode.`
-		: `The project is the hard authority boundary. Git metadata is writable and hooks are read-only. Sandboxed tools cannot access host credentials, Unix sockets, other projects, or parent directories. Use research_pi_host for an exact outside read, SSH target, or host argv; its missing-grant path pauses for the Pi TUI decision. Do not bypass the boundary, duplicate approval through consult_research_pi, or hand a terminal command to the user.
+		? `This executor was explicitly launched with full host access. The project remains the task scope, but it is not an OS filesystem or command sandbox: host files, commands, network, Unix sockets, credentials, and external paths are available when genuinely required by the delegated task. Do not broaden the task or expose secrets. apodex_pi_host remains available for compatibility but is not required for ordinary host operations in this mode.`
+		: `The project is the hard authority boundary. Git metadata is writable and hooks are read-only. Sandboxed tools cannot access host credentials, Unix sockets, other projects, or parent directories. Use apodex_pi_host for an exact outside read, SSH target, or host argv; its missing-grant path pauses for the Pi TUI decision. Do not bypass the boundary, duplicate approval through consult_apodex_pi, or hand a terminal command to the user.
 
 Approved capabilities keep credentials opaque: credential contents never enter your process or context. Executor may use approved SSH or host commands; advisor may use external-read only. Reuse a listed grantId so its approved cwd is restored. A cwd mismatch requires retrying the same capability, not switching kind or adding a shell wrapper. Command syntax is not the policy boundary.`;
 
-	return `<research_pi_delegation>
+	return `<apodex_pi_delegation>
 ${role}
 
 ${interaction}
@@ -262,7 +262,7 @@ ${continuationNotice ?? "This is a fresh Codex thread. Inspect the current works
 </continuation_state>
 
 ${resultInstruction}
-</research_pi_delegation>`;
+</apodex_pi_delegation>`;
 }
 
 export async function writeJsonAtomic(path, value, mode = 0o600) {
@@ -547,7 +547,7 @@ export function buildCodexThreadRefreshNotice(previousJob, currentGit, currentRe
 		?? "",
 	).trim().slice(0, 6000);
 	return [
-		`LEGACY THREAD REFRESH: job ${previousJob.id} used Codex thread ${previousJob.threadId}, which predates Research Pi dynamic-tool protocol v${CODEX_DYNAMIC_TOOL_PROTOCOL_VERSION}. A fresh Codex thread is being created so submit_research_pi_result, consult_research_pi, and research_pi_host are all available.`,
+		`LEGACY THREAD REFRESH: job ${previousJob.id} used Codex thread ${previousJob.threadId}, which predates Apodex Pi dynamic-tool protocol v${CODEX_DYNAMIC_TOOL_PROTOCOL_VERSION}. A fresh Codex thread is being created so submit_apodex_pi_result, consult_apodex_pi, and apodex_pi_host are all available.`,
 		"The mission and Actor identity are unchanged, but conversational history is not being resumed. Reconstruct current state from the task and authoritative workspace; treat the previous handoff below as orientation rather than evidence.",
 		buildCodexFreshnessNotice(previousJob, currentGit, currentResearch),
 		handoff ? `<previous_handoff>\n${handoff}\n</previous_handoff>` : "No previous handoff summary is available.",
@@ -567,7 +567,7 @@ function createCommandId() {
 export async function startCodexJob(options) {
 	if (typeof options.task !== "string" || !options.task.trim()) throw new Error("Codex task is required");
 	const mode = options.mode === "advisor" ? "advisor" : "executor";
-	const fullAccess = mode !== "advisor" && (options.fullAccess ?? researchPiFullAccessEnabled());
+	const fullAccess = mode !== "advisor" && (options.fullAccess ?? apodexPiFullAccessEnabled());
 	const model = validateModel(options.model ?? defaultCodexModel(mode));
 	const reasoningEffort = validateReasoningEffort(options.reasoningEffort ?? defaultCodexReasoningEffort(mode));
 	const identity = await resolveCodexWorkspaceIdentity(options.cwd);

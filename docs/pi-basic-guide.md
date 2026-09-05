@@ -1,6 +1,6 @@
-# Research Pi 基本使用指南
+# Apodex Pi 基本使用指南
 
-这份指南面向 Research Pi：Pi 0.84.2 与 Pi 原生支持的供应商/模型。源码 checkout 用于快速开发；稳定版本作为 npm CLI 全局安装。两种形态的日常入口都是 `pi`。
+这份指南面向 Apodex Pi：Pi 0.84.2 与 Pi 原生支持的供应商/模型。源码 checkout 用于快速开发；稳定版本作为 npm CLI 全局安装。两种形态的日常入口都是 `pi`。
 
 ## 1. 启动
 
@@ -9,7 +9,7 @@ cd /path/to/research-project
 pi
 ```
 
-Research Pi 有两个直观的项目角色：
+Apodex Pi 有两个直观的项目角色：
 
 - **Leader Session**：默认入口 `pi`。可以修改项目、运行实验、调度 Codex、更新 Project State，并独占 durable Leader mailbox。
 - **Analysis Session**：入口 `pi --analysis`。读取同一 ProjectView 并讨论问题，但不抢占 Leader、不接收 Codex ASK/result，也不能修改代码、启动实验或更新 Project State。可以在 OS 强制的项目只读沙箱中运行本地 shell；只有项目内 Runtime 临时目录可写。
@@ -28,7 +28,7 @@ Analysis Session 可以使用项目内只读工具和本地只读 shell，也可
 也可以把第二个终端留给原生 Codex Session，不把它纳入 `codex_delegate` job。先在同一个科研项目目录启动 `codex`，给它一次明确约定：
 
 ```text
-先运行 pi analysis context 读取 Research Pi 的当前 ProjectView；只和我讨论，不接管 Leader。只有我明确说“投递”时，才把判断、最强依据和建议下一步压缩后交给 Research Pi。
+先运行 pi analysis context 读取 Apodex Pi 的当前 ProjectView；只和我讨论，不接管 Leader。只有我明确说“投递”时，才把判断、最强依据和建议下一步压缩后交给 Apodex Pi。
 ```
 
 Codex 投递时调用：
@@ -46,7 +46,7 @@ printf '%s\n' '判断：...' '依据：...' '建议：...' | pi analysis send
 源码开发时，可以从 harness 目录显式启动：
 
 ```bash
-cd /path/to/research-pi-harness
+cd /path/to/apodex-pi-harness
 ./run-pi.sh --workspace /path/to/research-project
 ```
 
@@ -66,21 +66,21 @@ pi-raw
 pi-traced
 ```
 
-科研 prompt、DeepSeek 配置、研究工具、Codex executor 和 session 由 harness 提供；文件操作、Git checkpoint、Codex 委派和实验账本作用在启动 `pi` 时所在的研究仓库。所有项目的 Research Pi session 集中保存在当前运行形态的状态目录，每个 session header 仍记录其原始工作目录。
+科研 prompt、DeepSeek 配置、研究工具、Codex executor 和 session 由 harness 提供；文件操作、Git checkpoint、Codex 委派和实验账本作用在启动 `pi` 时所在的研究仓库。所有项目的 Apodex Pi session 集中保存在当前运行形态的状态目录，每个 session header 仍记录其原始工作目录。
 
-稳定包首次安装后运行 `pi setup`。进入 TUI 后用 Pi 原生 `/login` 登录供应商，用 `/model` 切换模型；`/scoped-models` 控制模型轮换范围，`/settings` 调节 thinking 等 Pi 设置。若供应商使用 API key，或需要 DeepSeek 原生小型搜索，也可以在 `~/.config/research-pi/credentials.env` 填入 `DEEPSEEK_API_KEY`、`ZAI_API_KEY` 或 `OPENCODE_API_KEY`。Research Pi 自己的 Runtime/compact/Codex/search/UI 配置位于 `~/.config/research-pi/config.json`；session、Project Runtime、memory、Codex job、grant 和 trace 默认集中在 `~/.local/state/research-pi/`。源码开发入口使用 checkout 的 `.env`、`.pi/config.json` 与 `.pi/` 状态；每个开发 worktree 的配置和运行状态彼此隔离。`pi paths` 可确认当前运行形态和 Pi 原生 agent 目录。
+稳定包首次安装后运行 `pi setup`。进入 TUI 后用 Pi 原生 `/login` 登录供应商，用 `/model` 切换模型；`/scoped-models` 控制模型轮换范围，`/settings` 调节 thinking 等 Pi 设置。若供应商使用 API key，或需要 DeepSeek 原生小型搜索，也可以在 `~/.config/apodex-pi/credentials.env` 填入 `DEEPSEEK_API_KEY`、`ZAI_API_KEY` 或 `OPENCODE_API_KEY`。Apodex Pi 自己的 Runtime/compact/Codex/search/UI 配置位于 `~/.config/apodex-pi/config.json`；session、Project Runtime、memory、Codex job、grant 和 trace 默认集中在 `~/.local/state/apodex-pi/`。源码开发入口使用 checkout 的 `.env`、`.pi/config.json` 与 `.pi/` 状态；每个开发 worktree 的配置和运行状态彼此隔离。`pi paths` 可确认当前运行形态和 Pi 原生 agent 目录。
 
-查看 Research Pi 配置：
+查看 Apodex Pi 配置：
 
 ```sh
 pi config show
 ```
 
-模型不属于上述配置：进入 TUI 后输入 `/model` 或按 `Ctrl+L`，直接使用 Pi 的完整原生模型选择器。新增供应商或订阅模型后，按 Pi 的方式 `/login`，必要时运行 `pi update --models`，无需等待 Research Pi 更新 profile。API key 不进入 `config.json`。
+模型不属于上述配置：进入 TUI 后输入 `/model` 或按 `Ctrl+L`，直接使用 Pi 的完整原生模型选择器。新增供应商或订阅模型后，按 Pi 的方式 `/login`，必要时运行 `pi update --models`，无需等待 Apodex Pi 更新 profile。API key 不进入 `config.json`。
 
-所有字段、示例和覆盖优先级见 [Research Pi Configuration](configuration.md)。
+所有字段、示例和覆盖优先级见 [Apodex Pi Configuration](configuration.md)。
 
-Research Pi 默认关闭 Pi 的 skill 和 executable extension 自动发现，只加载内置 `research-briefing`、经过检查的外部研究白名单与 harness extensions。某次任务需要额外 skill 时可显式添加：
+Apodex Pi 默认关闭 Pi 的 skill 和 executable extension 自动发现，只加载内置 `research-briefing`、经过检查的外部研究白名单与 harness extensions。某次任务需要额外 skill 时可显式添加：
 
 ```sh
 pi --skill /path/to/skill
@@ -173,7 +173,7 @@ Leader 模型 shell 可读写当前项目（包括正常 Git commit 所需的 `.
 
 `trust-*` 按项目持久保存，`grant-*` 只在当前 Pi session 生效。持久规则保存在用户状态目录而不是仓库中；源码开发模式下位于 Git 忽略的 `.pi/capabilities/`。`host-command` 会在授权界面显示 cwd、完整 argv 和建议前缀，授权后的 `/boundary grants` 会显示 grant ID；它以宿主用户权限运行，所以只信任你认可的项目入口。Pi/Codex 后续使用 grant ID 时自动恢复原 cwd；不带 cwd 的调用只有在唯一匹配时才自动恢复，多个 worktree 同时匹配会要求明确选择，不会创建 `bash -lc "cd ..."` 的重复授权。不透明 `ssh-target` 的凭据内容不会进入模型。
 
-Codex executor 缺少 grant 时不再先失败后咨询 Leader。`research_pi_host` 会把精确操作保存为结构化 `input_required`，attached Pi TUI 自动弹出相同的授权框；你的选择自动恢复原 Codex tool call。没有可用 TUI 时请求继续保存在 Runtime inbox。权限 ask 只有在批准/拒绝或显式回复已送回 Codex 后才结算，Leader 仅仅读到它不会让请求从 inbox 消失。
+Codex executor 缺少 grant 时不再先失败后咨询 Leader。`apodex_pi_host` 会把精确操作保存为结构化 `input_required`，attached Pi TUI 自动弹出相同的授权框；你的选择自动恢复原 Codex tool call。没有可用 TUI 时请求继续保存在 Runtime inbox。权限 ask 只有在批准/拒绝或显式回复已送回 Codex 后才结算，Leader 仅仅读到它不会让请求从 inbox 消失。
 
 所有模型工具调用都会在底部状态栏显示工具名、经过截断和凭据遮蔽的目标摘要以及已运行时间；成功或失败终态保留 5 秒。多个工具并行时显示数量和稳定摘要。Codex 后台 job 使用独立的持久状态，不受这个 5 秒终态影响；多个 Codex Action 或一个 Action 内的并发活动在单行 footer 中聚合，在 editor 上方 Runtime Dock 中按稳定顺序逐行展示。
 
@@ -181,7 +181,7 @@ Pi 现在提供这些低摩擦研究工具：
 
 - `record_experiment`：当结果真正改变研究判断时，Pi 向唯一的 `.pi/research/experiments.jsonl` 追加一条 canonical 备忘录，并区分 confirmatory、exploratory、diagnostic 与 validity_failure。它不会创建 Markdown、Run 目录或复制 artifact；普通 probe 和执行日志不应重复文档化。只有 confirmatory 要求假设和观察前预测；不存在的 hypothesis、prediction、validityChecks、nextStep 不能事后补写。preregistered prediction 需要 `registrationRef`；未知 `trackRef` 会在写盘前拒绝。重试会去重，artifact 最多保留 12 个简洁引用。
 
-Git 项目首次启动时，Research Pi 会通过本地 `.git/info/exclude` 隐藏 `/.pi/`，不修改共享 `.gitignore`，也不产生项目 diff。一个 coherent batch 默认最多保留一份冻结 protocol 和一份简洁 settlement；原始 panel、checkpoint、shard、rollout、批量 ledger 和生成 payload 应由项目 artifact store 管理。
+Git 项目首次启动时，Apodex Pi 会通过本地 `.git/info/exclude` 隐藏 `/.pi/`，不修改共享 `.gitignore`，也不产生项目 diff。一个 coherent batch 默认最多保留一份冻结 protocol 和一份简洁 settlement；原始 panel、checkpoint、shard、rollout、批量 ledger 和生成 payload 应由项目 artifact store 管理。
 - `record_research_transition`：当用户明确改变研究问题，或有效证据使旧路线成为 archived/superseded/parallel 时，记录一次 project-level 换轨。普通 next step、代码重构或 Codex completed 不触发；parallel 分支可用精确 `fromTrackRef` 指定从哪条 live route 继续。
 - `amend_project_state`：当当前 ProjectView 只有局部字段需要依据明确用户决策、实验、run 或文档进行纠正时，提交带 Project revision 的 append-only patch。初始状态用 `/compact`，换轨用 `record_research_transition`；数组字段是整组替换，省略字段保持不变。
 - `research_checkpoint`：在大步替换、回滚或废弃路线前，把当前 tracked Git 状态保存到 `refs/pi-research/checkpoints/...`。它不会切分支或清理工作树，也不会捕获 untracked 文件。
@@ -189,7 +189,7 @@ Git 项目首次启动时，Research Pi 会通过本地 `.git/info/exclude` 隐�
 - `research_memory_read`：根据搜索结果中的 session/entry ID 读取精确原文和小范围上下文。
 - `/side <问题>`：用当前上下文做一次隔离追问并持久保存；默认不进入主上下文。
 - `web_search`：通过 DeepSeek 原生搜索做简单、直接、带来源的网页查找。
-- `codex_delegate`：把工具密集或长程执行交给独立 Codex 上下文，或请求一个只读第二意见。进度使用自然语言 `phase=commentary`，结构化结果由一次性的 `submit_research_pi_result` 提交，最后只保留简短 `phase=final_answer` acknowledgement；executor 用 `outcome=succeeded|partial|blocked|failed` 与 `goal_satisfied` 表达委派结果，不把 turn 的 `completed` 当作任务成功。Pi 仍负责研究规划与证据判断。
+- `codex_delegate`：把工具密集或长程执行交给独立 Codex 上下文，或请求一个只读第二意见。进度使用自然语言 `phase=commentary`，结构化结果由一次性的 `submit_apodex_pi_result` 提交，最后只保留简短 `phase=final_answer` acknowledgement；executor 用 `outcome=succeeded|partial|blocked|failed` 与 `goal_satisfied` 表达委派结果，不把 turn 的 `completed` 当作任务成功。Pi 仍负责研究规划与证据判断。
 - `/watch`：按需打开 Codex 客观执行面板；左右切换 Action，Tab 或上下切换 overview/activity/agents，`q`/`Esc` 关闭。观察内容不进入模型上下文。
 - `/actors`（等同 `/actors active`）、`/inbox`：查看当前 active/waiting 的 project Runtime Actors 与 durable mailbox；`/actors all` 查看历史注册和 suspended Actors。
 - `/message`、`/steer`：面向 Actor 通信；steer 默认等待下一安全模型边界，只有 `--preempt` 才主动中断。
@@ -204,7 +204,7 @@ Git 项目首次启动时，Research Pi 会通过本地 `.git/info/exclude` 隐�
 - `/runtime new clean [reason]`：创建不复制 transcript、也不自动继承 ProjectView/mailbox 的 clean Session；Project 数据不删除，clean compact 不回写 Project State，Codex mission 的 `reuse=auto` 会降为新 thread。
 - `/runtime inherit [reason]`：让当前 clean Session 从下一轮开始恢复 ProjectView、未消费 mailbox 与 project-aware 操作；旧 transcript 仍不会恢复。后续 compact 以 canonical Project State 为 previous state，已有 clean summary 只作为非权威候选综合。
 - `/model`：唯一的日常 Leader 模型选择器；选择后持久化匹配 profile 和默认 thinking。
-- `/config`：显示 Research Pi 配置摘要；`/config show|path|themes|theme <name>` 管理非模型设置，`use <profile>` 仅保留兼容。
+- `/config`：显示 Apodex Pi 配置摘要；`/config show|path|themes|theme <name>` 管理非模型设置，`use <profile>` 仅保留兼容。
 
 可以直接提出：
 
@@ -222,7 +222,7 @@ Git 项目首次启动时，Research Pi 会通过本地 `.git/info/exclude` 隐�
 先用 research_memory_search 查找之前关于梯度爆炸和 run-184 的实验；读取精确 entry 后再判断，不要把旧 assistant summary 当成实验事实。
 ```
 
-人类也可使用 `/memory 梯度爆炸` 查看少量检索结果。`/memory` 不会把结果加入模型上下文；Research Pi 也不会自动在每一轮注入历史。
+人类也可使用 `/memory 梯度爆炸` 查看少量检索结果。`/memory` 不会把结果加入模型上下文；Apodex Pi 也不会自动在每一轮注入历史。
 
 临时追问但不希望扩大主上下文时：
 
@@ -232,7 +232,7 @@ Git 项目首次启动时，Research Pi 会通过本地 `.git/info/exclude` 隐�
 
 side 问答会以卡片保存在 session 中。`Ctrl+O` 在展开/收起之间切换；如果终端状态异常，也可用 `/side collapse` 强制恢复紧凑视图。`/side show <id>` 打开可滚动 overlay，使用方向键/PgUp/PgDn 浏览并以 `q` 或 Esc 返回；`/side use <id>` 才把它提升到主上下文。之后也能通过 Research Memory 找回，但它仍属于 assistant synthesis，不是实验事实。
 
-需要当天信息、一个官方页面或一份有界小调研时，可以让 Pi 调用 `web_search`。它复用 Research Pi 配置中的 DeepSeek key。用户明确指定，或任务确实需要大量搜索、交叉核验和中间材料整理时，再交给 Codex 隔离过程。
+需要当天信息、一个官方页面或一份有界小调研时，可以让 Pi 调用 `web_search`。它复用 Apodex Pi 配置中的 DeepSeek key。用户明确指定，或任务确实需要大量搜索、交叉核验和中间材料整理时，再交给 Codex 隔离过程。
 
 需要 Codex 实际完成一项较长任务时，可以直接对 Pi 说：
 
@@ -250,17 +250,17 @@ advisor 保持项目只读，但不再默认采取反驳姿态。它可通过 Ru
 
 同步 advisor 遇到问题时不会继续占住当前 tool call：它以 `input_required` 把控制权交还 Leader，Leader 使用返回的精确 `jobId/requestId` 回复，随后沿用同一个 worker、thread 和 turn 继续。此状态不是失败，不应 cancel 或重新启动 advisor。完全异步咨询仍可显式使用 `background=true`。
 
-Pi 会获得一个 `codex-...` job ID。单个 job 时，底部状态栏持续显示 job 后八位、advisor/executor 模式和明确的 `starting/running/completed/failed/cancelled/outcome_unknown` transport lifecycle；`now:` 表示当前叶子活动，`last:` 表示最近结束的命令或工具。两个以上 Action 或并发叶子活动出现时，footer 只显示不会跳动的聚合计数，Runtime Dock 为每个 Action/活动保留固定多行；超过可见上限时使用 `/watch`。`research_pi_host · completed` 只表示一次工具调用完成，job `completed` 只表示 Codex turn 正常结算；executor 是否完成委派目标由 final result 的 `outcome=succeeded` 且 `goal_satisfied=true` 决定。后台任务未结束时，Leader 不应为了发现完成而反复调用 `status/result`：人类观察进度用 `/watch`，模型等待 Runtime mailbox 的下一条 blocking/terminal 事件；只有显式用户查询、故障恢复或手动管理 `autoNotify=false` 的 job 才需要主动读取同一 job。纯 `status/result/missions` 查询不会把 ProjectView 标成已变更，也不会凭空制造新的 `<research_project_delta>`；真实的 Action 或 mailbox 状态变化仍按原机制刷新。重复启动任务仍然不允许。状态、阻塞问题和完成事件先进入项目 Runtime mailbox，再交给最近 attached 的 Research Leader session。默认 executor 是 project-write + public-network，advisor 是 project-read + public-network；各自的默认 model/effort 位于 `config.json` 的 `codex.executor` 与 `codex.advisor`，也可以在具体委派时覆盖。
+Pi 会获得一个 `codex-...` job ID。单个 job 时，底部状态栏持续显示 job 后八位、advisor/executor 模式和明确的 `starting/running/completed/failed/cancelled/outcome_unknown` transport lifecycle；`now:` 表示当前叶子活动，`last:` 表示最近结束的命令或工具。两个以上 Action 或并发叶子活动出现时，footer 只显示不会跳动的聚合计数，Runtime Dock 为每个 Action/活动保留固定多行；超过可见上限时使用 `/watch`。`apodex_pi_host · completed` 只表示一次工具调用完成，job `completed` 只表示 Codex turn 正常结算；executor 是否完成委派目标由 final result 的 `outcome=succeeded` 且 `goal_satisfied=true` 决定。后台任务未结束时，Leader 不应为了发现完成而反复调用 `status/result`：人类观察进度用 `/watch`，模型等待 Runtime mailbox 的下一条 blocking/terminal 事件；只有显式用户查询、故障恢复或手动管理 `autoNotify=false` 的 job 才需要主动读取同一 job。纯 `status/result/missions` 查询不会把 ProjectView 标成已变更，也不会凭空制造新的 `<research_project_delta>`；真实的 Action 或 mailbox 状态变化仍按原机制刷新。重复启动任务仍然不允许。状态、阻塞问题和完成事件先进入项目 Runtime mailbox，再交给最近 attached 的 Research Leader session。默认 executor 是 project-write + public-network，advisor 是 project-read + public-network；各自的默认 model/effort 位于 `config.json` 的 `codex.executor` 与 `codex.advisor`，也可以在具体委派时覆盖。
 
 Codex 终态任务不会无限保留碎片文件：每天启动时至多检查一次，默认仅将“超过 30 天且不在最近 200 个终态任务中”的 completed/failed/cancelled job 归档到一个中央 JSONL；结构化结果仍能按 job ID 读取。活跃、等待输入和 `outcome_unknown` 任务永不自动归档，Codex thread/context 状态也不受影响。阈值由 `codex.retention` 配置。
 
 `outcome_unknown` 表示 executor 可能已产生文件、Git、远程 run 等副作用，但 worker 没有留下可靠终态。此时不要重跑或猜测：先检查相关外部状态，再让 Pi 调用 `codex_delegate action=reconcile`，提供 `completed|failed|cancelled` 和简短证据说明。同一 workspace 在结案前不会启动另一写入型 Codex；advisor 仍可用于只读排查。
 
-Codex 中间更新使用自然语言 `phase=commentary`，不再受终态 schema 约束；结束时调用 `submit_research_pi_result` 写入严格结构化结果，再发简短 `phase=final_answer` acknowledgement。结果卡默认折叠为状态、摘要预览和结构化计数；展开后额外显示 delegation outcome、completion basis 与 remaining work。用户可随时运行 `/watch` 查看最近的 active Action，也可用 `/watch <job后缀>`、`/watch <mission>` 或 `/watch @codex:<Actor短码>` 定位。内部 subagent 只是本次 Action 的临时子节点，不会污染 Project Actor 列表。
+Codex 中间更新使用自然语言 `phase=commentary`，不再受终态 schema 约束；结束时调用 `submit_apodex_pi_result` 写入严格结构化结果，再发简短 `phase=final_answer` acknowledgement。结果卡默认折叠为状态、摘要预览和结构化计数；展开后额外显示 delegation outcome、completion basis 与 remaining work。用户可随时运行 `/watch` 查看最近的 active Action，也可用 `/watch <job后缀>`、`/watch <mission>` 或 `/watch @codex:<Actor短码>` 定位。内部 subagent 只是本次 Action 的临时子节点，不会污染 Project Actor 列表。
 
 Pi 在连续处理同一研究子任务时应使用稳定、简短的 `mission` 标签。带 mission 的新派遣默认 `reuse=auto`：运行中的同 mission/mode/track job 会直接重新挂接，已完成的会通过 App Server `thread/resume` 续接历史；同一精确 workspace、mode、mission 和 research track 可跨 Pi session 复用。同一个 advisor mission 用于持续澄清同一问题；换轨后默认开启新 thread，只有用户或 Leader 显式恢复旧 job 才跨 track 续接，并会收到 route-change 警告。续接时 Runtime 也会比较 Git snapshot，工作区变化则要求 Codex 重新检查当前文件。使用 `/codex missions` 查看按 track 分组的任务链，使用 `/actors` 找当前活跃 Actor，或用 `/actors all` 找 suspended Actor 的稳定 `@codex:<Actor短码>`；若要切换研究路线或主动清除旧假设，使用新的 mission。
 
-App Server 的动态工具在 thread 创建时固定。Research Pi 为这组工具记录协议版本；升级结构化结果、Leader 咨询或宿主能力工具后，旧 thread 会在下一次续接时自动刷新一次。mission 与 Actor 身份保留，但旧对话不强行迁移；新 thread 从当前任务、上一轮简短 handoff 和权威工作区重建状态，之后继续正常复用。
+App Server 的动态工具在 thread 创建时固定。Apodex Pi 为这组工具记录协议版本；升级结构化结果、Leader 咨询或宿主能力工具后，旧 thread 会在下一次续接时自动刷新一次。mission 与 Actor 身份保留，但旧对话不强行迁移；新 thread 从当前任务、上一轮简短 handoff 和权威工作区重建状态，之后继续正常复用。
 
 用户发现某个 Actor 跑偏时可以直接输入：
 
@@ -272,7 +272,7 @@ App Server 的动态工具在 thread 创建时固定。Research Pi 为这组工�
 
 ## 4. 会话、分支和恢复
 
-普通会话会自动保存到 Research Pi 的集中状态目录，而不是散落在每个科研仓库中。源码开发模式使用 harness 的 `.pi/sessions/`；稳定包使用 `~/.local/state/research-pi/sessions/`。历史检索依据 session header 中的 cwd/Git 根目录区分项目。
+普通会话会自动保存到 Apodex Pi 的集中状态目录，而不是散落在每个科研仓库中。源码开发模式使用 harness 的 `.pi/sessions/`；稳定包使用 `~/.local/state/apodex-pi/sessions/`。历史检索依据 session header 中的 cwd/Git 根目录区分项目。
 
 | 操作 | 用法 |
 |---|---|
@@ -306,7 +306,7 @@ App Server 的动态工具在 thread 创建时固定。Research Pi 为这组工�
 - 普通新 Session 自动收到三层 ProjectView。第一层是项目根目录可选的 `RESEARCH.md` Project Anchor；第二层 Project Brief 来自最近一次成功 compact，只保留项目介绍、最终目标、总体思路、用户优先级和已经结束阶段的“目标—思路—结果”；第三层 ProjectView Delta 包含当前路线、最新 handoff、实验账本、Git 和 Runtime 状态。完成过项目相关工具工作的 Leader turn 会把最终用户汇报保存为本地 handoff，但不会推进科学 Project revision。用 `/runtime view` 可检查完整视图，用 `/runtime recommend` 可查看是否值得 compact 或轮换。确定交接时优先使用 `/runtime rotate`；若目的是主动排除项目记忆影响，则使用 `/runtime new clean`，之后只有显式 `/runtime inherit` 才恢复自动注入。
 - Project Brief 在两次成功 compact 之间保持字节稳定；窄幅 `amend_project_state`、实验记录、任务完成和路线变化只影响下一次用户请求捕获的 Delta。下一次 compact 才能重写 Brief，并把已经结束的阶段压缩进历史。Delta 显示 `current/unconfirmed/stale/transitioning/missing` freshness；新 experiment 或 research transition 晚于最近 compact 时，旧 claim/next experiment 不会冒充当前结论。窄更新用 `amend_project_state`，实质换轨用 `record_research_transition`，真正阶段边界再 compact，不需要每次实验都压缩。
 - Delta 只在真正的用户输入到来时捕获一次，并作为该请求的非持久尾部上下文发给模型；它不是独立用户消息，不会单独触发 Leader。该请求后续发生工具调用时，同一份 Delta 保持冻结并移动到最新输入尾部；Action、实验记录或 mailbox 状态在中途变化，也只会由工具结果本身体现。下一次用户输入才捕获新的 Delta，旧副本从来不写入 Session。这样固定 Brief 和既有历史仍是缓存友好前缀，同时避免“Delta 更新 → Leader 再思考”的循环；实际命中率仍以 provider 返回的 cache usage 为准。
-- `RESEARCH.md` 是独立于 compact 的用户权威锚点。Research Pi 只自动读取项目根目录中的普通文件，不跟随符号链接；最多注入前 3600 个字符，过长时会提示缩短。适合写项目问题、最终目标、总体路线、non-goals、术语和长期判断原则，不适合写最新实验、临时结论或 TODO。文件变化会随下一次真正的用户请求生成新的 Brief receipt，并过滤旧 Anchor 版本；compact 不会修改此文件。
+- `RESEARCH.md` 是独立于 compact 的用户权威锚点。Apodex Pi 只自动读取项目根目录中的普通文件，不跟随符号链接；最多注入前 3600 个字符，过长时会提示缩短。适合写项目问题、最终目标、总体路线、non-goals、术语和长期判断原则，不适合写最新实验、临时结论或 TODO。文件变化会随下一次真正的用户请求生成新的 Brief receipt，并过滤旧 Anchor 版本；compact 不会修改此文件。
 
 推荐模板：
 
@@ -357,7 +357,7 @@ Transition 会立即影响后续 Session 的 ProjectView，不必等待 `/compac
 
 ## 5. 常用界面操作
 
-输入 `/` 会打开 slash command 补全；Pi 0.84.2 没有单独的 `/help` 命令。Research Pi 隐藏了不再需要的低层 `/scoped-models` 补全项。
+输入 `/` 会打开 slash command 补全；Pi 0.84.2 没有单独的 `/help` 命令。Apodex Pi 隐藏了不再需要的低层 `/scoped-models` 补全项。
 
 | 按键 | 作用 |
 |---|---|
@@ -437,6 +437,6 @@ Transition 会立即影响后续 Session 的 ProjectView，不必等待 `/compac
 - 项目持久 `trust-ssh` 绑定精确 target，`trust-command` 绑定界面显示的 argv 前缀；代码字符串默认绑定完整 argv。它们可被 Pi 与 Codex executor 自动复用，也可用 `/boundary revoke` 撤销；
 - `!` / `!!` 与人工批准的直接文件工具仍是最终越界通道，但 broker 能表达的操作应由 agent 申请授权后继续执行，不应常态化退回用户手动运行；
 - memory SQLite 是派生缓存，不进入 Git；它会脱敏常见凭证形式，但原始 session、实验账本和不常见秘密格式仍是敏感数据；
-- Research Pi 在约 272K 总上下文时标记 compact，384K 作为硬触发线；当前 agent run settled 后再执行，避免压缩 abort 尚未完成的工具链；原始 recent tail 按当前分支第 1/2/3 次 compact 取约 24K/32K/40K，结构化状态目标 8K，compact 后通常约 32K/40K/48K；
+- Apodex Pi 在约 272K 总上下文时标记 compact，384K 作为硬触发线；当前 agent run settled 后再执行，避免压缩 abort 尚未完成的工具链；原始 recent tail 按当前分支第 1/2/3 次 compact 取约 24K/32K/40K，结构化状态目标 8K，compact 后通常约 32K/40K/48K；
 - 当前适合科研探索；极限上下文、长期多分支召回和 Codex 无人值守远程执行仍需在真实任务中继续验证；
 - 先让真实任务暴露摩擦，再加入 extension 或工作流，不预先安装全家桶。

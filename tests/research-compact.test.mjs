@@ -141,7 +141,7 @@ test("clean compaction state stays local when the Session later restores Project
 			type: "compaction",
 			id: "project-compact",
 			details: {
-				kind: "research-pi-compaction",
+				kind: "apodex-pi-compaction",
 				version: 1,
 				inheritancePolicy: "project",
 				projectRevision: 3,
@@ -152,7 +152,7 @@ test("clean compaction state stays local when the Session later restores Project
 			type: "compaction",
 			id: "clean-compact",
 			details: {
-				kind: "research-pi-compaction",
+				kind: "apodex-pi-compaction",
 				version: 1,
 				inheritancePolicy: "clean",
 				projectRevision: 3,
@@ -163,7 +163,7 @@ test("clean compaction state stays local when the Session later restores Project
 			type: "compaction",
 			id: "analysis-compact",
 			details: {
-				kind: "research-pi-compaction",
+				kind: "apodex-pi-compaction",
 				version: 1,
 				inheritancePolicy: "analysis",
 				projectRevision: 3,
@@ -268,7 +268,7 @@ test("structured compaction preserves prior hypotheses and downgrades unsupporte
 			parentId: null,
 			timestamp: "2026-01-01T00:00:00Z",
 			details: {
-				kind: "research-pi-compaction",
+				kind: "apodex-pi-compaction",
 				version: 1,
 				researchState: {
 					hypotheses: [{ id: "H3", statement: "保留的旧假设", status: "active", predictions: [], rationale: "", evidenceRefs: [] }],
@@ -333,7 +333,7 @@ test("structured compaction preserves prior hypotheses and downgrades unsupporte
 		tokensBefore: 100,
 		fileOps: { read: ["a.py"], modified: ["b.py"] },
 	});
-	assert.equal(details.kind, "research-pi-compaction");
+	assert.equal(details.kind, "apodex-pi-compaction");
 	assert.equal(details.evidenceLedger.experiments.length, 2);
 	assert.ok(details.validationWarnings.length >= 2);
 });
@@ -514,7 +514,7 @@ test("research compaction uses bounded staged recent tails", () => {
 	const compact = (id) => ({
 		type: "compaction",
 		id,
-		details: { kind: "research-pi-compaction", version: 1 },
+		details: { kind: "apodex-pi-compaction", version: 1 },
 	});
 	assert.deepEqual(selectResearchCompactionPolicy([]), {
 		version: 1,

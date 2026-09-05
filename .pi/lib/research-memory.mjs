@@ -4,7 +4,7 @@ import { dirname, join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
 export const MEMORY_SCHEMA_VERSION = 1;
-export const MEMORY_EXTRACTOR_VERSION = "research-pi-memory-v3";
+export const MEMORY_EXTRACTOR_VERSION = "apodex-pi-memory-v3";
 
 const MAX_INDEXED_CHARS = 64_000;
 const DEFAULT_RESULT_LIMIT = 6;

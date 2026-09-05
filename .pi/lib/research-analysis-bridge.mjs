@@ -37,11 +37,11 @@ export async function readCodexAnalysisContext(cwd, options = {}) {
 	]);
 	const view = buildProjectView({ runtime, snapshot, git, experiments });
 	return [
-		"<research_pi_codex_analysis>",
-		"Independent discussion context. Discuss and inspect without taking over the Research Pi Leader or treating new interpretations as evidence.",
+		"<apodex_pi_codex_analysis>",
+		"Independent discussion context. Discuss and inspect without taking over the Apodex Pi Leader or treating new interpretations as evidence.",
 		"Do not send anything automatically. Only when the user explicitly asks to deliver it, send one synthesis of at most 1200 characters with judgment, strongest basis, and suggested next step via `pi analysis send`.",
 		renderProjectView(view, { includeDirectedMessages: false }),
-		"</research_pi_codex_analysis>",
+		"</apodex_pi_codex_analysis>",
 	].join("\n\n");
 }
 

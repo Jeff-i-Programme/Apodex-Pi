@@ -6,26 +6,26 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { formatBoundaryDoctor, runBoundaryDoctor } from "../.pi/lib/boundary-doctor.mjs";
 import {
-	ensureResearchPiConfig,
-	researchPiCredentialEnvironmentNames,
-	researchPiConfigSummary,
-	researchPiDeepSeekSearchEnabled,
-	researchPiEnvironment,
-	RESEARCH_PI_THEME_CHOICES,
-	writeResearchPiAgentConfig,
-	writeResearchPiConfig,
+	ensureApodexPiConfig,
+	apodexPiCredentialEnvironmentNames,
+	apodexPiConfigSummary,
+	apodexPiDeepSeekSearchEnabled,
+	apodexPiEnvironment,
+	APODEX_PI_THEME_CHOICES,
+	writeApodexPiAgentConfig,
+	writeApodexPiConfig,
 } from "../.pi/lib/research-config.mjs";
 import {
 	CODEX_ANALYSIS_HANDOFF_MAX_CHARS,
 	queueCodexAnalysisHandoff,
 	readCodexAnalysisContext,
 } from "../.pi/lib/research-analysis-bridge.mjs";
-import { resolveResearchPiPaths } from "../.pi/lib/runtime-paths.mjs";
+import { resolveApodexPiPaths } from "../.pi/lib/runtime-paths.mjs";
 import { defaultScienceSkillPaths, scienceLoopExtensionEnabled } from "../.pi/lib/science-workspace.mjs";
 import { applyHostPythonEnv, prependHostBinToPath, prependWorkspaceToPythonPath } from "../.pi/lib/host-shell.mjs";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const paths = resolveResearchPiPaths({ harnessRoot: packageRoot });
+const paths = resolveApodexPiPaths({ harnessRoot: packageRoot });
 const packageJson = JSON.parse(readFileSync(join(packageRoot, "package.json"), "utf8"));
 const coreVersion = String(packageJson.dependencies?.["@earendil-works/pi-coding-agent"] ?? "").replace(/^[^0-9]*/, "");
 
@@ -65,21 +65,21 @@ function ensureRuntimeLayout(config) {
 		mkdirSync(path, { recursive: true, mode: 0o700 });
 		chmodSync(path, 0o700);
 	}
-	writeResearchPiAgentConfig(paths.agentDir, config, { coreVersion });
+	writeApodexPiAgentConfig(paths.agentDir, config, { coreVersion });
 }
 
 function prepareConfig() {
-	const config = ensureResearchPiConfig(paths.configPath);
+	const config = ensureApodexPiConfig(paths.configPath);
 	ensureRuntimeLayout(config);
 	return config;
 }
 
 function setup() {
 	const config = prepareConfig();
-	const credentialNames = researchPiCredentialEnvironmentNames(config);
+	const credentialNames = apodexPiCredentialEnvironmentNames(config);
 	if (!existsSync(paths.credentialsPath)) {
 		mkdirSync(dirname(paths.credentialsPath), { recursive: true, mode: 0o700 });
-		writeFileSync(paths.credentialsPath, `# Research Pi credentials; never commit this file.\n${credentialNames.map((name) => `${name}=`).join("\n")}\n`, {
+		writeFileSync(paths.credentialsPath, `# Apodex Pi credentials; never commit this file.\n${credentialNames.map((name) => `${name}=`).join("\n")}\n`, {
 			encoding: "utf8",
 			mode: 0o600,
 		});
@@ -112,7 +112,7 @@ function loadConfigurationEnvironment() {
 function takeResearchOptions(argv, config) {
 	const args = [...argv];
 	let sessionMode;
-	let fullAccess = process.env.RESEARCH_PI_FULL_ACCESS === "1";
+	let fullAccess = process.env.APODEX_PI_FULL_ACCESS === "1";
 	const fullAccessIndex = args.indexOf("--full-access");
 	if (fullAccessIndex >= 0) {
 		fullAccess = true;
@@ -134,10 +134,10 @@ function takeResearchOptions(argv, config) {
 }
 
 function applyConfigurationEnvironment(config) {
-	for (const [name, value] of Object.entries(researchPiEnvironment(config))) {
+	for (const [name, value] of Object.entries(apodexPiEnvironment(config))) {
 		if (process.env[name] === undefined) process.env[name] = value;
 	}
-	process.env.RESEARCH_PI_CONFIG_FILE = paths.configPath;
+	process.env.APODEX_PI_CONFIG_FILE = paths.configPath;
 }
 
 function expandUserPath(path) {
@@ -155,27 +155,27 @@ function configCommand(argv) {
 		return;
 	}
 	if (action === "show") {
-		process.stdout.write(`${researchPiConfigSummary(config, paths.configPath)}\n\n${JSON.stringify(config, null, 2)}\n`);
+		process.stdout.write(`${apodexPiConfigSummary(config, paths.configPath)}\n\n${JSON.stringify(config, null, 2)}\n`);
 		return;
 	}
 	if (action === "themes") {
 		const active = config.pi.settings.theme;
-		for (const theme of RESEARCH_PI_THEME_CHOICES) {
+		for (const theme of APODEX_PI_THEME_CHOICES) {
 			process.stdout.write(`${theme.name === active ? "*" : " "} ${theme.name}\t${theme.label}\t${theme.description}\n`);
 		}
 		return;
 	}
 	if (action === "theme") {
 		const name = argv[1];
-		if (!name || !RESEARCH_PI_THEME_CHOICES.some((theme) => theme.name === name)) {
-			throw new Error(`Usage: pi config theme <${RESEARCH_PI_THEME_CHOICES.map((theme) => theme.name).join("|")}>`);
+		if (!name || !APODEX_PI_THEME_CHOICES.some((theme) => theme.name === name)) {
+			throw new Error(`Usage: pi config theme <${APODEX_PI_THEME_CHOICES.map((theme) => theme.name).join("|")}>`);
 		}
-		const next = writeResearchPiConfig(paths.configPath, {
+		const next = writeApodexPiConfig(paths.configPath, {
 			...config,
 			pi: { ...config.pi, settings: { ...config.pi.settings, theme: name } },
 		});
-		writeResearchPiAgentConfig(paths.agentDir, next, { coreVersion, environment: process.env });
-		process.stdout.write(`${researchPiConfigSummary(next, paths.configPath)}\n`);
+		writeApodexPiAgentConfig(paths.agentDir, next, { coreVersion, environment: process.env });
+		process.stdout.write(`${apodexPiConfigSummary(next, paths.configPath)}\n`);
 		return;
 	}
 	throw new Error("Usage: pi config [show|path|themes|theme <name>]");
@@ -201,7 +201,7 @@ async function analysisCommand(argv) {
 			throw new Error(`Usage: pi analysis send <message>, or pipe a handoff of at most ${CODEX_ANALYSIS_HANDOFF_MAX_CHARS} characters to pi analysis send`);
 		}
 		const message = await queueCodexAnalysisHandoff(workspace, input);
-		process.stdout.write(`${message.id} queued for the Research Pi Leader; no transcript or Project State was written.\n`);
+		process.stdout.write(`${message.id} queued for the Apodex Pi Leader; no transcript or Project State was written.\n`);
 		return;
 	}
 	throw new Error("Usage: pi analysis [context|send <message>]");
@@ -210,20 +210,20 @@ async function analysisCommand(argv) {
 async function spawnCore(argv) {
 	const baseConfig = prepareConfig();
 	const { workspace, args: userArgs, config, sessionMode, fullAccess } = takeResearchOptions(argv, baseConfig);
-	writeResearchPiAgentConfig(paths.agentDir, config, { coreVersion });
+	writeApodexPiAgentConfig(paths.agentDir, config, { coreVersion });
 	if (!existsSync(workspace)) throw new Error(`Research workspace does not exist: ${workspace}`);
 	loadConfigurationEnvironment();
 	applyConfigurationEnvironment(config);
-	writeResearchPiAgentConfig(paths.agentDir, config, { coreVersion, environment: process.env });
+	writeApodexPiAgentConfig(paths.agentDir, config, { coreVersion, environment: process.env });
 	const informational = userArgs.some((arg) => ["--version", "--help", "-h"].includes(arg));
-	const deepSeekSearchEnabled = informational ? false : researchPiDeepSeekSearchEnabled(config, process.env);
+	const deepSeekSearchEnabled = informational ? false : apodexPiDeepSeekSearchEnabled(config, process.env);
 
 	process.env.PI_CODING_AGENT_DIR = paths.agentDir;
-	process.env.RESEARCH_PI_CONFIG_DIR = paths.configRoot;
-	process.env.RESEARCH_PI_STATE_DIR = paths.stateRoot;
-	if (sessionMode === "analysis") process.env.RESEARCH_PI_INITIAL_SESSION_MODE = "analysis";
-	if (fullAccess) process.env.RESEARCH_PI_FULL_ACCESS = "1";
-	if (process.env.RESEARCH_PI_TRACE === "1") process.env.PI_TRACE_DIR = paths.traceDir;
+	process.env.APODEX_PI_CONFIG_DIR = paths.configRoot;
+	process.env.APODEX_PI_STATE_DIR = paths.stateRoot;
+	if (sessionMode === "analysis") process.env.APODEX_PI_INITIAL_SESSION_MODE = "analysis";
+	if (fullAccess) process.env.APODEX_PI_FULL_ACCESS = "1";
+	if (process.env.APODEX_PI_TRACE === "1") process.env.PI_TRACE_DIR = paths.traceDir;
 	prependHostBinToPath(process.env);
 	prependWorkspaceToPythonPath(process.env, workspace);
 	applyHostPythonEnv(process.env);
@@ -267,7 +267,7 @@ async function spawnCore(argv) {
 	}
 	if (deepSeekSearchEnabled) extensions.splice(extensions.indexOf("deepseek-v4-pro-anchor.ts"), 0, "deepseek-web-search.ts");
 	for (const name of extensions) args.push("--extension", join(packageRoot, ".pi", "extensions", name));
-	if (process.env.RESEARCH_PI_TRACE === "1") {
+	if (process.env.APODEX_PI_TRACE === "1") {
 		args.push("--extension", join(packageRoot, ".pi", "vendor", "pi-trace-extension-0.1.14", "trace", "index.ts"));
 	}
 	args.push(...userArgs);
@@ -310,6 +310,6 @@ async function main() {
 }
 
 main().catch((error) => {
-	process.stderr.write(`Research Pi: ${error instanceof Error ? error.message : String(error)}\n`);
+	process.stderr.write(`Apodex Pi: ${error instanceof Error ? error.message : String(error)}\n`);
 	process.exitCode = 1;
 });

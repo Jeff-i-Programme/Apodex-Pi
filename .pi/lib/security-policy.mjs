@@ -39,13 +39,13 @@ async function activeDeveloperDirectory(environment, run = execFileAsync) {
 async function configuredRuntimeRoots(environment) {
 	const roots = [];
 	const home = resolve(homedir());
-	for (const value of String(environment.RESEARCH_PI_RUNTIME_ROOTS ?? "").split(delimiter)) {
+	for (const value of String(environment.APODEX_PI_RUNTIME_ROOTS ?? "").split(delimiter)) {
 		const root = await canonicalDirectory(value.trim());
 		if (!root) continue;
 		if (root === parse(root).root) throw new Error(`Refusing filesystem-root runtime grant: ${root}`);
-		if ((isWithin(home, root) || isWithin(root, home)) && environment.RESEARCH_PI_ALLOW_HOME_RUNTIME_ROOTS !== "1") {
+		if ((isWithin(home, root) || isWithin(root, home)) && environment.APODEX_PI_ALLOW_HOME_RUNTIME_ROOTS !== "1") {
 			throw new Error(
-				`Refusing home-directory runtime root without RESEARCH_PI_ALLOW_HOME_RUNTIME_ROOTS=1: ${root}`,
+				`Refusing home-directory runtime root without APODEX_PI_ALLOW_HOME_RUNTIME_ROOTS=1: ${root}`,
 			);
 		}
 		roots.push(root);
@@ -81,10 +81,10 @@ export async function resolveSystemRuntimePolicy(options = {}) {
 			const home = resolve(homedir());
 			if (
 				(isWithin(home, developerDirectory) || isWithin(developerDirectory, home)) &&
-				environment.RESEARCH_PI_ALLOW_HOME_RUNTIME_ROOTS !== "1"
+				environment.APODEX_PI_ALLOW_HOME_RUNTIME_ROOTS !== "1"
 			) {
 				throw new Error(
-					`Refusing home-directory macOS developer runtime without RESEARCH_PI_ALLOW_HOME_RUNTIME_ROOTS=1: ${developerDirectory}`,
+					`Refusing home-directory macOS developer runtime without APODEX_PI_ALLOW_HOME_RUNTIME_ROOTS=1: ${developerDirectory}`,
 				);
 			}
 			readRoots.add(developerDirectory);

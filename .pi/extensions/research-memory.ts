@@ -5,10 +5,10 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 import { openMemoryIndex, readMemory, searchMemory, syncMemoryIndex } from "../lib/research-memory.mjs";
 import { readRuntimeSnapshot, resolveResearchRuntime } from "../lib/research-runtime.mjs";
-import { researchPiStateRoot } from "../lib/runtime-paths.mjs";
+import { apodexPiStateRoot } from "../lib/runtime-paths.mjs";
 
 const harnessRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const stateRoot = researchPiStateRoot(harnessRoot);
+const stateRoot = apodexPiStateRoot(harnessRoot);
 const memoryDir = join(stateRoot, "memory");
 const databasePath = join(memoryDir, "memory.sqlite");
 const sessionDir = join(stateRoot, "sessions");

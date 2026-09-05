@@ -4,16 +4,16 @@ import { fileURLToPath } from "node:url";
 import { resolveHostBash } from "./host-shell.mjs";
 
 const LIB_DIR = dirname(fileURLToPath(import.meta.url));
-export const RESEARCH_PI_DEFAULT_CONFIG_PATH = resolve(LIB_DIR, "../config.defaults.json");
-export const RESEARCH_PI_CONFIG_SCHEMA_PATH = resolve(LIB_DIR, "../schemas/research-pi-config.schema.json");
-export const RESEARCH_PI_CONFIG_VERSION = 2;
-export const RESEARCH_PI_PROVIDER_CREDENTIALS = Object.freeze({
+export const APODEX_PI_DEFAULT_CONFIG_PATH = resolve(LIB_DIR, "../config.defaults.json");
+export const APODEX_PI_CONFIG_SCHEMA_PATH = resolve(LIB_DIR, "../schemas/apodex-pi-config.schema.json");
+export const APODEX_PI_CONFIG_VERSION = 2;
+export const APODEX_PI_PROVIDER_CREDENTIALS = Object.freeze({
 	deepseek: "DEEPSEEK_API_KEY",
 	zai: "ZAI_API_KEY",
 	"opencode-go": "OPENCODE_API_KEY",
 });
-export const RESEARCH_PI_THEME_CHOICES = Object.freeze([
-	{ name: "research-pi", label: "Ocean", description: "Cool cyan, indigo, and violet for long research sessions." },
+export const APODEX_PI_THEME_CHOICES = Object.freeze([
+	{ name: "apodex-pi", label: "Ocean", description: "Cool cyan, indigo, and violet for long research sessions." },
 	{ name: "research-graphite", label: "Graphite", description: "Low-saturation graphite with restrained aqua accents." },
 	{ name: "research-ember", label: "Ember", description: "Warm copper and amber balanced by scientific teal." },
 	{ name: "dark", label: "Pi Dark", description: "Pi Core built-in dark palette." },
@@ -78,14 +78,14 @@ function validateCodexRole(role, value) {
 	if (!CODEX_EFFORTS.has(value.reasoningEffort)) throw new Error(`codex.${role}.reasoningEffort is invalid`);
 }
 
-export function validateResearchPiConfig(config) {
-	if (!plainObject(config)) throw new Error("Research Pi config must be a JSON object");
+export function validateApodexPiConfig(config) {
+	if (!plainObject(config)) throw new Error("Apodex Pi config must be a JSON object");
 	rejectSecretFields(config);
 	for (const key of Object.keys(config)) {
-		if (!TOP_LEVEL_KEYS.has(key)) throw new Error(`Unknown Research Pi config key: ${key}`);
+		if (!TOP_LEVEL_KEYS.has(key)) throw new Error(`Unknown Apodex Pi config key: ${key}`);
 	}
-	if (config.version !== RESEARCH_PI_CONFIG_VERSION) {
-		throw new Error(`Unsupported Research Pi config version: ${config.version}`);
+	if (config.version !== APODEX_PI_CONFIG_VERSION) {
+		throw new Error(`Unsupported Apodex Pi config version: ${config.version}`);
 	}
 	validateCodexRole("advisor", config.codex?.advisor);
 	validateCodexRole("executor", config.codex?.executor);
@@ -129,8 +129,8 @@ export function validateResearchPiConfig(config) {
 	return config;
 }
 
-export function defaultResearchPiConfig() {
-	return validateResearchPiConfig(JSON.parse(readFileSync(RESEARCH_PI_DEFAULT_CONFIG_PATH, "utf8")));
+export function defaultApodexPiConfig() {
+	return validateApodexPiConfig(JSON.parse(readFileSync(APODEX_PI_DEFAULT_CONFIG_PATH, "utf8")));
 }
 
 function migrateLegacyConfig(input = {}) {
@@ -151,63 +151,63 @@ function migrateLegacyConfig(input = {}) {
 		delete migrated.profiles;
 		delete migrated.providerCompat;
 		if (plainObject(migrated.ui)) delete migrated.ui.showProfileStatus;
-		migrated.version = RESEARCH_PI_CONFIG_VERSION;
+		migrated.version = APODEX_PI_CONFIG_VERSION;
 	}
 	return { migrated, legacyModelDefault };
 }
 
-export function resolveResearchPiConfig(input = {}) {
-	const defaults = defaultResearchPiConfig();
+export function resolveApodexPiConfig(input = {}) {
+	const defaults = defaultApodexPiConfig();
 	const { migrated, legacyModelDefault } = migrateLegacyConfig(input);
-	const resolved = validateResearchPiConfig(merge(defaults, migrated));
+	const resolved = validateApodexPiConfig(merge(defaults, migrated));
 	if (legacyModelDefault) {
 		Object.defineProperty(resolved, "legacyModelDefault", { value: legacyModelDefault, enumerable: false });
 	}
 	return resolved;
 }
 
-export function writeResearchPiConfig(path, config) {
-	const resolved = resolveResearchPiConfig(config);
+export function writeApodexPiConfig(path, config) {
+	const resolved = resolveApodexPiConfig(config);
 	mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
 	writeFileSync(path, `${JSON.stringify(resolved, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
 	chmodSync(path, 0o600);
 	return resolved;
 }
 
-export function ensureResearchPiConfig(path, options = {}) {
-	if (!existsSync(path)) writeResearchPiConfig(path, options.defaults ?? defaultResearchPiConfig());
+export function ensureApodexPiConfig(path, options = {}) {
+	if (!existsSync(path)) writeApodexPiConfig(path, options.defaults ?? defaultApodexPiConfig());
 	const raw = JSON.parse(readFileSync(path, "utf8"));
-	const resolved = resolveResearchPiConfig(raw);
-	if (raw.version !== RESEARCH_PI_CONFIG_VERSION || Object.hasOwn(raw, "activeProfile") || Object.hasOwn(raw, "profiles")) {
+	const resolved = resolveApodexPiConfig(raw);
+	if (raw.version !== APODEX_PI_CONFIG_VERSION || Object.hasOwn(raw, "activeProfile") || Object.hasOwn(raw, "profiles")) {
 		mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
 		writeFileSync(path, `${JSON.stringify(resolved, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
 		chmodSync(path, 0o600);
 	}
-	const schemaDestination = join(dirname(path), "schemas", "research-pi-config.schema.json");
+	const schemaDestination = join(dirname(path), "schemas", "apodex-pi-config.schema.json");
 	mkdirSync(dirname(schemaDestination), { recursive: true, mode: 0o700 });
-	const schemaSource = resolve(options.schemaPath ?? RESEARCH_PI_CONFIG_SCHEMA_PATH);
+	const schemaSource = resolve(options.schemaPath ?? APODEX_PI_CONFIG_SCHEMA_PATH);
 	if (schemaSource !== resolve(schemaDestination)) copyFileSync(schemaSource, schemaDestination);
 	return resolved;
 }
 
-export function readResearchPiConfig(path) {
+export function readApodexPiConfig(path) {
 	let parsed;
 	try {
 		parsed = JSON.parse(readFileSync(path, "utf8"));
 	} catch (error) {
-		if (error?.code === "ENOENT") throw new Error(`Research Pi config does not exist: ${path}`);
-		throw new Error(`Research Pi config is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+		if (error?.code === "ENOENT") throw new Error(`Apodex Pi config does not exist: ${path}`);
+		throw new Error(`Apodex Pi config is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
 	}
-	return resolveResearchPiConfig(parsed);
+	return resolveApodexPiConfig(parsed);
 }
 
-export function researchPiCredentialEnvironmentNames(config) {
-	const names = new Set(Object.values(RESEARCH_PI_PROVIDER_CREDENTIALS));
+export function apodexPiCredentialEnvironmentNames(config) {
+	const names = new Set(Object.values(APODEX_PI_PROVIDER_CREDENTIALS));
 	if (config.research.search.enabled !== "off") names.add("DEEPSEEK_API_KEY");
 	return [...names];
 }
 
-export function researchPiDeepSeekSearchEnabled(config, environment = process.env) {
+export function apodexPiDeepSeekSearchEnabled(config, environment = process.env) {
 	const mode = config.research.search.enabled;
 	if (mode === "off") return false;
 	const available = Boolean(environment.DEEPSEEK_API_KEY?.trim());
@@ -217,7 +217,7 @@ export function researchPiDeepSeekSearchEnabled(config, environment = process.en
 	return available;
 }
 
-export function researchPiCoreSettings(config, coreVersion, existing = {}) {
+export function apodexPiCoreSettings(config, coreVersion, existing = {}) {
 	const settings = merge(plainObject(existing) ? existing : {}, config.pi.settings);
 	if (config.legacyModelDefault) {
 		settings.defaultProvider ??= config.legacyModelDefault.provider;
@@ -237,9 +237,9 @@ export function researchPiCoreSettings(config, coreVersion, existing = {}) {
 }
 
 function applyEvalRetry(settings, environment = process.env) {
-	const evalLike = Boolean(String(environment.RESEARCH_PI_TPM_GAP_MS || "").trim())
-		|| Boolean(String(environment.RESEARCH_PI_TPM_LIMIT || "").trim())
-		|| environment.RESEARCH_PI_FORCE_RETRY === "1";
+	const evalLike = Boolean(String(environment.APODEX_PI_TPM_GAP_MS || "").trim())
+		|| Boolean(String(environment.APODEX_PI_TPM_LIMIT || "").trim())
+		|| environment.APODEX_PI_FORCE_RETRY === "1";
 	if (!evalLike) return;
 	const current = plainObject(settings.retry) ? settings.retry : {};
 	const provider = plainObject(current.provider) ? current.provider : {};
@@ -256,7 +256,7 @@ function applyEvalRetry(settings, environment = process.env) {
 	};
 }
 
-export function writeResearchPiAgentConfig(agentDir, config, options = {}) {
+export function writeApodexPiAgentConfig(agentDir, config, options = {}) {
 	mkdirSync(agentDir, { recursive: true, mode: 0o700 });
 	const settingsPath = join(agentDir, "settings.json");
 	let existingSettings = {};
@@ -267,42 +267,42 @@ export function writeResearchPiAgentConfig(agentDir, config, options = {}) {
 			throw new Error(`Pi native settings are not valid JSON: ${settingsPath}`);
 		}
 	}
-	const settings = researchPiCoreSettings(config, options.coreVersion, existingSettings);
+	const settings = apodexPiCoreSettings(config, options.coreVersion, existingSettings);
 	writeFileSync(settingsPath, `${JSON.stringify(settings, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
 	chmodSync(settingsPath, 0o600);
 }
 
-export function researchPiEnvironment(config) {
+export function apodexPiEnvironment(config) {
 	const compact = config.research.compaction;
 	const search = config.research.search;
 	return {
-		RESEARCH_PI_CODEX_ADVISOR_MODEL: config.codex.advisor.model,
-		RESEARCH_PI_CODEX_ADVISOR_EFFORT: config.codex.advisor.reasoningEffort,
-		RESEARCH_PI_CODEX_EXECUTOR_MODEL: config.codex.executor.model,
-		RESEARCH_PI_CODEX_EXECUTOR_EFFORT: config.codex.executor.reasoningEffort,
-		RESEARCH_PI_CODEX_RETENTION_DAYS: String(config.codex.retention.terminalDays),
-		RESEARCH_PI_CODEX_KEEP_TERMINAL_JOBS: String(config.codex.retention.keepTerminalJobs),
-		RESEARCH_PI_COMPACT_SOFT_TOKENS: String(compact.softTokens),
-		RESEARCH_PI_COMPACT_HARD_TOKENS: String(compact.hardTokens),
-		RESEARCH_PI_COMPACT_RECENT_TAIL_TOKENS: compact.recentTailTokens.join(","),
-		RESEARCH_PI_COMPACT_SUMMARY_TARGET_TOKENS: String(compact.summaryTargetTokens),
-		RESEARCH_PI_COMPACT_SUMMARY_MAX_TOKENS: String(compact.summaryMaxTokens),
-		RESEARCH_PI_SEARCH_MODEL: search.model,
-		RESEARCH_PI_SEARCH_ENABLED: search.enabled,
-		RESEARCH_PI_SEARCH_THINKING_BUDGET_TOKENS: String(search.thinkingBudgetTokens),
-		RESEARCH_PI_SEARCH_MAX_SOURCES: String(search.maxSources),
-		RESEARCH_PI_SEARCH_DEFAULT_MAX_USES: String(search.defaultMaxUses),
-		RESEARCH_PI_UI_DENSITY: config.ui.density,
-		RESEARCH_PI_UI_RUNTIME_STRIP: config.ui.runtimeStrip,
-		RESEARCH_PI_UI_CONFIG_PANEL_ROWS: String(config.ui.configPanelRows),
-		RESEARCH_PI_TRACE: config.diagnostics.trace ? "1" : "0",
+		APODEX_PI_CODEX_ADVISOR_MODEL: config.codex.advisor.model,
+		APODEX_PI_CODEX_ADVISOR_EFFORT: config.codex.advisor.reasoningEffort,
+		APODEX_PI_CODEX_EXECUTOR_MODEL: config.codex.executor.model,
+		APODEX_PI_CODEX_EXECUTOR_EFFORT: config.codex.executor.reasoningEffort,
+		APODEX_PI_CODEX_RETENTION_DAYS: String(config.codex.retention.terminalDays),
+		APODEX_PI_CODEX_KEEP_TERMINAL_JOBS: String(config.codex.retention.keepTerminalJobs),
+		APODEX_PI_COMPACT_SOFT_TOKENS: String(compact.softTokens),
+		APODEX_PI_COMPACT_HARD_TOKENS: String(compact.hardTokens),
+		APODEX_PI_COMPACT_RECENT_TAIL_TOKENS: compact.recentTailTokens.join(","),
+		APODEX_PI_COMPACT_SUMMARY_TARGET_TOKENS: String(compact.summaryTargetTokens),
+		APODEX_PI_COMPACT_SUMMARY_MAX_TOKENS: String(compact.summaryMaxTokens),
+		APODEX_PI_SEARCH_MODEL: search.model,
+		APODEX_PI_SEARCH_ENABLED: search.enabled,
+		APODEX_PI_SEARCH_THINKING_BUDGET_TOKENS: String(search.thinkingBudgetTokens),
+		APODEX_PI_SEARCH_MAX_SOURCES: String(search.maxSources),
+		APODEX_PI_SEARCH_DEFAULT_MAX_USES: String(search.defaultMaxUses),
+		APODEX_PI_UI_DENSITY: config.ui.density,
+		APODEX_PI_UI_RUNTIME_STRIP: config.ui.runtimeStrip,
+		APODEX_PI_UI_CONFIG_PANEL_ROWS: String(config.ui.configPanelRows),
+		APODEX_PI_TRACE: config.diagnostics.trace ? "1" : "0",
 		PI_CODEX_SQLITE_LOGS: config.diagnostics.codexSqliteLogs ? "1" : "0",
 	};
 }
 
-export function researchPiConfigSummary(config, path) {
+export function apodexPiConfigSummary(config, path) {
 	return [
-		`Research Pi config v${config.version}`,
+		`Apodex Pi config v${config.version}`,
 		`Path: ${path}`,
 		"Leader model/auth: Pi Core native settings (/login, /model, /scoped-models, /settings)",
 		`Codex advisor: ${config.codex.advisor.model}/${config.codex.advisor.reasoningEffort}`,
@@ -310,6 +310,6 @@ export function researchPiConfigSummary(config, path) {
 		`Codex retention: ${config.codex.retention.terminalDays} days · keep at least ${config.codex.retention.keepTerminalJobs} terminal jobs`,
 		`Research compact: ${config.research.compaction.softTokens}/${config.research.compaction.hardTokens} tokens · summary target/max ${config.research.compaction.summaryTargetTokens}/${config.research.compaction.summaryMaxTokens}`,
 		`Search: ${config.research.search.enabled} · deepseek/${config.research.search.model} · max ${config.research.search.maxSources} sources`,
-		`UI: theme ${config.pi.settings.theme ?? "research-pi"} · ${config.ui.density} · runtime strip ${config.ui.runtimeStrip}`,
+		`UI: theme ${config.pi.settings.theme ?? "apodex-pi"} · ${config.ui.density} · runtime strip ${config.ui.runtimeStrip}`,
 	].join("\n");
 }

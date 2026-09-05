@@ -2,7 +2,7 @@
 
 状态：Milestone 2 已实测；下一阶段的多 Session 所有权、路线 provenance 与 ledger 恢复已实现，等待真实项目验证
 更新：2026-08-20
-适用版本：包含 `research-runtime.ts` 的 Research Pi 开发版
+适用版本：包含 `research-runtime.ts` 的 Apodex Pi 开发版
 
 ## 1. 先把几个对象分开
 
@@ -83,7 +83,7 @@ starting -> running -> input_required -> running -> completed
 
 一次 suspended Actor 的新指令会通过原 thread 创建一个新 Action/job，而不是把旧终态 job 改回 running。
 
-Job lifecycle 与叶子活动是两个维度。Runtime Dock 和 `/watch` 中的 `now:`/`last:` 只描述 command、file change、search 或 `research_pi_host` 调用；叶子活动的 `completed` 不得改变 Action/job lifecycle。只有持久 job state 自身进入 `completed` 且 `finishedAt` 已记录，才表示 executor 完成。
+Job lifecycle 与叶子活动是两个维度。Runtime Dock 和 `/watch` 中的 `now:`/`last:` 只描述 command、file change、search 或 `apodex_pi_host` 调用；叶子活动的 `completed` 不得改变 Action/job lifecycle。只有持久 job state 自身进入 `completed` 且 `finishedAt` 已记录，才表示 executor 完成。
 
 ### 3.3 Runtime message 状态
 
@@ -129,7 +129,7 @@ sequenceDiagram
 
 ### 4.2 Codex 主动提问
 
-1. Codex 调用 `consult_research_pi` 或 App Server user-input request；
+1. Codex 调用 `consult_apodex_pi` 或 App Server user-input request；
 2. job 进入 `input_required`；
 3. Runtime 创建 `ask` message，目标是 `research-leader`；
 4. 当前 attached Pi Session 收到一次消息；
@@ -138,7 +138,7 @@ sequenceDiagram
 
 回复不是启动另一只 Codex，也不需要把完整问题复制进新 Session。
 
-Host capability 不走上述自由文本咨询路径。Codex 调用 `research_pi_host` 且没有匹配 grant 时：
+Host capability 不走上述自由文本咨询路径。Codex 调用 `apodex_pi_host` 且没有匹配 grant 时：
 
 1. 原 tool call 保持挂起，job 进入带 `kind=host_capability` 的 `input_required`；
 2. attached Pi TUI 自动展示精确 cwd/target、完整操作和建议持久前缀；
@@ -146,7 +146,7 @@ Host capability 不走上述自由文本咨询路径。Codex 调用 `research_pi
 4. Harness 自动把决定送回原 request ID，同一个 Codex turn 继续；
 5. Runtime `ask` 在决定真正送回前保持 open，不能因为 Leader 已看到消息就提前 consumed。
 
-如果没有 attached project-aware TUI，请求应耐久留在 inbox；恢复 TUI 后再弹窗。整个过程不要求 Leader 生成 grantId，也不应额外调用 `consult_research_pi`。
+如果没有 attached project-aware TUI，请求应耐久留在 inbox；恢复 TUI 后再弹窗。整个过程不要求 Leader 生成 grantId，也不应额外调用 `consult_apodex_pi`。
 
 ### 4.3 用户纠偏
 
@@ -174,7 +174,7 @@ Host capability 不走上述自由文本咨询路径。Codex 调用 `research_pi
 6. queued 或已经 delivered 但尚未 consumed 的消息重投到 B；已 consumed 的消息不会重复注入；
 7. B 可以继续管理原 Actor-owned job 或恢复 Codex thread。
 
-用户仍可使用原生 `/new`。它同样会生成 ProjectView，但绕过 readiness 与 rotation request/completion 审计，因此不用于验证“Project 是否足以接管 Session”这一 Runtime 性质。Research Pi 永远不会自动执行轮换。
+用户仍可使用原生 `/new`。它同样会生成 ProjectView，但绕过 readiness 与 rotation request/completion 审计，因此不用于验证“Project 是否足以接管 Session”这一 Runtime 性质。Apodex Pi 永远不会自动执行轮换。
 
 普通第二个 TUI 启动时不会静默抢走仍 attached 的 Leader。`/runtime`、`/runtime health|recommend|view`、`/actors` 和 `/inbox` 都是只读观察；一条真正的研究输入会在旧 Leader 没有 active agent run 时转移 attachment。若旧 Session 正在生成，输入会保留在编辑器并提示等待；只有 `/runtime takeover <reason>` 会显式越过该保护。claim 与 activation start 在同一个 ledger lock 中竞争，因此不会同时产生两个合法 owner。attachment epoch 变化后，旧 Session 在下一模型边界 abort；旧 shutdown 不能 detach 新 epoch，旧 settled run 不能消费消息，改变 Codex 状态的操作也必须持有当前 attachment lease。open message 会重投给新 owner。
 
@@ -495,7 +495,7 @@ Action 完成后，在当前 attached Session 输入：
 
 ```text
 Project path:
-Research Pi commit/version:
+Apodex Pi commit/version:
 Session A suffix:
 Session B suffix:
 Codex Actor target:

@@ -31,13 +31,13 @@
   linkcolor=RPBlue,
   urlcolor=RPCyan,
   citecolor=RPGreen,
-  pdftitle={Research-Pi：面向计算实验科研的 Project-Centric Agent Harness},
-  pdfauthor={Research-Pi 项目}
+  pdftitle={Apodex-Pi：面向计算实验科研的 Project-Centric Agent Harness},
+  pdfauthor={Apodex-Pi 项目}
 }
 
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{Research-Pi 设计思想与阶段成果}
+\lhead{Apodex-Pi 设计思想与阶段成果}
 \rhead{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
@@ -72,8 +72,8 @@
   showstringspaces=false
 }
 
-\title{\bfseries Research-Pi：面向计算实验科研的\\Project-Centric Agent Harness\\\large 设计思想、系统实现与阶段成果汇报}
-\author{Research-Pi 项目}
+\title{\bfseries Apodex-Pi：面向计算实验科研的\\Project-Centric Agent Harness\\\large 设计思想、系统实现与阶段成果汇报}
+\author{Apodex-Pi 项目}
 \date{\today}
 
 \begin{document}
@@ -81,7 +81,7 @@
 \maketitle
 
 \begin{resultbox}[结论先行]
-Research-Pi 不是 AutoResearch，也不只是给 Coding Agent 增加科研提示词。它面向研究者深度参与的计算实验流程，用三条轴组织 Harness：\term{记忆 $M$}让 Session 可以丢弃而研究认知留下，\term{通信 $C$}让 User、Leader 与 Subagent 的任务和消息不串扰，\term{控制 $A$}让 Agent 在项目内充分执行而人的研究裁决不可替代。当前工程机制已经通过自动化测试和真实项目迭代；是否提高科研效率与结论质量，仍需在后续科研任务中评估。
+Apodex-Pi 不是 AutoResearch，也不只是给 Coding Agent 增加科研提示词。它面向研究者深度参与的计算实验流程，用三条轴组织 Harness：\term{记忆 $M$}让 Session 可以丢弃而研究认知留下，\term{通信 $C$}让 User、Leader 与 Subagent 的任务和消息不串扰，\term{控制 $A$}让 Agent 在项目内充分执行而人的研究裁决不可替代。当前工程机制已经通过自动化测试和真实项目迭代；是否提高科研效率与结论质量，仍需在后续科研任务中评估。
 \end{resultbox}
 
 \setcounter{tocdepth}{2}
@@ -100,13 +100,13 @@ Research-Pi 不是 AutoResearch，也不只是给 Coding Agent 增加科研提�
   \item \term{模型固有惯性}：GPT 类模型容易沿最近任务继续局部修补，把流畅解释当成可靠结论，把进程 \code{completed}、任务完成和假设成立混为一谈；长上下文与有损摘要还会放大旧判断的惯性。
 \end{enumerate}
 
-因此，Research-Pi 不是要构造无人参与的 AutoResearch，而是要构造一个\term{研究者能够深度参与的 Research Harness}：Agent 承担记忆恢复、候选假设、工具执行和证据整理；人持续提供研究目标、价值判断、关键取舍和对结论的最终裁决。人的作用不是异常时才介入的审批器，而是研究闭环中不可替代的共同决策者。
+因此，Apodex-Pi 不是要构造无人参与的 AutoResearch，而是要构造一个\term{研究者能够深度参与的 Research Harness}：Agent 承担记忆恢复、候选假设、工具执行和证据整理；人持续提供研究目标、价值判断、关键取舍和对结论的最终裁决。人的作用不是异常时才介入的审批器，而是研究闭环中不可替代的共同决策者。
 
 \section{模块二：三轴设计}
 
-\subsection{一张图理解 Research-Pi}
+\subsection{一张图理解 Apodex-Pi}
 
-Research-Pi 将 Harness 归纳为三个相互耦合的轴：记忆 $M$ 维持跨时间的研究连续性，通信 $C$ 维持跨 Actor 的任务连续性，控制 $A$ 决定谁可以把判断变成现实行动。
+Apodex-Pi 将 Harness 归纳为三个相互耦合的轴：记忆 $M$ 维持跨时间的研究连续性，通信 $C$ 维持跨 Actor 的任务连续性，控制 $A$ 决定谁可以把判断变成现实行动。
 
 \begin{figure}[H]
   \centering
@@ -136,7 +136,7 @@ Research-Pi 将 Harness 归纳为三个相互耦合的轴：记忆 $M$ 维持跨
     \draw[arrow] (auth) -- (work);
     \draw[arrow] (work.south) |- (mem.south);
   \end{tikzpicture}
-  \caption{Research-Pi 的三轴闭环。上层通信 $C$ 连接 User、Leader 与 Subagent；控制 $A$ 约束它们能够触发的现实行动；行动产生的证据回到记忆 $M$，再通过 ProjectView 和检索进入下一轮判断。}
+  \caption{Apodex-Pi 的三轴闭环。上层通信 $C$ 连接 User、Leader 与 Subagent；控制 $A$ 约束它们能够触发的现实行动；行动产生的证据回到记忆 $M$，再通过 ProjectView 和检索进入下一轮判断。}
   \label{fig:three-axes}
 \end{figure}
 
@@ -146,7 +146,7 @@ Research-Pi 将 Harness 归纳为三个相互耦合的轴：记忆 $M$ 维持跨
   \small
   \begin{tabularx}{\textwidth}{>{\bfseries\raggedright\arraybackslash}p{1.7cm}p{4.1cm}Y}
     \toprule
-    轴 & 核心问题 & 在 Research-Pi 中的体现 \\
+    轴 & 核心问题 & 在 Apodex-Pi 中的体现 \\
     \midrule
     记忆 $M$ & 哪些历史可信、当前研究状态是什么、本轮模型需要看到什么 & 原始 Session/Artifact、实验账本、全文检索、structured compact、ProjectView \\
     通信 $C$ & 谁在处理哪个目标，问题、进度和结果应送给谁 & User--Leader 对话、Actor/Action、mission/thread、durable mailbox、ASK/result、Session handoff \\
@@ -157,7 +157,7 @@ Research-Pi 将 Harness 归纳为三个相互耦合的轴：记忆 $M$ 维持跨
 
 \subsection{M：四类扩展把历史变成模型可用的研究状态}
 
-“原始、结构化、工作”描述的是记忆层级，不是扩展名称。Research-Pi 中真正对应的四类功能如下：
+“原始、结构化、工作”描述的是记忆层级，不是扩展名称。Apodex-Pi 中真正对应的四类功能如下：
 
 \begin{table}[H]
   \centering
@@ -333,7 +333,7 @@ R_{t,k}=P\;\Vert\;H_{t-1}\;\Vert\;U_t\;\Vert\;W_{t,k}\;\Vert\;\Delta V_{t,k},
     \node[right=7mm of w.east, anchor=west, align=left, text width=2.35cm,
       font=\scriptsize\bfseries, text=RPOrange] {当前轮动态尾部\\已写入部分可供下一次调用复用};
   \end{tikzpicture}
-  \caption{一次 Research-Pi 模型调用的纵向上下文栈。上方 $P$ 与 $H_{t-1}$ 构成跨轮稳定前缀；下方 $U_t$、$W_{t,k}$ 与可选的 $\Delta V_{t,k}$ 按事件追加。ProjectView 没有被拆成两份：已持久化的 snapshot/短 delta 位于 $H_{t-1}$，当前运行尚未持久化的同一视图更新才临时放在请求末尾。只要已有字节不变，provider 就能从左逻辑前缀（图中自上而下）复用 KV cache；compact、模型/工具定义变化或从历史中移除消息会建立新的缓存边界。}
+  \caption{一次 Apodex-Pi 模型调用的纵向上下文栈。上方 $P$ 与 $H_{t-1}$ 构成跨轮稳定前缀；下方 $U_t$、$W_{t,k}$ 与可选的 $\Delta V_{t,k}$ 按事件追加。ProjectView 没有被拆成两份：已持久化的 snapshot/短 delta 位于 $H_{t-1}$，当前运行尚未持久化的同一视图更新才临时放在请求末尾。只要已有字节不变，provider 就能从左逻辑前缀（图中自上而下）复用 KV cache；compact、模型/工具定义变化或从历史中移除消息会建立新的缓存边界。}
   \label{fig:context-composition}
 \end{figure}
 
@@ -361,7 +361,7 @@ Runtime Dock、\code{/watch} 和 Tool Activity 直接投影 Actor/Action/mailbox
   \end{tabularx}
 \end{table}
 
-当前主分支包含全局可安装 CLI、16 个 Harness extensions、20 个核心 library modules 和 153 个自动化测试用例。这些证据说明机制按预期工作，却不能证明 Research-Pi 已经提高科学发现质量。下一阶段应在真实项目中观察三类指标：新 Session 恢复研究方向所需时间、无效负结果或错误路线延续率、用户为理解阶段进展所需的追问次数。评估目标不是 Agent 是否更少询问人，而是人是否能以更低认知成本做出更高质量的研究判断。
+当前主分支包含全局可安装 CLI、16 个 Harness extensions、20 个核心 library modules 和 153 个自动化测试用例。这些证据说明机制按预期工作，却不能证明 Apodex-Pi 已经提高科学发现质量。下一阶段应在真实项目中观察三类指标：新 Session 恢复研究方向所需时间、无效负结果或错误路线延续率、用户为理解阶段进展所需的追问次数。评估目标不是 Agent 是否更少询问人，而是人是否能以更低认知成本做出更高质量的研究判断。
 
 \section{模块四：使用手册与工具说明}
 
@@ -377,7 +377,7 @@ pi setup
 pi paths
 \end{lstlisting}
 
-\code{pi setup} 创建配置和凭据模板。普通配置位于 \path{~/.config/research-pi/config.json}，API key 单独位于 \path{~/.config/research-pi/credentials.env}；Session、Runtime、memory、Codex job 和授权账本默认位于 \path{~/.local/state/research-pi/}，不写入科研仓库。进入任意科研项目后直接运行：
+\code{pi setup} 创建配置和凭据模板。普通配置位于 \path{~/.config/apodex-pi/config.json}，API key 单独位于 \path{~/.config/apodex-pi/credentials.env}；Session、Runtime、memory、Codex job 和授权账本默认位于 \path{~/.local/state/apodex-pi/}，不写入科研仓库。进入任意科研项目后直接运行：
 
 \begin{lstlisting}[language=bash]
 cd /path/to/research-project
@@ -466,7 +466,7 @@ Codex 的判据不是“任务看起来高级”，而是过程是否会产生�
 \clearpage
 \section*{总结}
 
-Research-Pi 当前已经从“给 Pi 加科研 prompt”的最初想法，发展为一个由记忆、通信和控制三轴支撑，并由科研策略与用户接口共同约束的完整 Harness。其最重要的设计思想可以归纳为：
+Apodex-Pi 当前已经从“给 Pi 加科研 prompt”的最初想法，发展为一个由记忆、通信和控制三轴支撑，并由科研策略与用户接口共同约束的完整 Harness。其最重要的设计思想可以归纳为：
 
 \begin{enumerate}
   \item \term{记忆轴}用 Project 保存长期科研认知，用 Session 承载可替换的局部工作，并以原文、语义事件、综合状态和上下文投影维持权威边界；
@@ -477,12 +477,12 @@ Research-Pi 当前已经从“给 Pi 加科研 prompt”的最初想法，发展
   \item 在真实科研任务中持续迭代，并对尚未验证的效果保持明确边界。
 \end{enumerate}
 
-因此，现阶段最合理的评价不是“Research-Pi 已经成为自动科学家”，而是：它已经建立了一个更适合长期计算实验科研的可用运行时基础，并把下一阶段真正需要验证的问题暴露得更清楚。
+因此，现阶段最合理的评价不是“Apodex-Pi 已经成为自动科学家”，而是：它已经建立了一个更适合长期计算实验科研的可用运行时基础，并把下一阶段真正需要验证的问题暴露得更清楚。
 
 \section*{项目入口与参考资料}
 
 \begin{itemize}
-  \item Research-Pi repository: \url{https://github.com/Jeff-i-Programme/Apodex-Pi}
+  \item Apodex-Pi repository: \url{https://github.com/Jeff-i-Programme/Apodex-Pi}
   \item Pi upstream: \url{https://github.com/earendil-works/pi}
   \item DeepSeek Context Caching: \url{https://api-docs.deepseek.com/guides/kv_cache/}
   \item GitHub Spec Kit clarify template（沟通设计参考之一）：\url{https://github.com/github/spec-kit/blob/main/templates/commands/clarify.md}

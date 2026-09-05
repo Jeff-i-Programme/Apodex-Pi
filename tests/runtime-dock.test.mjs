@@ -87,19 +87,19 @@ test("Runtime Dock never presents a completed leaf tool as a completed executor"
 		id: "codex-demo-9e62a4b5",
 		status: "running",
 		mode: "executor",
-		progress: "research_pi_host · completed",
+		progress: "apodex_pi_host · completed",
 		lastActivity: {
 			id: "tool-1",
 			category: "tool",
 			status: "completed",
-			summary: "research_pi_host · completed",
+			summary: "apodex_pi_host · completed",
 			at: new Date().toISOString(),
 		},
 		startedAt: new Date(Date.now() - 90 * 60_000).toISOString(),
 	}];
 	const lines = new RuntimeDockComponent(active, jobs, theme(), { density: "balanced" }).render(160).join("\n");
 	assert.match(lines, /executor 9e62a4b5 · RUNNING/);
-	assert.match(lines, /last: research_pi_host · completed/);
+	assert.match(lines, /last: apodex_pi_host · completed/);
 	assert.doesNotMatch(lines, /executor 9e62a4b5 · COMPLETED/);
 });
 

@@ -234,7 +234,7 @@ test("Session rotation readiness requires recoverable Project and Action state",
 });
 
 test("Runtime message and Action terminal states cannot regress under delayed cross-session events", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-monotonic-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-monotonic-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -266,7 +266,7 @@ test("Runtime message and Action terminal states cannot regress under delayed cr
 });
 
 test("Codex ASK lifecycle keeps only the current request and supersedes all asks at job terminal", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-ask-lifecycle-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-ask-lifecycle-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -302,7 +302,7 @@ test("Codex ASK lifecycle keeps only the current request and supersedes all asks
 });
 
 test("mailbox repair settles terminal Codex asks before a resumed Session can redeliver them", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-mailbox-repair-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-mailbox-repair-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -338,7 +338,7 @@ test("mailbox repair settles terminal Codex asks before a resumed Session can re
 });
 
 test("Runtime repairs only a partial final ledger record and keeps prior semantic events", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-tail-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-tail-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -381,7 +381,7 @@ test("Runtime repairs only a partial final ledger record and keeps prior semanti
 });
 
 test("Actor attachment and activation events are idempotent and carry an ownership epoch", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-activation-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-activation-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -409,7 +409,7 @@ test("Actor attachment and activation events are idempotent and carry an ownersh
 });
 
 test("Leader activation and attachment claim serialize into one valid owner", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-claim-race-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-claim-race-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -443,7 +443,7 @@ test("Leader activation and attachment claim serialize into one valid owner", as
 });
 
 test("Project Runtime keeps Actor identity across session attachment and message settlement", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-"));
 	try {
 		const workspace = join(root, "workspace");
 		const runtimeRoot = join(root, "runtime");
@@ -476,7 +476,7 @@ test("Project Runtime keeps Actor identity across session attachment and message
 });
 
 test("delivered but unconsumed messages remain recoverable across Leader Session rotation", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-redelivery-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-redelivery-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace, { recursive: true });
@@ -507,7 +507,7 @@ test("delivered but unconsumed messages remain recoverable across Leader Session
 });
 
 test("Runtime Session rotation is durably requested and settled", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-rotation-ledger-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-rotation-ledger-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace, { recursive: true });
@@ -538,7 +538,7 @@ test("Runtime Session rotation is durably requested and settled", async () => {
 });
 
 test("Runtime Session inheritance receipts are durable and terminal", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-inheritance-ledger-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-inheritance-ledger-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace, { recursive: true });
@@ -561,7 +561,7 @@ test("Runtime Session inheritance receipts are durable and terminal", async () =
 });
 
 test("Codex mission and mode define stable Actors while job events remain idempotent", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-codex-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-codex-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace, { recursive: true });
@@ -603,7 +603,7 @@ test("Codex mission and mode define stable Actors while job events remain idempo
 });
 
 test("a directly-read Codex terminal result consumes its durable mailbox event", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-direct-terminal-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-direct-terminal-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace, { recursive: true });
@@ -636,9 +636,9 @@ test("a directly-read Codex terminal result consumes its durable mailbox event",
 });
 
 test("Runtime mailbox delivery is single-owner and rechecks message state before send", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-delivery-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-delivery-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace, { recursive: true });
@@ -727,16 +727,16 @@ test("Runtime mailbox delivery is single-owner and rechecks message state before
 		assert.equal(sent.length, 2);
 		assert.equal(sent[1].options.triggerTurn, false, "notify is visible later but cannot start a Leader turn");
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("ordinary Leader claim starts the mailbox watcher immediately", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-claim-watch-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-claim-watch-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace, { recursive: true });
@@ -773,16 +773,16 @@ test("ordinary Leader claim starts the mailbox watcher immediately", async () =>
 		assert.equal(sent.filter((item) => item.message?.details?.messageId === "msg-after-ordinary-claim").length, 1);
 		await handlers.get("session_shutdown")({ type: "session_shutdown" }, ctx);
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("Analysis notify reaches only the attached Leader without starting an autonomous turn", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-analysis-wake-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-analysis-wake-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	let leaderStarted = false;
 	let analysisStarted = false;
 	let leaderHandlers;
@@ -919,16 +919,16 @@ test("Analysis notify reaches only the attached Leader without starting an auton
 	} finally {
 		if (analysisStarted) await analysisHandlers.get("session_shutdown")({ type: "session_shutdown" }, analysisCtx);
 		if (leaderStarted) await leaderHandlers.get("session_shutdown")({ type: "session_shutdown" }, leaderCtx);
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("Runtime steer is non-preemptive by default and leaves context after one settled run", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-extension-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-extension-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace, { recursive: true });
@@ -1023,16 +1023,16 @@ test("Runtime steer is non-preemptive by default and leaves context after one se
 		assert.equal(aborts, 1);
 		assert.equal(sent.at(-1).options.deliverAs, "followUp");
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("/runtime rotate creates a fresh Session and records a ProjectView receipt", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-rotate-command-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-rotate-command-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		const oldSessionFile = join(root, "session-old.jsonl");
@@ -1105,16 +1105,16 @@ test("/runtime rotate creates a fresh Session and records a ProjectView receipt"
 		assert.equal(sent[0].message.details.messageId, openMessage.id);
 		assert.ok(notices.some((message) => /ProjectView r1 \(current\) is ready/.test(message)));
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("/runtime new clean starts without transcript, ProjectView, mailbox, or Project State writes until explicit inherit", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-clean-session-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-clean-session-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		const oldSessionFile = join(root, "session-old.jsonl");
@@ -1224,16 +1224,16 @@ test("/runtime new clean starts without transcript, ProjectView, mailbox, or Pro
 		const inherited = await handlers.get("context")({ type: "context", messages: [{ role: "user", content: "continue" }] }, cleanContext);
 		assert.match(messageText(inherited.messages.at(-1)), /Project question must stay outside clean context/);
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("Analysis Session observes Project state without stealing the Leader, then can hand off or promote", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-analysis-session-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-analysis-session-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace, { recursive: true });
@@ -1391,16 +1391,16 @@ test("Analysis Session observes Project state without stealing the Leader, then 
 		assert.match(messageText(leaderContext.messages.at(-1)), /Session role: Leader Session/);
 		assert.match(messageText(leaderContext.messages.at(-1)), /supersedes any earlier Analysis Session role block/);
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("opening the Runtime Board does not steal the Leader attachment from another Session", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-board-observe-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-board-observe-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace, { recursive: true });
@@ -1453,16 +1453,16 @@ test("opening the Runtime Board does not steal the Leader attachment from anothe
 		assert.equal(customCalls, 1);
 		assert.equal((await readRuntimeSnapshot(runtime)).attachments.find((item) => item.actorId === RESEARCH_LEADER_ACTOR_ID)?.sessionId, "session-b");
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("an active Leader Session blocks silent takeover but explicit takeover advances the attachment epoch", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-takeover-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-takeover-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -1545,16 +1545,16 @@ test("an active Leader Session blocks silent takeover but explicit takeover adva
 			/attachment changed/,
 		);
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("print mode takes over a busy Leader Session instead of swallowing the prompt", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-print-takeover-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-print-takeover-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -1603,16 +1603,16 @@ test("print mode takes over a busy Leader Session instead of swallowing the prom
 		assert.equal(aborted, false);
 		assert.equal((await readRuntimeSnapshot(runtime)).attachments[0].sessionId, "session-print");
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("a cross-session transition reaches the next genuine user Delta and stays frozen through the run", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-boundary-refresh-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-boundary-refresh-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -1680,16 +1680,16 @@ test("a cross-session transition reaches the next genuine user Delta and stays f
 		const activityResult = await handlers.get("context")({ type: "context", messages: [{ role: "user", content: "continue again" }] }, ctx);
 		assert.match(messageText(activityResult.messages.at(-1)), /cross-session-action \[running\]/);
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("ProjectView persists one fixed Brief while replacing one live tail Delta", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-project-view-persistence-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-view-persistence-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -1791,16 +1791,16 @@ test("ProjectView persists one fixed Brief while replacing one live tail Delta",
 		assert.match(String(refreshedBriefs[0].content), /corrected scientific objective/);
 		assert.doesNotMatch(String(refreshedBriefs[0].content), /original scientific objective/);
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("a completed Leader work turn becomes a durable cross-Session handoff without changing scientific revision", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-runtime-work-handoff-"));
-	const previousRoot = process.env.RESEARCH_PI_RUNTIME_DIR;
-	process.env.RESEARCH_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-runtime-work-handoff-"));
+	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
+	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -1862,8 +1862,8 @@ test("a completed Leader work turn becomes a durable cross-Session handoff witho
 		assert.match(messageText(update.messages.at(-1)), /Latest completed work handoff/);
 		assert.match(messageText(update.messages.at(-1)), /context, not an automatic next task/);
 	} finally {
-		if (previousRoot === undefined) delete process.env.RESEARCH_PI_RUNTIME_DIR;
-		else process.env.RESEARCH_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
+		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });

@@ -10,6 +10,6 @@ while [ -L "$script_path" ]; do
   esac
 done
 script_dir=$(CDPATH= cd -- "$(dirname -- "$script_path")" && pwd)
-export RESEARCH_PI_DEV_MODE=1
-export RESEARCH_PI_TRACE=1
+export APODEX_PI_DEV_MODE=1
+export APODEX_PI_TRACE=1
 exec node "$script_dir/bin/pi.mjs" "$@"

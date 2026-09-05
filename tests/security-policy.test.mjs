@@ -6,7 +6,7 @@ import test from "node:test";
 import { resolveSystemRuntimePolicy } from "../.pi/lib/security-policy.mjs";
 
 test("macOS developer runtime is discovered and injected read-only", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-developer-runtime-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-developer-runtime-"));
 	try {
 		const developer = join(root, "CommandLineTools");
 		mkdirSync(developer);
@@ -24,7 +24,7 @@ test("macOS developer runtime is discovered and injected read-only", async () =>
 });
 
 test("Codex and agent skill directories are exposed as narrow read-only instruction roots", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-instruction-roots-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-instruction-roots-"));
 	try {
 		const codexSkills = join(root, ".codex", "skills");
 		const agentSkills = join(root, ".agents", "skills");
@@ -47,7 +47,7 @@ test("home runtime roots require an explicit high-risk opt-in", async () => {
 	await assert.rejects(
 		resolveSystemRuntimePolicy({
 			platform: "linux",
-			environment: { RESEARCH_PI_RUNTIME_ROOTS: process.env.HOME },
+			environment: { APODEX_PI_RUNTIME_ROOTS: process.env.HOME },
 		}),
 		/ALLOW_HOME_RUNTIME_ROOTS/,
 	);
@@ -57,7 +57,7 @@ test("filesystem-root runtime grants are always rejected", async () => {
 	await assert.rejects(
 		resolveSystemRuntimePolicy({
 			platform: "linux",
-			environment: { RESEARCH_PI_RUNTIME_ROOTS: "/" },
+			environment: { APODEX_PI_RUNTIME_ROOTS: "/" },
 		}),
 		/filesystem-root/,
 	);

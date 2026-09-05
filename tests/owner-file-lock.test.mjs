@@ -6,7 +6,7 @@ import test from "node:test";
 import { withOwnerFileLock } from "../.pi/lib/owner-file-lock.mjs";
 
 test("owner file locks preserve live holders and recover dead stale holders", async () => {
-	const root = mkdtempSync(join(tmpdir(), "research-pi-owner-lock-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex-pi-owner-lock-"));
 	const lockPath = join(root, "ledger.lock");
 	try {
 		let release;
