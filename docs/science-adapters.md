@@ -52,4 +52,4 @@ node bin/pi.mjs --workspace <executable-world-examples> --full-access --provider
 
 对照原版：同一命令前设 `RESEARCH_PI_SCIENCE=0`。
 
-三方对照（师兄原版 Pi / 用户原 harness / 融合版）用 harness 里的 `harness/examples/run_three_way_compare.py`，单 key、顺序、禁止并发。两边各保留了哪些能力、五题分数见 [融合对照简报.pdf](融合对照简报.pdf)。
+三方对照（师兄原版 Pi / 用户原 harness / 融合版）用 harness 里的 `harness/examples/run_three_way_compare.py`，单 key、顺序、禁止并发。
