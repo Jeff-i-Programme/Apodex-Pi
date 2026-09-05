@@ -189,7 +189,7 @@ function createProjectBashOperations(
 				return { exitCode: 126 };
 			}
 
-			const commandId = `apodex-pi-${randomUUID()}`;
+			const commandId = `apodex_pi-${randomUUID()}`;
 			const wrapped = await SandboxManager.wrapWithSandboxArgv(command, "/bin/zsh", undefined, signal, cwd, {
 				commandId,
 				commandText: command,
@@ -258,7 +258,7 @@ function createProjectBashOperations(
 					if (crossedBoundary) {
 						onData(
 							Buffer.from(
-								"\n[Apodex Pi boundary] This command needs host authority. Do not hand the command back to the user by default: retry it through host_capability command with an exact argv, or use an already trusted SSH target/command prefix.\n",
+								"\n[Apodex_Pi boundary] This command needs host authority. Do not hand the command back to the user by default: retry it through host_capability command with an exact argv, or use an already trusted SSH target/command prefix.\n",
 							),
 						);
 					}
@@ -355,7 +355,7 @@ export default function projectBoundaryExtension(pi: ExtensionAPI) {
 			? "Host commands have your user authority. Project trust is stored outside the repository and can be revoked."
 			: "SSH credentials remain opaque to the model.";
 		const choice = await ctx.ui.select(
-			`⚠️ Apodex Pi requests a host capability\n\n${describeCapabilityRequest(request, operation)}\n\n${footer}`,
+			`⚠️ Apodex_Pi requests a host capability\n\n${describeCapabilityRequest(request, operation)}\n\n${footer}`,
 			choices,
 		);
 		if (choice !== "Approve once" && choice !== "Approve this Pi session (24h)" && choice !== projectTrustLabel) return undefined;
@@ -489,7 +489,7 @@ export default function projectBoundaryExtension(pi: ExtensionAPI) {
 					content: [
 						{
 							type: "text",
-							text: `Apodex Pi project sandbox is unavailable and failed closed: ${initializationError ?? "not initialized"}`,
+							text: `Apodex_Pi project sandbox is unavailable and failed closed: ${initializationError ?? "not initialized"}`,
 						},
 					],
 					isError: true,
@@ -499,7 +499,7 @@ export default function projectBoundaryExtension(pi: ExtensionAPI) {
 				await ensureProjectSandbox(ctx);
 			} catch (error) {
 				return {
-					content: [{ type: "text", text: `Apodex Pi project sandbox failed closed: ${error instanceof Error ? error.message : String(error)}` }],
+					content: [{ type: "text", text: `Apodex_Pi project sandbox failed closed: ${error instanceof Error ? error.message : String(error)}` }],
 					isError: true,
 				};
 			}
@@ -554,7 +554,7 @@ export default function projectBoundaryExtension(pi: ExtensionAPI) {
 			protectedMutation ? "受保护的 Git hooks 持久执行路径" : undefined,
 		);
 		if (!ctx.hasUI) return { block: true, reason: `${warning}\n非交互模式不能批准越界操作。`, terminate: false };
-		const approved = await ctx.ui.confirm("⚠️ Apodex Pi 正在突破项目限制区", `${warning}\n\n只批准这一次工具调用吗？`);
+		const approved = await ctx.ui.confirm("⚠️ Apodex_Pi 正在突破项目限制区", `${warning}\n\n只批准这一次工具调用吗？`);
 		if (!approved) return { block: true, reason: `${warning}\n用户未批准。`, terminate: false };
 		ctx.ui.notify(`已由人工批准一次性 ${event.toolName}: ${info.resolvedPath}`, "warning");
 		return undefined;
@@ -586,21 +586,21 @@ export default function projectBoundaryExtension(pi: ExtensionAPI) {
 			await ensureProjectSandbox(ctx);
 			initializationError = undefined;
 			await refreshBoundaryStatus(ctx);
-			if (localExclude.changed) ctx.ui.notify("Apodex Pi local .pi state is now hidden through Git info/exclude; no project file was modified.", "info");
+			if (localExclude.changed) ctx.ui.notify("Apodex_Pi local .pi state is now hidden through Git info/exclude; no project file was modified.", "info");
 			else if (localExclude.status === "failed") ctx.ui.notify(`Could not add the local .pi Git exclusion: ${localExclude.error}`, "warning");
 		} catch (error) {
 			runtime = undefined;
 			systemRuntime = undefined;
 			initializationError = error instanceof Error ? error.message : String(error);
 			ctx.ui.setStatus("boundary", ctx.ui.theme.fg("error", "🔒 boundary failed closed"));
-			ctx.ui.notify(`Apodex Pi project boundary failed to initialize: ${initializationError}`, "error");
+			ctx.ui.notify(`Apodex_Pi project boundary failed to initialize: ${initializationError}`, "error");
 		}
 	});
 
 	pi.on("before_agent_start", (event, ctx) => {
 		if (!leaderHasFullAccess(ctx)) return undefined;
 		return {
-			systemPrompt: `${event.systemPrompt}\n\n<apodex_pi_full_access>\nThe user explicitly launched Apodex Pi with full access. The project remains the task scope, but it is not an OS filesystem or command sandbox for this Leader Session. You may use host files, commands, network, Unix sockets, credentials, and external paths when they are genuinely required by the user's task, without requesting a Apodex Pi boundary grant. Do not broaden the task, expose secrets, or skip exact-target checks for destructive operations. Analysis Sessions and Codex advisor Actors remain read-only.\n</apodex_pi_full_access>`,
+			systemPrompt: `${event.systemPrompt}\n\n<apodex_pi_full_access>\nThe user explicitly launched Apodex_Pi with full access. The project remains the task scope, but it is not an OS filesystem or command sandbox for this Leader Session. You may use host files, commands, network, Unix sockets, credentials, and external paths when they are genuinely required by the user's task, without requesting a Apodex_Pi boundary grant. Do not broaden the task, expose secrets, or skip exact-target checks for destructive operations. Analysis Sessions and Codex advisor Actors remain read-only.\n</apodex_pi_full_access>`,
 		};
 	});
 
@@ -616,7 +616,7 @@ export default function projectBoundaryExtension(pi: ExtensionAPI) {
 	});
 
 	pi.registerCommand("boundary", {
-		description: "Show the active Apodex Pi project security boundary",
+		description: "Show the active Apodex_Pi project security boundary",
 		handler: async (args, ctx) => {
 			const words = parseCommandWords(args ?? "");
 			const action = words.shift();
@@ -629,7 +629,7 @@ export default function projectBoundaryExtension(pi: ExtensionAPI) {
 				try {
 					let piOutput = "";
 					const piProbe = await createProjectBashOperations(runtime, gitIdentity, systemRuntime).exec(
-						"set -e\ngit --version >/dev/null\ngit status --porcelain=v1 --untracked-files=no >/dev/null\nif command -v python3 >/dev/null 2>&1; then python3 --version >/dev/null; fi\nprintf 'apodex-pi-shell-preflight=ok\\n'",
+						"set -e\ngit --version >/dev/null\ngit status --porcelain=v1 --untracked-files=no >/dev/null\nif command -v python3 >/dev/null 2>&1; then python3 --version >/dev/null; fi\nprintf 'apodex_pi-shell-preflight=ok\\n'",
 						runtime.root,
 						{
 							onData: (chunk) => {
@@ -660,7 +660,7 @@ export default function projectBoundaryExtension(pi: ExtensionAPI) {
 					]);
 					ctx.ui.notify(
 						[
-							"Apodex Pi boundary doctor passed.",
+							"Apodex_Pi boundary doctor passed.",
 							leaderHasFullAccess(ctx) ? "Pi shell: explicit full host access active." : "Pi shell: project/Git/runtime OK.",
 							`Codex advisor: ${advisorProbe.codexVersion || "version unknown"} · ${advisorProbe.codexBin} · project/Git/runtime OK.`,
 							`Codex executor: ${executorProbe.codexVersion || "version unknown"} · ${executorProbe.codexBin} · ${leaderHasFullAccess(ctx) ? "full host access/runtime OK" : "project/Git/runtime OK"}.`,
@@ -760,7 +760,7 @@ export default function projectBoundaryExtension(pi: ExtensionAPI) {
 			}
 			const lines = runtime
 				? [
-						leaderHasFullAccess(ctx) ? "Apodex Pi full access is active for this Leader Session." : "Apodex Pi project boundary is active.",
+						leaderHasFullAccess(ctx) ? "Apodex_Pi full access is active for this Leader Session." : "Apodex_Pi project boundary is active.",
 						`Project root: ${runtime.root}`,
 						currentSessionPolicy(ctx) === "analysis"
 							? "Agent shell: Analysis project read-only; project-local runtime temp writable; host authority remains brokered."

@@ -1,6 +1,6 @@
 # Security Policy
 
-Apodex Pi executes model-generated code and coordinates local or remote
+Apodex_Pi executes model-generated code and coordinates local or remote
 research work. Security reports are welcome, especially when behavior crosses
 the documented project, credential, approval, or session boundaries.
 
@@ -9,10 +9,10 @@ the documented project, credential, approval, or session boundaries.
 | Branch | Status |
 |---|---|
 | `main` | Supported |
-| `windows-apodex-pi` | Preview; security reports and fixes are handled on a best-effort basis |
+| `windows-apodex_pi` | Preview; security reports and fixes are handled on a best-effort basis |
 | Older commits and other development branches | Not supported |
 
-Apodex Pi does not yet publish stable release tags. Reproduce a report on the
+Apodex_Pi does not yet publish stable release tags. Reproduce a report on the
 latest relevant branch when practical.
 
 ## Reporting a vulnerability

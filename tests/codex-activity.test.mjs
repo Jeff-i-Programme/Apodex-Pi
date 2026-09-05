@@ -100,7 +100,7 @@ test("Codex collaboration events project internal subagents without creating Run
 });
 
 test("Codex activity cursor tails only new objective records", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-activity-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-activity-"));
 	try {
 		const path = join(root, "events.jsonl");
 		writeFileSync(path, `${JSON.stringify({ timestamp: "2026-08-15T00:00:00.000Z", category: "lifecycle", summary: "Codex turn started" })}\n`);

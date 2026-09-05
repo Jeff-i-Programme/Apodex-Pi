@@ -79,7 +79,7 @@ function setup() {
 	const credentialNames = apodexPiCredentialEnvironmentNames(config);
 	if (!existsSync(paths.credentialsPath)) {
 		mkdirSync(dirname(paths.credentialsPath), { recursive: true, mode: 0o700 });
-		writeFileSync(paths.credentialsPath, `# Apodex Pi credentials; never commit this file.\n${credentialNames.map((name) => `${name}=`).join("\n")}\n`, {
+		writeFileSync(paths.credentialsPath, `# Apodex_Pi credentials; never commit this file.\n${credentialNames.map((name) => `${name}=`).join("\n")}\n`, {
 			encoding: "utf8",
 			mode: 0o600,
 		});
@@ -201,7 +201,7 @@ async function analysisCommand(argv) {
 			throw new Error(`Usage: pi analysis send <message>, or pipe a handoff of at most ${CODEX_ANALYSIS_HANDOFF_MAX_CHARS} characters to pi analysis send`);
 		}
 		const message = await queueCodexAnalysisHandoff(workspace, input);
-		process.stdout.write(`${message.id} queued for the Apodex Pi Leader; no transcript or Project State was written.\n`);
+		process.stdout.write(`${message.id} queued for the Apodex_Pi Leader; no transcript or Project State was written.\n`);
 		return;
 	}
 	throw new Error("Usage: pi analysis [context|send <message>]");
@@ -310,6 +310,6 @@ async function main() {
 }
 
 main().catch((error) => {
-	process.stderr.write(`Apodex Pi: ${error instanceof Error ? error.message : String(error)}\n`);
+	process.stderr.write(`Apodex_Pi: ${error instanceof Error ? error.message : String(error)}\n`);
 	process.exitCode = 1;
 });

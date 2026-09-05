@@ -9,7 +9,7 @@ const root = resolve(new URL("..", import.meta.url).pathname);
 const launcher = join(root, "bin", "pi.mjs");
 
 test("packaged launcher creates external config/state and runs the pinned core", () => {
-	const temp = mkdtempSync(join(tmpdir(), "apodex-pi-launcher-"));
+	const temp = mkdtempSync(join(tmpdir(), "apodex_pi-launcher-"));
 	try {
 		const config = join(temp, "config");
 		const state = join(temp, "state");
@@ -33,7 +33,7 @@ test("packaged launcher creates external config/state and runs the pinned core",
 		assert.equal(Object.hasOwn(persistedConfig, "activeProfile"), false);
 		assert.equal(Object.hasOwn(persistedConfig, "profiles"), false);
 		assert.equal(statSync(configPath).mode & 0o777, 0o600);
-		assert.ok(statSync(join(config, "schemas", "apodex-pi-config.schema.json")).isFile());
+		assert.ok(statSync(join(config, "schemas", "apodex_pi-config.schema.json")).isFile());
 
 		const paths = spawnSync(process.execPath, [launcher, "paths"], { encoding: "utf8", env: environment });
 		assert.equal(paths.status, 0, paths.stderr);

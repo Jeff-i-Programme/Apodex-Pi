@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/Jeff-i-Programme/Apodex-Pi/apodex-pi-config.schema.json",
-  "title": "Apodex Pi Configuration",
+  "$id": "https://github.com/Jeff-i-Programme/Apodex-Pi/apodex_pi-config.schema.json",
+  "title": "Apodex_Pi Configuration",
   "type": "object",
   "required": ["version"],
   "properties": {

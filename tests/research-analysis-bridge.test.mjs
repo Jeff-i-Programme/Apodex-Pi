@@ -20,7 +20,7 @@ import {
 } from "../.pi/lib/research-runtime.mjs";
 
 function fixture() {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-analysis-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-analysis-"));
 	const workspace = join(root, "project");
 	const runtimeRoot = join(root, "runtime");
 	mkdirSync(workspace, { recursive: true });
@@ -97,7 +97,7 @@ test("pi analysis context/send works as a standalone bridge beside a running Lea
 			input: "判断：值得继续讨论。\n依据：现有结果尚未区分两个解释。\n建议：先做诊断。\n",
 		});
 		assert.equal(send.status, 0, send.stderr);
-		assert.match(send.stdout, /queued for the Apodex Pi Leader/);
+		assert.match(send.stdout, /queued for the Apodex_Pi Leader/);
 		const runtime = await resolveResearchRuntime(paths.workspace, { runtimeRoot: join(stateRoot, "runtime", "projects") });
 		const snapshot = await readRuntimeSnapshot(runtime);
 		assert.equal(snapshot.messages.length, 1);

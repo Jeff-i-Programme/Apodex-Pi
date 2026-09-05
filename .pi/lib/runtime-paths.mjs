@@ -3,18 +3,18 @@ import { join, resolve } from "node:path";
 
 function defaultConfigRoot(environment, platform) {
 	if (environment.APODEX_PI_CONFIG_DIR) return resolve(environment.APODEX_PI_CONFIG_DIR);
-	if (environment.XDG_CONFIG_HOME) return resolve(environment.XDG_CONFIG_HOME, "apodex-pi");
-	if (platform === "win32") return resolve(environment.APPDATA ?? join(homedir(), "AppData", "Roaming"), "Apodex-Pi");
-	return resolve(homedir(), ".config", "apodex-pi");
+	if (environment.XDG_CONFIG_HOME) return resolve(environment.XDG_CONFIG_HOME, "apodex_pi");
+	if (platform === "win32") return resolve(environment.APPDATA ?? join(homedir(), "AppData", "Roaming"), "Apodex_Pi");
+	return resolve(homedir(), ".config", "apodex_pi");
 }
 
 function defaultStateRoot(environment, platform) {
 	if (environment.APODEX_PI_STATE_DIR) return resolve(environment.APODEX_PI_STATE_DIR);
-	if (environment.XDG_STATE_HOME) return resolve(environment.XDG_STATE_HOME, "apodex-pi");
+	if (environment.XDG_STATE_HOME) return resolve(environment.XDG_STATE_HOME, "apodex_pi");
 	if (platform === "win32") {
-		return resolve(environment.LOCALAPPDATA ?? join(homedir(), "AppData", "Local"), "Apodex-Pi", "state");
+		return resolve(environment.LOCALAPPDATA ?? join(homedir(), "AppData", "Local"), "Apodex_Pi", "state");
 	}
-	return resolve(homedir(), ".local", "state", "apodex-pi");
+	return resolve(homedir(), ".local", "state", "apodex_pi");
 }
 
 export function resolveApodexPiPaths(options) {

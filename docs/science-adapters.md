@@ -7,7 +7,7 @@ TRACE 交的是**一个 agent**。typed-action 世界、仪器读数、必须写
 1. 把科学方法写进 `.pi/APPEND_SYSTEM.md`（与师兄的科研契约同一份）
 2. 加载 `research-briefing` **和** `scientific-loop`
 3. 注册 `science_run_program`、`science_note_measurement`、`science_prepare_action`（与 `record_experiment` 并列的一等工具；直接 spawn Python，不依赖 Git Bash）
-4. Windows 上由 Apodex Pi 启动链路探测 Git Bash 并写入 `shellPath`（`.pi/lib/host-shell.mjs`），把 Git `bin` 放到 PATH 最前，并把**当前工作区**放进 `PYTHONPATH`，这样子目录里的脚本也能 `import` 工作区根上的包。不是科学层另开一条路。
+4. Windows 上由 Apodex_Pi 启动链路探测 Git Bash 并写入 `shellPath`（`.pi/lib/host-shell.mjs`），把 Git `bin` 放到 PATH 最前，并把**当前工作区**放进 `PYTHONPATH`，这样子目录里的脚本也能 `import` 工作区根上的包。不是科学层另开一条路。
 5. 可选 `APODEX_PI_TPM_GAP_MS`：两次模型请求之间的最小间隔（默认 0）。`APODEX_PI_TPM_LIMIT`：按滚动一分钟的估计 token 再排队，避免打满基座 TPM。评测脚本会打开 Pi 的 429/断线重试；不要把 `retry.enabled` 关死。
 
 普通写代码、记笔记、Codex 协作仍走原契约；观察里没有隐藏世界或指定产物时，不要去强制 USE 或跑程序闭环。

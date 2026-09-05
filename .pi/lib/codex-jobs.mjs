@@ -32,7 +32,7 @@ export const DEFAULT_CODEX_REASONING_EFFORT = DEFAULT_CODEX_EXECUTOR_REASONING_E
 export const DEFAULT_CODEX_RETENTION_DAYS = Number.parseInt(process.env.APODEX_PI_CODEX_RETENTION_DAYS ?? "30", 10) || 30;
 export const DEFAULT_CODEX_KEEP_TERMINAL_JOBS = Number.parseInt(process.env.APODEX_PI_CODEX_KEEP_TERMINAL_JOBS ?? "200", 10) || 200;
 // App Server dynamic tools are fixed when a thread is created and cannot be
-// added by thread/resume. Bump this whenever the Apodex Pi dynamic tool set
+// added by thread/resume. Bump this whenever the Apodex_Pi dynamic tool set
 // or its required schemas change so pre-existing threads refresh once.
 export const CODEX_DYNAMIC_TOOL_PROTOCOL_VERSION = 1;
 
@@ -172,8 +172,8 @@ export function buildDelegationPrompt({
 }) {
 	const role =
 		mode === "advisor"
-			? `You are the read-only research advisor collaborating with Apodex Pi. The question may be incomplete or tentative. Reconstruct its intent, evidence, and uncertainty; ask focused questions and jointly expand substantively different candidate explanations toward a working synthesis. Refine tentative ideas rather than defaulting to rebuttal, grading, or a verdict. Expose decision-relevant assumptions and distinguishing evidence. Do not modify files or external state.`
-			: `You are the execution subagent subordinate to Apodex Pi. Complete the task end to end rather than stopping at a plan. ${fullAccess ? "This job has explicit full host access" : "Inside the exact project boundary you may take necessary operations"}, including editing or deleting files, installing dependencies, committing, and starting, monitoring, or cancelling expensive experiments. Resolve non-blocking ambiguity and persist through failures. Verify exact destructive targets, but do not request another approval solely because an authorized action is destructive, long-running, or expensive.`;
+			? `You are the read-only research advisor collaborating with Apodex_Pi. The question may be incomplete or tentative. Reconstruct its intent, evidence, and uncertainty; ask focused questions and jointly expand substantively different candidate explanations toward a working synthesis. Refine tentative ideas rather than defaulting to rebuttal, grading, or a verdict. Expose decision-relevant assumptions and distinguishing evidence. Do not modify files or external state.`
+			: `You are the execution subagent subordinate to Apodex_Pi. Complete the task end to end rather than stopping at a plan. ${fullAccess ? "This job has explicit full host access" : "Inside the exact project boundary you may take necessary operations"}, including editing or deleting files, installing dependencies, committing, and starting, monitoring, or cancelling expensive experiments. Resolve non-blocking ambiguity and persist through failures. Verify exact destructive targets, but do not request another approval solely because an authorized action is destructive, long-running, or expensive.`;
 
 	const criteria = successCriteria.length > 0
 		? successCriteria.map((item) => `- ${item}`).join("\n")
@@ -185,8 +185,8 @@ export function buildDelegationPrompt({
 		? hostCapabilities.map((grant) => `- ${capabilityGrantSummary(grant)}`).join("\n")
 		: "- None. If host authority becomes necessary, call apodex_pi_host with the exact operation; its missing-grant path pauses for a Pi TUI decision instead of handing terminal commands to the user.";
 	const interaction = mode === "advisor"
-		? `Apodex Pi retains final responsibility for user intent, evidence interpretation, and research decisions; framing and hypothesis development are collaborative. Do not redefine the objective. Use consult_apodex_pi for a concise clarification or interpretation choice when it would materially improve shared understanding; you do not need to wait until progress is completely blocked. Avoid performative or repetitive questions.`
-		: `Apodex Pi owns research framing, evidence interpretation, and the next decision. Do not broaden the objective. Use consult_apodex_pi only when a missing research decision or user-owned fact materially blocks progress, not for implementation choices, progress, or in-project approval. If unresolved, submit a blocked outcome with the exact blocker and remaining work.`;
+		? `Apodex_Pi retains final responsibility for user intent, evidence interpretation, and research decisions; framing and hypothesis development are collaborative. Do not redefine the objective. Use consult_apodex_pi for a concise clarification or interpretation choice when it would materially improve shared understanding; you do not need to wait until progress is completely blocked. Avoid performative or repetitive questions.`
+		: `Apodex_Pi owns research framing, evidence interpretation, and the next decision. Do not broaden the objective. Use consult_apodex_pi only when a missing research decision or user-owned fact materially blocks progress, not for implementation choices, progress, or in-project approval. If unresolved, submit a blocked outcome with the exact blocker and remaining work.`;
 	const resultInstruction = mode === "advisor"
 		? `Use phase=commentary for intermediate updates. When ready to hand back, call submit_apodex_pi_result exactly once, then give a brief phase=final_answer acknowledgement. This is a continuation surface, not a verdict or review score: preserve shared understanding, candidate explanations, questions, evidence, uncertainty, and the useful next exchange.`
 		: `Use phase=commentary for brief updates and continue executing; never encode a plan, preamble, checkpoint, or future intent as a result. Call submit_apodex_pi_result exactly once only at success, a genuine blocker, or irrecoverable failure, then give a brief phase=final_answer acknowledgement. succeeded requires goal_satisfied=true and no remaining delegated work. Separate observation from interpretation and report validity limits.`;
@@ -196,7 +196,7 @@ export function buildDelegationPrompt({
 			? " This continuation now has explicit full host access; the project remains task scope but is no longer an OS sandbox."
 			: "";
 		return `<apodex_pi_continuation>
-Continue the same ${mode} role, mission, and dynamic-tool protocol from this Codex thread.${continuationAuthority} Apodex Pi still owns the objective and evidence judgment; do not reopen settled context unless freshness below requires it.
+Continue the same ${mode} role, mission, and dynamic-tool protocol from this Codex thread.${continuationAuthority} Apodex_Pi still owns the objective and evidence judgment; do not reopen settled context unless freshness below requires it.
 
 <mission>
 ${mission ?? "Unlabelled standalone delegation"}
@@ -547,7 +547,7 @@ export function buildCodexThreadRefreshNotice(previousJob, currentGit, currentRe
 		?? "",
 	).trim().slice(0, 6000);
 	return [
-		`LEGACY THREAD REFRESH: job ${previousJob.id} used Codex thread ${previousJob.threadId}, which predates Apodex Pi dynamic-tool protocol v${CODEX_DYNAMIC_TOOL_PROTOCOL_VERSION}. A fresh Codex thread is being created so submit_apodex_pi_result, consult_apodex_pi, and apodex_pi_host are all available.`,
+		`LEGACY THREAD REFRESH: job ${previousJob.id} used Codex thread ${previousJob.threadId}, which predates Apodex_Pi dynamic-tool protocol v${CODEX_DYNAMIC_TOOL_PROTOCOL_VERSION}. A fresh Codex thread is being created so submit_apodex_pi_result, consult_apodex_pi, and apodex_pi_host are all available.`,
 		"The mission and Actor identity are unchanged, but conversational history is not being resumed. Reconstruct current state from the task and authoritative workspace; treat the previous handoff below as orientation rather than evidence.",
 		buildCodexFreshnessNotice(previousJob, currentGit, currentResearch),
 		handoff ? `<previous_handoff>\n${handoff}\n</previous_handoff>` : "No previous handoff summary is available.",

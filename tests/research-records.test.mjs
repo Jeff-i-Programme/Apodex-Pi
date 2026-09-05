@@ -29,7 +29,7 @@ function toolFrom(extension, extra = {}) {
 }
 
 test("record_experiment mirrors concise evidence into Project Runtime", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-record-evidence-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-evidence-"));
 	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
 	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
@@ -103,7 +103,7 @@ test("record_experiment mirrors concise evidence into Project Runtime", async ()
 });
 
 test("record_experiment preserves an omitted ex-ante prediction without inventing one", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-record-no-prediction-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-no-prediction-"));
 	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
 	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
@@ -138,7 +138,7 @@ test("record_experiment preserves an omitted ex-ante prediction without inventin
 });
 
 test("record_experiment validates route provenance before durable persistence", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-record-route-preflight-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-route-preflight-"));
 	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
 	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
@@ -173,7 +173,7 @@ test("record_experiment validates route provenance before durable persistence", 
 });
 
 test("record_experiment retries are idempotent across new tool call ids", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-record-idempotent-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-idempotent-"));
 	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
 	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
@@ -214,7 +214,7 @@ test("record_experiment retries are idempotent across new tool call ids", async 
 });
 
 test("record_experiment rejects contradictory prediction and evidence semantics", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-record-semantics-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-semantics-"));
 	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
 	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
@@ -262,7 +262,7 @@ test("record_experiment rejects contradictory prediction and evidence semantics"
 });
 
 test("record_research_transition is a narrow explicit project-memory operation", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-record-transition-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-transition-"));
 	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
 	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
@@ -295,7 +295,7 @@ test("record_research_transition is a narrow explicit project-memory operation",
 });
 
 test("amend_project_state is a Leader-owned narrow correction and is disabled in clean Sessions", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-amend-state-tool-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-amend-state-tool-"));
 	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
 	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {

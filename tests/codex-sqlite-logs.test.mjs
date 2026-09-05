@@ -25,8 +25,8 @@ function insertAndCount(path, body) {
 	return count;
 }
 
-test("Apodex Pi suppresses only the newest Codex internal log database and can restore diagnostics", () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-sqlite-"));
+test("Apodex_Pi suppresses only the newest Codex internal log database and can restore diagnostics", () => {
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-sqlite-"));
 	try {
 		const oldDatabase = join(root, "logs_1.sqlite");
 		const activeDatabase = join(root, "logs_2.sqlite");
@@ -55,7 +55,7 @@ test("Apodex Pi suppresses only the newest Codex internal log database and can r
 test("Codex SQLite logs are suppressed by default and require an explicit diagnostic opt-in", () => {
 	assert.equal(codexSqliteLogMode({}), "suppress");
 	assert.equal(codexSqliteLogMode({ PI_CODEX_SQLITE_LOGS: "1" }), "preserve");
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-sqlite-empty-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-sqlite-empty-"));
 	try {
 		mkdirSync(root, { recursive: true });
 		assert.deepEqual(configureCodexSqliteLogs(root), { mode: "unavailable", databasePath: null });

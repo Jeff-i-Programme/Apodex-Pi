@@ -227,7 +227,7 @@ export default function (pi: ExtensionAPI) {
 		default: false,
 	});
 	pi.registerFlag(VARIANT_FLAG_NAME, {
-		description: "V4 Pro anchor promotion context: exact (project/skills only) or research (also Apodex Pi contract)",
+		description: "V4 Pro anchor promotion context: exact (project/skills only) or research (also Apodex_Pi contract)",
 		type: "string",
 		default: "exact",
 	});
@@ -277,7 +277,7 @@ export default function (pi: ExtensionAPI) {
 		if (phase !== "bootstrap") return;
 		persist("promoted", reason);
 		updateStatus(ctx);
-		if (ctx.hasUI) ctx.ui.notify(`V4 Pro anchor promoted: exposing ${fullTools.length} tools and Apodex Pi context.`, "info");
+		if (ctx.hasUI) ctx.ui.notify(`V4 Pro anchor promoted: exposing ${fullTools.length} tools and Apodex_Pi context.`, "info");
 	};
 
 	pi.on("session_start", (_event, ctx) => {
@@ -384,7 +384,7 @@ export default function (pi: ExtensionAPI) {
 				persist("off", "command");
 				latestAudit = undefined;
 				updateStatus(ctx);
-				ctx.ui.notify("V4 Pro anchor disabled; normal Apodex Pi prompt and tools restored.", "info");
+				ctx.ui.notify("V4 Pro anchor disabled; normal Apodex_Pi prompt and tools restored.", "info");
 				return;
 			}
 			if (action !== "status") {

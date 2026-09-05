@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-Apodex Pi's original code and documentation are licensed under the MIT
+Apodex_Pi's original code and documentation are licensed under the MIT
 License. Third-party components retain their own copyright and license terms.
 This notice is informational and does not replace those terms.
 

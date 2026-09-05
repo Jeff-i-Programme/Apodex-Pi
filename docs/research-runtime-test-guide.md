@@ -2,7 +2,7 @@
 
 状态：Milestone 2 已实测；下一阶段的多 Session 所有权、路线 provenance 与 ledger 恢复已实现，等待真实项目验证
 更新：2026-08-20
-适用版本：包含 `research-runtime.ts` 的 Apodex Pi 开发版
+适用版本：包含 `research-runtime.ts` 的 Apodex_Pi 开发版
 
 ## 1. 先把几个对象分开
 
@@ -174,7 +174,7 @@ Host capability 不走上述自由文本咨询路径。Codex 调用 `apodex_pi_h
 6. queued 或已经 delivered 但尚未 consumed 的消息重投到 B；已 consumed 的消息不会重复注入；
 7. B 可以继续管理原 Actor-owned job 或恢复 Codex thread。
 
-用户仍可使用原生 `/new`。它同样会生成 ProjectView，但绕过 readiness 与 rotation request/completion 审计，因此不用于验证“Project 是否足以接管 Session”这一 Runtime 性质。Apodex Pi 永远不会自动执行轮换。
+用户仍可使用原生 `/new`。它同样会生成 ProjectView，但绕过 readiness 与 rotation request/completion 审计，因此不用于验证“Project 是否足以接管 Session”这一 Runtime 性质。Apodex_Pi 永远不会自动执行轮换。
 
 普通第二个 TUI 启动时不会静默抢走仍 attached 的 Leader。`/runtime`、`/runtime health|recommend|view`、`/actors` 和 `/inbox` 都是只读观察；一条真正的研究输入会在旧 Leader 没有 active agent run 时转移 attachment。若旧 Session 正在生成，输入会保留在编辑器并提示等待；只有 `/runtime takeover <reason>` 会显式越过该保护。claim 与 activation start 在同一个 ledger lock 中竞争，因此不会同时产生两个合法 owner。attachment epoch 变化后，旧 Session 在下一模型边界 abort；旧 shutdown 不能 detach 新 epoch，旧 settled run 不能消费消息，改变 Codex 状态的操作也必须持有当前 attachment lease。open message 会重投给新 owner。
 
@@ -495,7 +495,7 @@ Action 完成后，在当前 attached Session 输入：
 
 ```text
 Project path:
-Apodex Pi commit/version:
+Apodex_Pi commit/version:
 Session A suffix:
 Session B suffix:
 Codex Actor target:

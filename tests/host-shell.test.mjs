@@ -20,7 +20,7 @@ test("candidate list prefers env override then Program Files Git", () => {
 });
 
 test("resolveHostBash uses an existing candidate without requiring Program Files", () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-bash-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-bash-"));
 	try {
 		const bash = join(root, "Git", "bin", "bash.exe");
 		mkdirSync(join(root, "Git", "bin"), { recursive: true });
@@ -33,7 +33,7 @@ test("resolveHostBash uses an existing candidate without requiring Program Files
 });
 
 test("prependHostBinToPath updates Path and PATH together", () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-path2-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-path2-"));
 	try {
 		const bash = join(root, "Git", "bin", "bash.exe");
 		mkdirSync(join(root, "Git", "bin"), { recursive: true });

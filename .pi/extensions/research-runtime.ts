@@ -370,7 +370,7 @@ export function formatRuntimeHealth(health: ReturnType<typeof runtimeHealth>): s
 		`Rotation: ${health.ready ? "ready for /runtime rotate" : `blocked (${health.blockers.join("; ")})`}`,
 		`Recommendation: ${health.recommendation}`,
 		health.reason,
-		"Lifecycle remains manual: Apodex Pi never rotates or reconciles automatically.",
+		"Lifecycle remains manual: Apodex_Pi never rotates or reconciles automatically.",
 	].join("\n");
 }
 

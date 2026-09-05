@@ -1,9 +1,9 @@
 {
-  "$schema": "./schemas/apodex-pi-config.schema.json",
+  "$schema": "./schemas/apodex_pi-config.schema.json",
   "version": 2,
   "pi": {
     "settings": {
-      "theme": "apodex-pi",
+      "theme": "apodex_pi",
       "tuiMode": "regular",
       "retry": {
         "enabled": true,

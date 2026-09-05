@@ -26,7 +26,7 @@ function loadConfig(): ResearchConfig {
 }
 
 export function themeSelectItems(config: ResearchConfig, available: Array<{ name: string; path?: string }> = []): SelectItem[] {
-	const active = String(config.pi.settings.theme ?? "apodex-pi");
+	const active = String(config.pi.settings.theme ?? "apodex_pi");
 	const metadata = new Map(APODEX_PI_THEME_CHOICES.map((theme) => [theme.name, theme]));
 	const availableNames = available.length ? new Set(available.map((theme) => theme.name)) : null;
 	const canonicalNames = APODEX_PI_THEME_CHOICES
@@ -73,8 +73,8 @@ export default function researchConfigExtension(pi: ExtensionAPI) {
 		const selected = await ctx.ui.custom<string | null>((tui, theme, _keybindings, done) => {
 			const container = new Container();
 			container.addChild(new DynamicBorder((text) => theme.fg("borderAccent", text)));
-			container.addChild(new Text(theme.fg("customMessageLabel", theme.bold(" Apodex Pi / Themes ")), 0, 0));
-			container.addChild(new Text(theme.fg("muted", ` current ${config.pi.settings.theme ?? "apodex-pi"}`), 0, 0));
+			container.addChild(new Text(theme.fg("customMessageLabel", theme.bold(" Apodex_Pi / Themes ")), 0, 0));
+			container.addChild(new Text(theme.fg("muted", ` current ${config.pi.settings.theme ?? "apodex_pi"}`), 0, 0));
 			container.addChild(new Text("", 0, 0));
 			const list = new SelectList(items, Math.min(items.length, config.ui.configPanelRows), {
 				selectedPrefix: (text) => theme.fg("accent", text),
@@ -106,7 +106,7 @@ export default function researchConfigExtension(pi: ExtensionAPI) {
 	};
 
 	pi.registerCommand("config", {
-		description: "Inspect Apodex Pi-only configuration and choose a theme; Pi Core owns models and authentication",
+		description: "Inspect Apodex_Pi-only configuration and choose a theme; Pi Core owns models and authentication",
 		handler: async (args, ctx) => {
 			try {
 				const input = args.trim();

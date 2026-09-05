@@ -49,7 +49,7 @@ import {
 } from "../.pi/lib/host-capabilities.mjs";
 
 test("terminal Codex jobs supersede unresolved request records without changing resolved history", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-request-settlement-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-request-settlement-"));
 	try {
 		const jobRoot = join(root, "jobs");
 		const jobId = "codex-2026-08-24T00-00-00-000Z-deadbeef";
@@ -475,7 +475,7 @@ test("Codex advisor results render as a continuation surface instead of a review
 		evidence: ["The current pilot is inconclusive"],
 		uncertainties: ["No oracle result yet"],
 		working_synthesis: "Keep both explanations live and design one discriminating probe.",
-		suggested_next_exchange: "Ask Apodex Pi which intervention is affordable first.",
+		suggested_next_exchange: "Ask Apodex_Pi which intervention is affordable first.",
 	};
 	const markdown = codexResultMarkdown(result);
 	assert.match(markdown, /^## Shared understanding/m);
@@ -488,7 +488,7 @@ test("Codex advisor results render as a continuation surface instead of a review
 });
 
 test("a stale Pi Session cannot start new Codex work after Leader ownership moves", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-stale-leader-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-stale-leader-"));
 	const previousRuntimeRoot = process.env.APODEX_PI_RUNTIME_DIR;
 	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
 	try {
@@ -535,7 +535,7 @@ import { createInterface } from "node:readline";
 
 const args = process.argv.slice(2);
 if (args.includes("sandbox")) {
-  process.stdout.write("apodex-pi-codex-preflight=ok\\n");
+  process.stdout.write("apodex_pi-codex-preflight=ok\\n");
   process.exit(0);
 }
 const configText = args.join(" ");
@@ -560,11 +560,11 @@ const complete = (prompt, leaderResponse = "") => {
   if (sandbox === "${CODEX_EXECUTOR_PROFILE}" || sandbox === "${CODEX_FULL_ACCESS_PROFILE}") {
     writeFileSync(join(process.cwd(), "codex-executed.txt"), "executor ran\\n", "utf8");
   }
-  const evidence = [model, sandbox, prompt.includes("Apodex Pi") ? "role-present" : "role-missing", deltaNotificationsOptedOut ? "delta-opt-out" : "delta-not-opted-out", hostToolPresent ? "host-tool-present" : "host-tool-missing", submissionToolPresent ? "submission-tool-present" : "submission-tool-missing", dynamicToolTypesValid ? "dynamic-tool-types-valid" : "dynamic-tool-types-invalid", turnOutputSchemaPresent ? "turn-schema-present" : "turn-schema-absent", consultationField, isResume ? (resumeParamsClean ? "resume-params-clean" : "resume-dynamic-tools-invalid") : "", process.env.SSH_AUTH_SOCK ? "child-ssh-agent-present" : "child-ssh-agent-absent", leaderResponse].filter(Boolean);
+  const evidence = [model, sandbox, prompt.includes("Apodex_Pi") ? "role-present" : "role-missing", deltaNotificationsOptedOut ? "delta-opt-out" : "delta-not-opted-out", hostToolPresent ? "host-tool-present" : "host-tool-missing", submissionToolPresent ? "submission-tool-present" : "submission-tool-missing", dynamicToolTypesValid ? "dynamic-tool-types-valid" : "dynamic-tool-types-invalid", turnOutputSchemaPresent ? "turn-schema-present" : "turn-schema-absent", consultationField, isResume ? (resumeParamsClean ? "resume-params-clean" : "resume-dynamic-tools-invalid") : "", process.env.SSH_AUTH_SOCK ? "child-ssh-agent-present" : "child-ssh-agent-absent", leaderResponse].filter(Boolean);
   let result = isAdvisorSchema ? {
     status: "working_synthesis",
     shared_understanding: "The question is still being clarified.",
-    points_of_agreement: ["Keep the research objective with Apodex Pi"],
+    points_of_agreement: ["Keep the research objective with Apodex_Pi"],
     candidate_explanations: ["candidate A", "candidate B"],
     questions_to_resolve: ["Which observation would distinguish them?"],
     evidence,
@@ -681,13 +681,13 @@ createInterface({ input: process.stdin }).on("line", (line) => {
     }
   } else if (message.id === "server-question-1") {
     const answer = message.result?.contentItems?.[0]?.text ?? "missing answer";
-    complete("Apodex Pi", answer);
+    complete("Apodex_Pi", answer);
   } else if (message.id === "server-host-read-1") {
     const answer = message.result?.contentItems?.[0]?.text ?? message.error?.message ?? "missing host response";
-    complete("Apodex Pi", answer);
+    complete("Apodex_Pi", answer);
   } else if (message.id === "server-host-command-1") {
     const answer = message.result?.contentItems?.[0]?.text ?? message.error?.message ?? "missing host response";
-    complete("Apodex Pi", answer);
+    complete("Apodex_Pi", answer);
   } else if (message.id === "server-submit-result-1") {
     send({ method: "item/completed", params: { threadId: "thread-fake-123", turnId: activeTurn, item: { id: "message-1", type: "agentMessage", phase: "final_answer", text: "Structured handoff submitted." } } });
     if (pendingFinalPrompt.includes("late commentary after final")) {
@@ -711,7 +711,7 @@ createInterface({ input: process.stdin }).on("line", (line) => {
 
 test("delegation prompt makes advisor collaborative while preserving executor authority", () => {
 	const advisor = buildDelegationPrompt({ mode: "advisor", task: "inspect", successCriteria: [], context: "" });
-	assert.match(advisor, /read-only research advisor collaborating with Apodex Pi/);
+	assert.match(advisor, /read-only research advisor collaborating with Apodex_Pi/);
 	assert.match(advisor, /question may be incomplete/);
 	assert.match(advisor, /jointly expand substantively different candidate explanations/);
 	assert.match(advisor, /do not need to wait until progress is completely blocked/);
@@ -784,7 +784,7 @@ test("Codex environment removes provider credentials without dropping execution 
 });
 
 test("worker liveness is bound to an instance nonce rather than PID alone", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-worker-identity-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-worker-identity-"));
 	try {
 		const jobId = "codex-2026-08-27-feedface";
 		const jobDir = join(root, jobId);
@@ -802,7 +802,7 @@ test("worker liveness is bound to an instance nonce rather than PID alone", asyn
 });
 
 test("advisor, executor, and explicit resume produce durable structured jobs", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -914,7 +914,7 @@ test("advisor, executor, and explicit resume produce durable structured jobs", a
 });
 
 test("submitted executor result cannot be replaced by a later commentary item", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-phase-result-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-phase-result-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -938,7 +938,7 @@ test("submitted executor result cannot be replaced by a later commentary item", 
 });
 
 test("legacy completed plus goal_satisfied false normalizes to a partial outcome", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-legacy-outcome-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-legacy-outcome-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -961,7 +961,7 @@ test("legacy completed plus goal_satisfied false normalizes to a partial outcome
 });
 
 test("executor crash after the durable side-effect barrier requires explicit reconciliation", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-unknown-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-unknown-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1014,7 +1014,7 @@ test("executor crash after the durable side-effect barrier requires explicit rec
 });
 
 test("unrelated app-server threads cannot replace or complete the owned Codex turn", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-thread-scope-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-thread-scope-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1039,7 +1039,7 @@ test("unrelated app-server threads cannot replace or complete the owned Codex tu
 });
 
 test("mission routing reuses only the same mode and workspace", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-mission-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-mission-"));
 	try {
 		const workspace = join(root, "workspace");
 		const otherWorkspace = join(root, "other-workspace");
@@ -1125,7 +1125,7 @@ test("mission routing reuses only the same mode and workspace", async () => {
 });
 
 test("automatic Codex reuse stays on one research route while explicit continuation crosses with a warning", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-route-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-route-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1185,7 +1185,7 @@ test("automatic Codex reuse stays on one research route while explicit continuat
 });
 
 test("sibling branches in one Pi session cannot observe or reuse each other's Codex jobs", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-branch-owner-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-branch-owner-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1282,7 +1282,7 @@ test("sibling branches in one Pi session cannot observe or reuse each other's Co
 });
 
 test("project Actor ownership survives Pi session rotation without crossing workspaces", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-project-actor-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-project-actor-"));
 	try {
 		const workspace = join(root, "workspace");
 		const otherWorkspace = join(root, "other-workspace");
@@ -1358,7 +1358,7 @@ test("project Actor ownership survives Pi session rotation without crossing work
 });
 
 test("an active Codex Actor accepts cross-session steer and cancellation through project ownership", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-project-steer-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-project-steer-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1411,7 +1411,7 @@ test("an active Codex Actor accepts cross-session steer and cancellation through
 });
 
 test("app-server delegation supports live leader requests and durable session reattachment", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-live-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-live-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1477,7 +1477,7 @@ test("app-server delegation supports live leader requests and durable session re
 });
 
 test("token delta storms do not amplify job-state or default audit-log writes", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-io-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-io-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1510,7 +1510,7 @@ test("token delta storms do not amplify job-state or default audit-log writes", 
 });
 
 test("App Server objective command and subagent events reach the bounded audit projection", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-observe-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-observe-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1554,7 +1554,7 @@ test("App Server objective command and subagent events reach the bounded audit p
 });
 
 test("parallel objective activities remain separately visible in live job state", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-parallel-ui-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-parallel-ui-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1588,7 +1588,7 @@ test("parallel objective activities remain separately visible in live job state"
 });
 
 test("Codex uses the same opaque session host-capability ledger", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-host-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-host-"));
 	try {
 		const workspace = join(root, "workspace");
 		const outside = join(root, "outside-note.txt");
@@ -1623,7 +1623,7 @@ test("Codex uses the same opaque session host-capability ledger", async () => {
 });
 
 test("Codex executor reuses a project-trusted host-command prefix", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-host-command-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-host-command-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1661,7 +1661,7 @@ test("Codex executor reuses a project-trusted host-command prefix", async () => 
 });
 
 test("a missing Codex host grant becomes structured input and resumes the same tool call after approval", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-host-approval-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-host-approval-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1722,7 +1722,7 @@ test("a missing Codex host grant becomes structured input and resumes the same t
 });
 
 test("a workspace has one writer lease and cancellation preserves the side-effect boundary", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-lock-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-lock-"));
 	try {
 		const workspace = join(root, "workspace");
 		const jobRoot = join(root, "codex", "jobs");
@@ -1744,7 +1744,7 @@ test("a workspace has one writer lease and cancellation preserves the side-effec
 });
 
 test("Codex retention archives only old excess terminal jobs and exact result lookup survives", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-codex-retention-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-retention-"));
 	const jobRoot = join(root, "codex", "jobs");
 	const workspace = join(root, "workspace");
 	try {

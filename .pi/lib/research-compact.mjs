@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-export const RESEARCH_COMPACTION_KIND = "apodex-pi-compaction";
+export const RESEARCH_COMPACTION_KIND = "apodex_pi-compaction";
 export const RESEARCH_COMPACTION_VERSION = 1;
 export const RESEARCH_COMPACTION_POLICY_VERSION = 1;
 export const RESEARCH_STATE_TOOL_NAME = "submit_research_state";

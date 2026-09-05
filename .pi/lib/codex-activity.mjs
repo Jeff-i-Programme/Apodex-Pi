@@ -131,7 +131,7 @@ export function compactCodexAuditEvent(message, options = {}) {
 			action: action || null,
 			target: target || null,
 			summary: tool === "consult_apodex_pi"
-				? "Codex requested Apodex Pi input"
+				? "Codex requested Apodex_Pi input"
 				: `${tool}${action ? ` ${action}` : ""}${target ? `: ${target}` : ""}`,
 		};
 	}

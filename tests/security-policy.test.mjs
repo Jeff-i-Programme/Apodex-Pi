@@ -6,7 +6,7 @@ import test from "node:test";
 import { resolveSystemRuntimePolicy } from "../.pi/lib/security-policy.mjs";
 
 test("macOS developer runtime is discovered and injected read-only", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-developer-runtime-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-developer-runtime-"));
 	try {
 		const developer = join(root, "CommandLineTools");
 		mkdirSync(developer);
@@ -24,7 +24,7 @@ test("macOS developer runtime is discovered and injected read-only", async () =>
 });
 
 test("Codex and agent skill directories are exposed as narrow read-only instruction roots", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-instruction-roots-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-instruction-roots-"));
 	try {
 		const codexSkills = join(root, ".codex", "skills");
 		const agentSkills = join(root, ".agents", "skills");

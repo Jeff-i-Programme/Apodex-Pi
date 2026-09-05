@@ -68,7 +68,7 @@ async function leaderCredentials(runtime, sessionId = "session-a") {
 }
 
 test("Project state commit is idempotent and folds into the Runtime snapshot", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-view-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-view-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -84,7 +84,7 @@ test("Project state commit is idempotent and folds into the Runtime snapshot", a
 });
 
 test("a stale Leader cannot commit canonical Project State after takeover", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-stale-leader-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-stale-leader-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -106,7 +106,7 @@ test("a stale Leader cannot commit canonical Project State after takeover", asyn
 });
 
 test("bounded session migration follows the active branch and commits its latest research compaction", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-migrate-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-migrate-"));
 	try {
 		const workspace = join(root, "workspace");
 		const sessionDir = join(root, "sessions");
@@ -130,7 +130,7 @@ test("bounded session migration follows the active branch and commits its latest
 });
 
 test("a research transition makes the old state stale and blocks a stale compact from replacing it", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-transition-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-transition-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -179,7 +179,7 @@ test("a research transition makes the old state stale and blocks a stale compact
 });
 
 test("a parallel research transition keeps the previous route current while adding explicit lineage", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-parallel-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-parallel-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -266,7 +266,7 @@ test("a superseded state stays retired when the latest transition is parallel", 
 });
 
 test("Project State amendments are partial, provenance-labelled, and revision guarded", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-amendment-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-amendment-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -336,7 +336,7 @@ test("Project State amendments are partial, provenance-labelled, and revision gu
 });
 
 test("Project State amendment refuses to rewrite a retired research route", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-amendment-retired-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-amendment-retired-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -376,7 +376,7 @@ test("Project State amendment refuses to rewrite a retired research route", asyn
 });
 
 test("a transition can continue an explicit live parallel route", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-parallel-source-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-parallel-source-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -408,7 +408,7 @@ test("a transition can continue an explicit live parallel route", async () => {
 });
 
 test("research transitions use Project revision compare-and-append", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-transition-cas-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-transition-cas-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -503,7 +503,7 @@ test("ProjectView materializes one stable Brief and one request-scoped Delta suf
 });
 
 test("RESEARCH.md is a user-maintained Project Anchor independent of compaction state", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-anchor-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-anchor-"));
 	try {
 		writeFileSync(join(root, "RESEARCH.md"), "# Project North Star\n\nGoal: discover a transferable mechanism.\n\nGuardrail: screens are not qualification.\n");
 		const anchor = await readProjectAnchor(root);
@@ -667,7 +667,7 @@ test("ProjectView refresh and prompt fingerprints ignore lifecycle-only churn", 
 });
 
 test("Project Brief bytes survive live evidence and route changes, then change only at the next compact", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-brief-boundary-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-brief-boundary-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -770,7 +770,7 @@ test("ProjectView keeps the newest live evidence when a large baseline must be t
 });
 
 test("ProjectView compresses earlier work but expands the latest handoff under project direction", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-project-handoff-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-project-handoff-"));
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);

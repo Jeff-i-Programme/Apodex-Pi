@@ -19,7 +19,7 @@ import {
 	writeApodexPiConfig,
 } from "../.pi/lib/research-config.mjs";
 
-test("Apodex Pi config owns research runtime settings, not the Leader model catalog", () => {
+test("Apodex_Pi config owns research runtime settings, not the Leader model catalog", () => {
 	const config = defaultApodexPiConfig();
 	assert.equal(config.version, 2);
 	assert.equal(Object.hasOwn(config, "activeProfile"), false);
@@ -33,7 +33,7 @@ test("Apodex Pi config owns research runtime settings, not the Leader model cata
 	assert.equal(config.research.compaction.summaryMaxTokens, 16 * 1024);
 	assert.equal(config.research.search.model, "deepseek-v4-flash");
 	assert.equal(config.ui.density, "balanced");
-	assert.equal(config.pi.settings.theme, "apodex-pi");
+	assert.equal(config.pi.settings.theme, "apodex_pi");
 });
 
 test("eval TPM env turns retry back on even if settings had it disabled", () => {
@@ -63,7 +63,7 @@ test("partial runtime config merges over defaults and rejects ambiguous or secre
 	const config = resolveApodexPiConfig({ codex: { executor: { model: "gpt-5.6-luna" } } });
 	assert.equal(config.codex.executor.model, "gpt-5.6-luna");
 	assert.equal(config.codex.executor.reasoningEffort, "max");
-	assert.throws(() => resolveApodexPiConfig({ typoSetting: true }), /Unknown Apodex Pi config key/);
+	assert.throws(() => resolveApodexPiConfig({ typoSetting: true }), /Unknown Apodex_Pi config key/);
 	assert.throws(() => resolveApodexPiConfig({ research: { compaction: { softTokens: 500_000 } } }), /below hardTokens/);
 	assert.throws(
 		() => resolveApodexPiConfig({ research: { compaction: { summaryTargetTokens: 20_000, summaryMaxTokens: 10_000 } } }),
@@ -75,7 +75,7 @@ test("partial runtime config merges over defaults and rejects ambiguous or secre
 });
 
 test("v1 profile config migrates once into Pi native defaults and removes the curated scope", () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-config-migrate-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-config-migrate-"));
 	try {
 		const defaults = defaultApodexPiConfig();
 		const configPath = join(root, "config.json");
@@ -109,7 +109,7 @@ test("v1 profile config migrates once into Pi native defaults and removes the cu
 });
 
 test("normal launches preserve Pi native model scope and custom models", () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-native-models-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-native-models-"));
 	try {
 		const agentDir = join(root, "agent");
 		const config = defaultApodexPiConfig();
@@ -139,13 +139,13 @@ test("normal launches preserve Pi native model scope and custom models", () => {
 });
 
 test("config persistence creates a private v2 file and schema", () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-config-"));
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-config-"));
 	try {
 		const configPath = join(root, "config.json");
 		const config = ensureApodexPiConfig(configPath);
 		assert.equal(config.version, 2);
 		assert.equal(statSync(configPath).mode & 0o777, 0o600);
-		assert.ok(statSync(join(root, "schemas", "apodex-pi-config.schema.json")).isFile());
+		assert.ok(statSync(join(root, "schemas", "apodex_pi-config.schema.json")).isFile());
 		const changed = writeApodexPiConfig(configPath, { ...config, ui: { ...config.ui, density: "compact" } });
 		assert.equal(readApodexPiConfig(configPath).ui.density, "compact");
 		assert.equal(changed.ui.density, "compact");
@@ -222,8 +222,8 @@ test("Codex, compact, and search modules consume the configured runtime environm
 	});
 });
 
-test("/config keeps Apodex Pi themes while exposing Pi Core model commands", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex-pi-config-ui-"));
+test("/config keeps Apodex_Pi themes while exposing Pi Core model commands", async () => {
+	const root = mkdtempSync(join(tmpdir(), "apodex_pi-config-ui-"));
 	const previousPath = process.env.APODEX_PI_CONFIG_FILE;
 	try {
 		const configPath = join(root, "config.json");
@@ -244,7 +244,7 @@ test("/config keeps Apodex Pi themes while exposing Pi Core model commands", asy
 		const ctx = {
 			hasUI: true,
 			ui: {
-				getAllThemes: () => ["apodex-pi", "research-graphite", "research-ember", "dark", "light"].map((name) => ({ name })),
+				getAllThemes: () => ["apodex_pi", "research-graphite", "research-ember", "dark", "light"].map((name) => ({ name })),
 				setTheme(name) { selectedTheme = name; return { success: true }; },
 				notify(message) { notices.push(message); },
 				addAutocompleteProvider(factory) { autocompleteFactory = factory; },

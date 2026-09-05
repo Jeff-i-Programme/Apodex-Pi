@@ -26,7 +26,7 @@ function fixture(prefix) {
 }
 
 test("one-shot external reads are exact, bounded, and consumed", async () => {
-	const paths = fixture("apodex-pi-cap-read-");
+	const paths = fixture("apodex_pi-cap-read-");
 	try {
 		const context = await resolveCapabilityContext(paths.project, "session-read", { stateRoot: paths.stateRoot });
 		const readable = join(paths.outside, "notes.txt");
@@ -55,7 +55,7 @@ test("credential files cannot become model-readable capabilities", async () => {
 	assert.equal(isForbiddenCredentialRead(join(homedir(), ".aws", "credentials")), true);
 	assert.equal(isForbiddenCredentialRead("/tmp/example.pem"), true);
 
-	const paths = fixture("apodex-pi-cap-secret-");
+	const paths = fixture("apodex_pi-cap-secret-");
 	try {
 		const context = await resolveCapabilityContext(paths.project, "session-secret", { stateRoot: paths.stateRoot });
 		const key = join(paths.outside, "private.key");
@@ -76,10 +76,10 @@ test("credential files cannot become model-readable capabilities", async () => {
 });
 
 test("common package, GitHub, and Codex credential stores cannot become model-readable", async () => {
-	const paths = fixture("apodex-pi-cap-common-credentials-");
+	const paths = fixture("apodex_pi-cap-common-credentials-");
 	try {
 		const context = await resolveCapabilityContext(paths.project, "session-common-credentials", { stateRoot: paths.stateRoot });
-		for (const relativePath of [".npmrc", ".codex/auth.json", ".config/gh/hosts.yml", ".config/apodex-pi/credentials.env"]) {
+		for (const relativePath of [".npmrc", ".codex/auth.json", ".config/gh/hosts.yml", ".config/apodex_pi/credentials.env"]) {
 			const target = join(paths.root, "outside", relativePath);
 			mkdirSync(join(target, ".."), { recursive: true });
 			writeFileSync(target, "token=synthetic-secret\n");
@@ -95,7 +95,7 @@ test("common package, GitHub, and Codex credential stores cannot become model-re
 });
 
 test("SSH grants use opaque host credentials and exact targets", async () => {
-	const paths = fixture("apodex-pi-cap-ssh-");
+	const paths = fixture("apodex_pi-cap-ssh-");
 	try {
 		const context = await resolveCapabilityContext(paths.project, "session-ssh", { stateRoot: paths.stateRoot });
 		const fakeSsh = join(paths.root, "fake-ssh.mjs");
@@ -144,7 +144,7 @@ process.stdout.write(JSON.stringify({
 });
 
 test("Analysis SSH escalation grants only the exact approved remote command", async () => {
-	const paths = fixture("apodex-pi-cap-analysis-ssh-");
+	const paths = fixture("apodex_pi-cap-analysis-ssh-");
 	try {
 		const context = await resolveCapabilityContext(paths.project, "session-analysis-ssh", { stateRoot: paths.stateRoot });
 		const broad = await prepareCapabilityRequest(context, { kind: "ssh-target", target: "lab.example" });
@@ -171,7 +171,7 @@ test("Analysis SSH escalation grants only the exact approved remote command", as
 });
 
 test("project-trusted SSH targets are reused automatically across Pi sessions", async () => {
-	const paths = fixture("apodex-pi-cap-ssh-project-");
+	const paths = fixture("apodex_pi-cap-ssh-project-");
 	try {
 		const firstContext = await resolveCapabilityContext(paths.project, "session-first", { stateRoot: paths.stateRoot });
 		const secondContext = await resolveCapabilityContext(paths.project, "session-second", { stateRoot: paths.stateRoot });
@@ -197,7 +197,7 @@ test("project-trusted SSH targets are reused automatically across Pi sessions", 
 });
 
 test("project host-command prefixes support uv-style runners and non-executable scripts", async () => {
-	const paths = fixture("apodex-pi-cap-command-");
+	const paths = fixture("apodex_pi-cap-command-");
 	try {
 		const firstContext = await resolveCapabilityContext(paths.project, "session-command-first", { stateRoot: paths.stateRoot });
 		const secondContext = await resolveCapabilityContext(paths.project, "session-command-second", { stateRoot: paths.stateRoot });
@@ -257,7 +257,7 @@ test("project host-command prefixes support uv-style runners and non-executable 
 });
 
 test("project host-command grants restore their approved cwd by grant id or unique argv match", async () => {
-	const paths = fixture("apodex-pi-cap-command-cwd-");
+	const paths = fixture("apodex_pi-cap-command-cwd-");
 	try {
 		const worktree = join(paths.project, ".worktrees", "experiment-a");
 		mkdirSync(worktree, { recursive: true });
@@ -304,7 +304,7 @@ test("project host-command grants restore their approved cwd by grant id or uniq
 });
 
 test("omitted host-command cwd refuses to guess between worktree grants", async () => {
-	const paths = fixture("apodex-pi-cap-command-ambiguous-");
+	const paths = fixture("apodex_pi-cap-command-ambiguous-");
 	try {
 		const worktreeA = join(paths.project, ".worktrees", "experiment-a");
 		const worktreeB = join(paths.project, ".worktrees", "experiment-b");
@@ -346,7 +346,7 @@ test("omitted host-command cwd refuses to guess between worktree grants", async 
 });
 
 test("code-string commands can be approved without granting a broader shell prefix", async () => {
-	const paths = fixture("apodex-pi-cap-code-string-");
+	const paths = fixture("apodex_pi-cap-code-string-");
 	try {
 		const context = await resolveCapabilityContext(paths.project, "session-code-string", { stateRoot: paths.stateRoot });
 		const argv = ["sh", "-c", "printf approved"];
@@ -377,7 +377,7 @@ test("code-string commands can be approved without granting a broader shell pref
 });
 
 test("project-script grants pin both file hash and argv", async () => {
-	const paths = fixture("apodex-pi-cap-script-");
+	const paths = fixture("apodex_pi-cap-script-");
 	try {
 		const context = await resolveCapabilityContext(paths.project, "session-script", { stateRoot: paths.stateRoot });
 		const script = join(paths.project, "sync.sh");

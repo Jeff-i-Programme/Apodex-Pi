@@ -10,7 +10,7 @@ const packageRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const scientificLoop = join(packageRoot, ".pi", "skills", "scientific-loop");
 
 test("ordinary research workspace still loads the scientific-loop skill", () => {
-	const temp = mkdtempSync(join(tmpdir(), "apodex-pi-science-"));
+	const temp = mkdtempSync(join(tmpdir(), "apodex_pi-science-"));
 	try {
 		mkdirSync(join(temp, "src"));
 		writeFileSync(join(temp, "README.md"), "# experiment\n");
@@ -23,7 +23,7 @@ test("ordinary research workspace still loads the scientific-loop skill", () => 
 });
 
 test("executable-world and dataset folders get the same unified skill, not a fork", () => {
-	const temp = mkdtempSync(join(tmpdir(), "apodex-pi-science-ew-"));
+	const temp = mkdtempSync(join(tmpdir(), "apodex_pi-science-ew-"));
 	try {
 		mkdirSync(join(temp, "ew_examples"));
 		writeFileSync(join(temp, "run_task.py"), "print(1)\n");

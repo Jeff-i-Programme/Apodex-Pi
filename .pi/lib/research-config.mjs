@@ -5,7 +5,7 @@ import { resolveHostBash } from "./host-shell.mjs";
 
 const LIB_DIR = dirname(fileURLToPath(import.meta.url));
 export const APODEX_PI_DEFAULT_CONFIG_PATH = resolve(LIB_DIR, "../config.defaults.json");
-export const APODEX_PI_CONFIG_SCHEMA_PATH = resolve(LIB_DIR, "../schemas/apodex-pi-config.schema.json");
+export const APODEX_PI_CONFIG_SCHEMA_PATH = resolve(LIB_DIR, "../schemas/apodex_pi-config.schema.json");
 export const APODEX_PI_CONFIG_VERSION = 2;
 export const APODEX_PI_PROVIDER_CREDENTIALS = Object.freeze({
 	deepseek: "DEEPSEEK_API_KEY",
@@ -13,7 +13,7 @@ export const APODEX_PI_PROVIDER_CREDENTIALS = Object.freeze({
 	"opencode-go": "OPENCODE_API_KEY",
 });
 export const APODEX_PI_THEME_CHOICES = Object.freeze([
-	{ name: "apodex-pi", label: "Ocean", description: "Cool cyan, indigo, and violet for long research sessions." },
+	{ name: "apodex_pi", label: "Ocean", description: "Cool cyan, indigo, and violet for long research sessions." },
 	{ name: "research-graphite", label: "Graphite", description: "Low-saturation graphite with restrained aqua accents." },
 	{ name: "research-ember", label: "Ember", description: "Warm copper and amber balanced by scientific teal." },
 	{ name: "dark", label: "Pi Dark", description: "Pi Core built-in dark palette." },
@@ -79,13 +79,13 @@ function validateCodexRole(role, value) {
 }
 
 export function validateApodexPiConfig(config) {
-	if (!plainObject(config)) throw new Error("Apodex Pi config must be a JSON object");
+	if (!plainObject(config)) throw new Error("Apodex_Pi config must be a JSON object");
 	rejectSecretFields(config);
 	for (const key of Object.keys(config)) {
-		if (!TOP_LEVEL_KEYS.has(key)) throw new Error(`Unknown Apodex Pi config key: ${key}`);
+		if (!TOP_LEVEL_KEYS.has(key)) throw new Error(`Unknown Apodex_Pi config key: ${key}`);
 	}
 	if (config.version !== APODEX_PI_CONFIG_VERSION) {
-		throw new Error(`Unsupported Apodex Pi config version: ${config.version}`);
+		throw new Error(`Unsupported Apodex_Pi config version: ${config.version}`);
 	}
 	validateCodexRole("advisor", config.codex?.advisor);
 	validateCodexRole("executor", config.codex?.executor);
@@ -183,7 +183,7 @@ export function ensureApodexPiConfig(path, options = {}) {
 		writeFileSync(path, `${JSON.stringify(resolved, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
 		chmodSync(path, 0o600);
 	}
-	const schemaDestination = join(dirname(path), "schemas", "apodex-pi-config.schema.json");
+	const schemaDestination = join(dirname(path), "schemas", "apodex_pi-config.schema.json");
 	mkdirSync(dirname(schemaDestination), { recursive: true, mode: 0o700 });
 	const schemaSource = resolve(options.schemaPath ?? APODEX_PI_CONFIG_SCHEMA_PATH);
 	if (schemaSource !== resolve(schemaDestination)) copyFileSync(schemaSource, schemaDestination);
@@ -195,8 +195,8 @@ export function readApodexPiConfig(path) {
 	try {
 		parsed = JSON.parse(readFileSync(path, "utf8"));
 	} catch (error) {
-		if (error?.code === "ENOENT") throw new Error(`Apodex Pi config does not exist: ${path}`);
-		throw new Error(`Apodex Pi config is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+		if (error?.code === "ENOENT") throw new Error(`Apodex_Pi config does not exist: ${path}`);
+		throw new Error(`Apodex_Pi config is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
 	}
 	return resolveApodexPiConfig(parsed);
 }
@@ -302,7 +302,7 @@ export function apodexPiEnvironment(config) {
 
 export function apodexPiConfigSummary(config, path) {
 	return [
-		`Apodex Pi config v${config.version}`,
+		`Apodex_Pi config v${config.version}`,
 		`Path: ${path}`,
 		"Leader model/auth: Pi Core native settings (/login, /model, /scoped-models, /settings)",
 		`Codex advisor: ${config.codex.advisor.model}/${config.codex.advisor.reasoningEffort}`,
@@ -310,6 +310,6 @@ export function apodexPiConfigSummary(config, path) {
 		`Codex retention: ${config.codex.retention.terminalDays} days · keep at least ${config.codex.retention.keepTerminalJobs} terminal jobs`,
 		`Research compact: ${config.research.compaction.softTokens}/${config.research.compaction.hardTokens} tokens · summary target/max ${config.research.compaction.summaryTargetTokens}/${config.research.compaction.summaryMaxTokens}`,
 		`Search: ${config.research.search.enabled} · deepseek/${config.research.search.model} · max ${config.research.search.maxSources} sources`,
-		`UI: theme ${config.pi.settings.theme ?? "apodex-pi"} · ${config.ui.density} · runtime strip ${config.ui.runtimeStrip}`,
+		`UI: theme ${config.pi.settings.theme ?? "apodex_pi"} · ${config.ui.density} · runtime strip ${config.ui.runtimeStrip}`,
 	].join("\n");
 }

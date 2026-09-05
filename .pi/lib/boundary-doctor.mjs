@@ -75,7 +75,7 @@ export function formatBoundaryDoctor(result) {
 		? `${probe.codexVersion || "ok"}${probe.codexBin ? ` · ${probe.codexBin}` : ""}`
 		: probe.error;
 	return [
-		`Apodex Pi boundary doctor: ${result.ok ? "PASS" : "FAIL"}`,
+		`Apodex_Pi boundary doctor: ${result.ok ? "PASS" : "FAIL"}`,
 		`Project: ${result.projectRoot}`,
 		`Host Git: ${result.hostGit.ok ? "ok" : result.hostGit.error}`,
 		`Host Python: ${result.hostPython.ok ? result.hostPython.stdout || "ok" : `optional/unavailable: ${result.hostPython.error}`}`,

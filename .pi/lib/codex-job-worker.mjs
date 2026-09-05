@@ -48,7 +48,7 @@ function fallbackStructuredResult(text, error, mode) {
 			evidence: [],
 			uncertainties: [error || "The final response did not parse as the required advisor schema."],
 			working_synthesis: "No validated working synthesis was returned.",
-			suggested_next_exchange: "Apodex Pi should inspect the job log and decide whether to resume the consultation.",
+			suggested_next_exchange: "Apodex_Pi should inspect the job log and decide whether to resume the consultation.",
 		};
 	}
 	return {
@@ -63,7 +63,7 @@ function fallbackStructuredResult(text, error, mode) {
 		external_effects: [],
 		uncertainties: [error || "The final response did not parse as the required executor schema."],
 		remaining_work: ["Inspect the job log and determine whether the same Codex thread should resume."],
-		recommended_next_step: "Apodex Pi should inspect the job log and decide whether to steer, resume, or rerun the delegation.",
+		recommended_next_step: "Apodex_Pi should inspect the job log and decide whether to steer, resume, or rerun the delegation.",
 	};
 }
 
@@ -362,7 +362,7 @@ async function main() {
 			responseLength: response.response?.length ?? JSON.stringify(response.answers ?? {}).length,
 			responseSha256: createHash("sha256").update(response.response || JSON.stringify(response.answers ?? {})).digest("hex"),
 		});
-		await enqueueJobUpdate({ status: "running", pendingRequest: null, progress: "Codex received Apodex Pi response" });
+		await enqueueJobUpdate({ status: "running", pendingRequest: null, progress: "Codex received Apodex_Pi response" });
 	};
 
 	const waitForHumanResponse = async (record) => {
@@ -371,7 +371,7 @@ async function main() {
 		await enqueueJobUpdate({
 			status: "input_required",
 			pendingRequest: publicPendingRequest(record),
-			progress: record.secret ? "waiting for direct user secret setup" : "waiting for Apodex Pi response",
+			progress: record.secret ? "waiting for direct user secret setup" : "waiting for Apodex_Pi response",
 		});
 		return await new Promise((resolve) => pendingHumanResponses.set(record.id, { resolve, record }));
 	};
@@ -396,7 +396,7 @@ async function main() {
 					id: message.id,
 					result: {
 						success: true,
-						contentItems: [{ type: "inputText", text: "Apodex Pi accepted the structured final handoff. End the turn with a brief acknowledgement and no further work." }],
+						contentItems: [{ type: "inputText", text: "Apodex_Pi accepted the structured final handoff. End the turn with a brief acknowledgement and no further work." }],
 					},
 				});
 				return;
@@ -460,7 +460,7 @@ async function main() {
 							id: message.id,
 							result: {
 								success: false,
-								contentItems: [{ type: "inputText", text: "Apodex Pi did not approve the requested host capability." }],
+								contentItems: [{ type: "inputText", text: "Apodex_Pi did not approve the requested host capability." }],
 							},
 						});
 						return;
@@ -554,7 +554,7 @@ async function main() {
 			if (!isOwnedServerRequest(message)) {
 				workerIo.foreignMessagesIgnored += 1;
 				try {
-					send({ id: message.id, error: { code: -32001, message: "Apodex Pi rejected a server request from an unrelated Codex thread or turn" } });
+					send({ id: message.id, error: { code: -32001, message: "Apodex_Pi rejected a server request from an unrelated Codex thread or turn" } });
 				} catch {
 					// The unrelated requester may already have stopped.
 				}
@@ -851,7 +851,7 @@ async function main() {
 		});
 
 		await rpcRequest("initialize", {
-			clientInfo: { name: "apodex_pi", title: "Apodex Pi Harness", version: "0.1.0" },
+			clientInfo: { name: "apodex_pi", title: "Apodex_Pi Harness", version: "0.1.0" },
 			capabilities: {
 				experimentalApi: true,
 				optOutNotificationMethods: ["item/agentMessage/delta"],
@@ -878,7 +878,7 @@ async function main() {
 				type: "function",
 				name: "submit_apodex_pi_result",
 				description: request.mode === "advisor"
-					? "Submit the advisor working synthesis exactly once when the consultation turn is ready to hand back to Apodex Pi. Do not use this for commentary or progress updates."
+					? "Submit the advisor working synthesis exactly once when the consultation turn is ready to hand back to Apodex_Pi. Do not use this for commentary or progress updates."
 					: "Submit the executor's structured final handoff exactly once, only after the delegated objective succeeds, reaches a genuine blocker, or irrecoverably fails. Do not use this for plans, preambles, audit checkpoints, or progress updates.",
 				inputSchema: resultInputSchema,
 			},
@@ -886,7 +886,7 @@ async function main() {
 				type: "function",
 				name: "apodex_pi_host",
 				description:
-					"Use Apodex Pi host capabilities for justified SSH or host-user operations. Project-trusted SSH targets and command prefixes run automatically. For a listed command grant, pass grantId so its approved cwd is restored; do not switch capability kind or create a shell wrapper after a cwd mismatch. A missing grant pauses this same tool call for the Pi TUI decision; do not duplicate it through consult_apodex_pi. Normal uv/Python/shell commands stay in the project sandbox. Advisor mode may use read only.",
+					"Use Apodex_Pi host capabilities for justified SSH or host-user operations. Project-trusted SSH targets and command prefixes run automatically. For a listed command grant, pass grantId so its approved cwd is restored; do not switch capability kind or create a shell wrapper after a cwd mismatch. A missing grant pauses this same tool call for the Pi TUI decision; do not duplicate it through consult_apodex_pi. Normal uv/Python/shell commands stay in the project sandbox. Advisor mode may use read only.",
 				inputSchema: {
 					type: "object",
 					additionalProperties: false,
@@ -910,8 +910,8 @@ async function main() {
 				name: "consult_apodex_pi",
 				description:
 					request.mode === "advisor"
-						? "Continue the research dialogue with Apodex Pi. Ask a focused clarification, assumption check, or interpretation choice when the answer would materially improve shared understanding; the discussion does not need to be completely blocked. Avoid performative or repetitive questions. Never request or transmit secrets."
-						: "Ask Apodex Pi only when a missing research decision or user-only fact materially blocks progress. Resolve implementation details yourself. Never request or transmit secrets with this tool.",
+						? "Continue the research dialogue with Apodex_Pi. Ask a focused clarification, assumption check, or interpretation choice when the answer would materially improve shared understanding; the discussion does not need to be completely blocked. Avoid performative or repetitive questions. Never request or transmit secrets."
+						: "Ask Apodex_Pi only when a missing research decision or user-only fact materially blocks progress. Resolve implementation details yourself. Never request or transmit secrets with this tool.",
 				inputSchema: {
 					type: "object",
 					additionalProperties: false,
@@ -932,7 +932,7 @@ async function main() {
 			permissions: request.sandbox,
 		};
 		// Dynamic tools are a thread/start-only capability in the App Server
-		// protocol. Compatible Apodex Pi threads retain the tools they were
+		// protocol. Compatible Apodex_Pi threads retain the tools they were
 		// created with; legacy threads are refreshed by resumeCodexJob.
 		const threadResponse = request.continuationThreadId
 			? await rpcRequest("thread/resume", { ...threadParams, threadId: request.continuationThreadId }, 60_000)
