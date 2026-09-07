@@ -261,6 +261,7 @@ async function spawnCore(argv) {
 		"deepseek-v4-pro-anchor.ts",
 		"codex-watch.ts",
 		"codex-delegate.ts",
+		"cache-audit.ts",
 	];
 	if (scienceLoopExtensionEnabled()) {
 		extensions.splice(extensions.indexOf("research-transition.ts"), 0, "science-loop.ts");
