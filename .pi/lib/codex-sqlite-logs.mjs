@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
 export const CODEX_SQLITE_LOG_ENV = "PI_CODEX_SQLITE_LOGS";
-export const CODEX_SQLITE_LOG_TRIGGER = "apodex_pi_suppress_codex_internal_logs";
+export const CODEX_SQLITE_LOG_TRIGGER = "probelab_suppress_codex_internal_logs";
 
 function logDatabaseVersion(name) {
 	return Number(/^logs_(\d+)\.sqlite$/.exec(name)?.[1] ?? -1);

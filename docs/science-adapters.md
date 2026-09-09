@@ -7,12 +7,12 @@ TRACE 交的是**一个 agent**。typed-action 世界、仪器读数、必须写
 1. 把科学方法写进 `.pi/APPEND_SYSTEM.md`（与师兄的科研契约同一份）
 2. 加载 `research-briefing` **和** `scientific-loop`
 3. 注册 `science_run_program`、`science_note_measurement`、`science_prepare_action`（与 `record_experiment` 并列的一等工具；直接 spawn Python，不依赖 Git Bash）
-4. Windows 上由 Apodex_Pi 启动链路探测 Git Bash 并写入 `shellPath`（`.pi/lib/host-shell.mjs`），把 Git `bin` 放到 PATH 最前，并把**当前工作区**放进 `PYTHONPATH`，这样子目录里的脚本也能 `import` 工作区根上的包。不是科学层另开一条路。
-5. 可选 `APODEX_PI_TPM_GAP_MS`：两次模型请求之间的最小间隔（默认 0）。`APODEX_PI_TPM_LIMIT`：按滚动一分钟的估计 token 再排队，避免打满基座 TPM。评测脚本会打开 Pi 的 429/断线重试；不要把 `retry.enabled` 关死。
+4. Windows 上由 Probelab 启动链路探测 Git Bash 并写入 `shellPath`（`.pi/lib/host-shell.mjs`），把 Git `bin` 放到 PATH 最前，并把**当前工作区**放进 `PYTHONPATH`，这样子目录里的脚本也能 `import` 工作区根上的包。不是科学层另开一条路。
+5. 可选 `PROBELAB_TPM_GAP_MS`：两次模型请求之间的最小间隔（默认 0）。`PROBELAB_TPM_LIMIT`：按滚动一分钟的估计 token 再排队，避免打满基座 TPM。评测脚本会打开 Pi 的 429/断线重试；不要把 `retry.enabled` 关死。
 
 普通写代码、记笔记、Codex 协作仍走原契约；观察里没有隐藏世界或指定产物时，不要去强制 USE 或跑程序闭环。
 
-`APODEX_PI_SCIENCE=0` 只用于对照师兄原版（关掉科学 skill 和这三个工具）。不要用它在 TRACE 上分流。
+`PROBELAB_SCIENCE=0` 只用于对照师兄原版（关掉科学 skill 和这三个工具）。不要用它在 TRACE 上分流。
 
 迁不走的评测环已经按同样逻辑写进 `scientific-loop`：同一观察重复三次要换探针、有可交互物就不要空等、开门后穿过、容器先开再拿、硬门槛没过还有提交次数就改再交。条款按当前观察启用，不绑练习套件的动作名或具名场景。
 
@@ -46,10 +46,10 @@ python adapters/science/cli.py prepare-action --ui-json "{...}" --action-json "{
 用法与师兄原来一致。科学纪律现在是默认的，不依赖工作区文件夹名。
 
 ```powershell
-$env:APODEX_PI_DEV_MODE = "1"
+$env:PROBELAB_DEV_MODE = "1"
 node bin/pi.mjs --workspace <executable-world-examples> --full-access --provider apodex --model apodex-1.1 -p -a "@prompt.md"
 ```
 
-对照原版：同一命令前设 `APODEX_PI_SCIENCE=0`。
+对照原版：同一命令前设 `PROBELAB_SCIENCE=0`。
 
 三方对照（师兄原版 Pi / 用户原 harness / 融合版）用 harness 里的 `harness/examples/run_three_way_compare.py`，单 key、顺序、禁止并发。

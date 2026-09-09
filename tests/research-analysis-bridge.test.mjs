@@ -20,7 +20,7 @@ import {
 } from "../.pi/lib/research-runtime.mjs";
 
 function fixture() {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-analysis-"));
+	const root = mkdtempSync(join(tmpdir(), "probelab-codex-analysis-"));
 	const workspace = join(root, "project");
 	const runtimeRoot = join(root, "runtime");
 	mkdirSync(workspace, { recursive: true });
@@ -80,15 +80,15 @@ test("pi analysis context/send works as a standalone bridge beside a running Lea
 	const paths = fixture();
 	try {
 		const stateRoot = join(paths.root, "state");
-		const environment = { ...process.env, APODEX_PI_STATE_DIR: stateRoot };
-		delete environment.APODEX_PI_DEV_MODE;
+		const environment = { ...process.env, PROBELAB_STATE_DIR: stateRoot };
+		delete environment.PROBELAB_DEV_MODE;
 		const context = spawnSync(process.execPath, [launcher, "analysis", "context"], {
 			cwd: paths.workspace,
 			env: environment,
 			encoding: "utf8",
 		});
 		assert.equal(context.status, 0, context.stderr);
-		assert.match(context.stdout, /apodex_pi_codex_analysis/);
+		assert.match(context.stdout, /probelab_codex_analysis/);
 
 		const send = spawnSync(process.execPath, [launcher, "analysis", "send"], {
 			cwd: paths.workspace,
@@ -97,7 +97,7 @@ test("pi analysis context/send works as a standalone bridge beside a running Lea
 			input: "判断：值得继续讨论。\n依据：现有结果尚未区分两个解释。\n建议：先做诊断。\n",
 		});
 		assert.equal(send.status, 0, send.stderr);
-		assert.match(send.stdout, /queued for the Apodex_Pi Leader/);
+		assert.match(send.stdout, /queued for the Probelab Leader/);
 		const runtime = await resolveResearchRuntime(paths.workspace, { runtimeRoot: join(stateRoot, "runtime", "projects") });
 		const snapshot = await readRuntimeSnapshot(runtime);
 		assert.equal(snapshot.messages.length, 1);

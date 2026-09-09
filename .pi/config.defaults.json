@@ -1,9 +1,9 @@
 {
-  "$schema": "./schemas/apodex_pi-config.schema.json",
+  "$schema": "./schemas/probelab-config.schema.json",
   "version": 2,
   "pi": {
     "settings": {
-      "theme": "apodex_pi",
+      "theme": "probelab",
       "tuiMode": "regular",
       "retry": {
         "enabled": true,

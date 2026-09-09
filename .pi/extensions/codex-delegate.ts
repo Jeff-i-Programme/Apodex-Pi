@@ -593,13 +593,13 @@ export default function codexDelegateExtension(pi: ExtensionAPI) {
 		if (job.status === "input_required" && job.pendingRequest) {
 			const pending = job.pendingRequest;
 			return [
-				`Codex delegation ${job.id} is waiting for ${pending.audience === "user" ? "the user" : "Apodex_Pi"}.`,
+				`Codex delegation ${job.id} is waiting for ${pending.audience === "user" ? "the user" : "Probelab"}.`,
 				`Request id: ${pending.id}`,
 				`Question: ${pending.question}`,
 				pending.whyBlocking ? `${job.mode === "advisor" ? "Why this matters" : "Why it blocks progress"}: ${pending.whyBlocking}` : undefined,
 				pending.options?.length ? `Options: ${pending.options.join(" | ")}` : undefined,
 				pending.kind === "host_capability"
-					? "Apodex_Pi will open the exact host-capability approval dialog in the attached TUI and return the decision to this same Codex turn."
+					? "Probelab will open the exact host-capability approval dialog in the attached TUI and return the decision to this same Codex turn."
 					: undefined,
 				pending.secret
 					? "This request is marked secret. Do not ask for or transmit the secret through Pi, model context, codex_delegate, or job files. Ask the user to configure it directly, then continue without echoing it."
@@ -709,8 +709,8 @@ export default function codexDelegateExtension(pi: ExtensionAPI) {
 			await respondToCodexJob(job.id, {
 				requestId: pending.id,
 				response: approved
-					? `Apodex_Pi user approved host capability ${grantId}. Continue the same tool call.`
-					: "Apodex_Pi user denied the requested host capability. Do not retry or bypass it.",
+					? `Probelab user approved host capability ${grantId}. Continue the same tool call.`
+					: "Probelab user denied the requested host capability. Do not retry or bypass it.",
 				...ownerCheck,
 			});
 			if (message?.status === "queued") {
@@ -1254,7 +1254,7 @@ export default function codexDelegateExtension(pi: ExtensionAPI) {
 								followUp: task,
 							}));
 							commandReceipt = job.threadRefresh
-								? `Refreshed legacy Codex thread for mission "${reusable.mission}" as ${job.id}; the same Actor now has the current Apodex_Pi tools.`
+								? `Refreshed legacy Codex thread for mission "${reusable.mission}" as ${job.id}; the same Actor now has the current Probelab tools.`
 								: `Resumed Codex mission "${reusable.mission}" from job ${reusable.id} as ${job.id}.`;
 						} else {
 							job = await withCurrentLeader(owner, () => startCodexJob({ ...common, task }));
@@ -1283,7 +1283,7 @@ export default function codexDelegateExtension(pi: ExtensionAPI) {
 							...ownerCheck,
 						}));
 						if (job.threadRefresh) {
-							commandReceipt = `Refreshed legacy Codex thread from job ${jobId} as ${job.id}; the same mission Actor now has the current Apodex_Pi tools.`;
+							commandReceipt = `Refreshed legacy Codex thread from job ${jobId} as ${job.id}; the same mission Actor now has the current Probelab tools.`;
 						}
 						ownerCheck = projectOwnerCheck;
 						effectiveBackground = params.background ?? job.autoNotify ?? (job.mode === "executor");

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-export const RESEARCH_COMPACTION_KIND = "apodex_pi-compaction";
+export const RESEARCH_COMPACTION_KIND = "probelab-compaction";
 export const RESEARCH_COMPACTION_VERSION = 1;
 export const RESEARCH_COMPACTION_POLICY_VERSION = 1;
 export const RESEARCH_STATE_TOOL_NAME = "submit_research_state";
@@ -129,18 +129,18 @@ function configuredPositiveInteger(name, fallback) {
 }
 
 function configuredTailSchedule() {
-	const values = String(process.env.APODEX_PI_COMPACT_RECENT_TAIL_TOKENS ?? "")
+	const values = String(process.env.PROBELAB_COMPACT_RECENT_TAIL_TOKENS ?? "")
 		.split(",")
 		.map((value) => Number(value.trim()))
 		.filter((value) => Number.isInteger(value) && value > 0);
 	return values.length ? values : [24 * 1024, 32 * 1024, 40 * 1024];
 }
 
-export const RESEARCH_SOFT_COMPACT_TOKENS = configuredPositiveInteger("APODEX_PI_COMPACT_SOFT_TOKENS", 272 * 1024);
-export const RESEARCH_HARD_COMPACT_TOKENS = configuredPositiveInteger("APODEX_PI_COMPACT_HARD_TOKENS", 384 * 1024);
+export const RESEARCH_SOFT_COMPACT_TOKENS = configuredPositiveInteger("PROBELAB_COMPACT_SOFT_TOKENS", 272 * 1024);
+export const RESEARCH_HARD_COMPACT_TOKENS = configuredPositiveInteger("PROBELAB_COMPACT_HARD_TOKENS", 384 * 1024);
 export const RESEARCH_RECENT_TAIL_SCHEDULE = Object.freeze(configuredTailSchedule());
-export const RESEARCH_SUMMARY_TARGET_TOKENS = configuredPositiveInteger("APODEX_PI_COMPACT_SUMMARY_TARGET_TOKENS", 8 * 1024);
-export const RESEARCH_SUMMARY_MAX_TOKENS = configuredPositiveInteger("APODEX_PI_COMPACT_SUMMARY_MAX_TOKENS", 16 * 1024);
+export const RESEARCH_SUMMARY_TARGET_TOKENS = configuredPositiveInteger("PROBELAB_COMPACT_SUMMARY_TARGET_TOKENS", 8 * 1024);
+export const RESEARCH_SUMMARY_MAX_TOKENS = configuredPositiveInteger("PROBELAB_COMPACT_SUMMARY_MAX_TOKENS", 16 * 1024);
 
 export const RESEARCH_COMPACTION_SYSTEM_PROMPT = `Maintain working state for computational research. Call ${RESEARCH_STATE_TOOL_NAME} exactly once; emit no prose. If tools are unavailable, return one JSON object.
 

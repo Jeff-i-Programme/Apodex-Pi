@@ -4,12 +4,12 @@ import { join, resolve } from "node:path";
 import test from "node:test";
 import { loadThemeFromPath } from "../node_modules/@earendil-works/pi-coding-agent/dist/modes/interactive/theme/theme.js";
 
-test("all bundled Apodex_Pi themes pass the Pi Core theme schema", () => {
+test("all bundled Probelab themes pass the Pi Core theme schema", () => {
 	const directory = resolve(new URL("../.pi/themes", import.meta.url).pathname);
 	const files = readdirSync(directory).filter((name) => name.endsWith(".json")).sort();
-	assert.deepEqual(files, ["apodex_pi.json", "research-ember.json", "research-graphite.json"]);
+	assert.deepEqual(files, ["probelab.json", "research-ember.json", "research-graphite.json"]);
 	const themes = files.map((file) => loadThemeFromPath(join(directory, file), "truecolor"));
-	assert.deepEqual(themes.map((theme) => theme.name).sort(), ["apodex_pi", "research-ember", "research-graphite"]);
+	assert.deepEqual(themes.map((theme) => theme.name).sort(), ["probelab", "research-ember", "research-graphite"]);
 	for (const theme of themes) {
 		assert.match(theme.fg("accent", "sample"), /sample/);
 		assert.match(theme.bg("customMessageBg", "sample"), /sample/);

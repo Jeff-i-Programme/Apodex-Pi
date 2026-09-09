@@ -29,9 +29,9 @@ function toolFrom(extension, extra = {}) {
 }
 
 test("record_experiment mirrors concise evidence into Project Runtime", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-evidence-"));
-	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
-	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "probelab-record-evidence-"));
+	const previousRoot = process.env.PROBELAB_RUNTIME_DIR;
+	process.env.PROBELAB_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -96,16 +96,16 @@ test("record_experiment mirrors concise evidence into Project Runtime", async ()
 		assert.equal(snapshot.evidence[0].recordedAtGit.commit, "record-time-head");
 		assert.equal(snapshot.revision, 2);
 	} finally {
-		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
-		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.PROBELAB_RUNTIME_DIR;
+		else process.env.PROBELAB_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("record_experiment preserves an omitted ex-ante prediction without inventing one", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-no-prediction-"));
-	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
-	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "probelab-record-no-prediction-"));
+	const previousRoot = process.env.PROBELAB_RUNTIME_DIR;
+	process.env.PROBELAB_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -131,16 +131,16 @@ test("record_experiment preserves an omitted ex-ante prediction without inventin
 		assert.equal(result.details.hypothesis, "");
 		assert.equal(result.details.evidenceMode, "exploratory");
 	} finally {
-		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
-		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.PROBELAB_RUNTIME_DIR;
+		else process.env.PROBELAB_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("record_experiment validates route provenance before durable persistence", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-route-preflight-"));
-	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
-	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "probelab-record-route-preflight-"));
+	const previousRoot = process.env.PROBELAB_RUNTIME_DIR;
+	process.env.PROBELAB_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -166,16 +166,16 @@ test("record_experiment validates route provenance before durable persistence", 
 		assert.equal(existsSync(join(workspace, ".pi", "research", "experiments.jsonl")), false);
 		assert.equal((await readRuntimeSnapshot(await resolveResearchRuntime(workspace))).evidence.length, 0);
 	} finally {
-		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
-		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.PROBELAB_RUNTIME_DIR;
+		else process.env.PROBELAB_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("record_experiment retries are idempotent across new tool call ids", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-idempotent-"));
-	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
-	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "probelab-record-idempotent-"));
+	const previousRoot = process.env.PROBELAB_RUNTIME_DIR;
+	process.env.PROBELAB_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -207,16 +207,16 @@ test("record_experiment retries are idempotent across new tool call ids", async 
 		assert.equal(readFileSync(join(workspace, ".pi", "research", "experiments.jsonl"), "utf8").trim().split("\n").length, 1);
 		assert.equal((await readRuntimeSnapshot(await resolveResearchRuntime(workspace))).evidence.length, 1);
 	} finally {
-		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
-		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.PROBELAB_RUNTIME_DIR;
+		else process.env.PROBELAB_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("record_experiment rejects contradictory prediction and evidence semantics", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-semantics-"));
-	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
-	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "probelab-record-semantics-"));
+	const previousRoot = process.env.PROBELAB_RUNTIME_DIR;
+	process.env.PROBELAB_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -255,16 +255,16 @@ test("record_experiment rejects contradictory prediction and evidence semantics"
 			evidenceMode: "validity_failure",
 		}, undefined, undefined, ctx), /cannot have validityJudgment=valid/);
 	} finally {
-		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
-		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.PROBELAB_RUNTIME_DIR;
+		else process.env.PROBELAB_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("record_research_transition is a narrow explicit project-memory operation", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-record-transition-"));
-	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
-	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "probelab-record-transition-"));
+	const previousRoot = process.env.PROBELAB_RUNTIME_DIR;
+	process.env.PROBELAB_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -288,16 +288,16 @@ test("record_research_transition is a narrow explicit project-memory operation",
 		assert.equal(snapshot.activeTransition.oldDisposition, "archived");
 		assert.equal(snapshot.revision, 1);
 	} finally {
-		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
-		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.PROBELAB_RUNTIME_DIR;
+		else process.env.PROBELAB_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
 test("amend_project_state is a Leader-owned narrow correction and is disabled in clean Sessions", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-amend-state-tool-"));
-	const previousRoot = process.env.APODEX_PI_RUNTIME_DIR;
-	process.env.APODEX_PI_RUNTIME_DIR = join(root, "runtime");
+	const root = mkdtempSync(join(tmpdir(), "probelab-amend-state-tool-"));
+	const previousRoot = process.env.PROBELAB_RUNTIME_DIR;
+	process.env.PROBELAB_RUNTIME_DIR = join(root, "runtime");
 	try {
 		const workspace = join(root, "workspace");
 		mkdirSync(workspace);
@@ -356,8 +356,8 @@ test("amend_project_state is a Leader-owned narrow correction and is disabled in
 			/Clean Sessions cannot mutate Project State/,
 		);
 	} finally {
-		if (previousRoot === undefined) delete process.env.APODEX_PI_RUNTIME_DIR;
-		else process.env.APODEX_PI_RUNTIME_DIR = previousRoot;
+		if (previousRoot === undefined) delete process.env.PROBELAB_RUNTIME_DIR;
+		else process.env.PROBELAB_RUNTIME_DIR = previousRoot;
 		rmSync(root, { recursive: true, force: true });
 	}
 });

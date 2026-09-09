@@ -2,18 +2,19 @@ import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, writeFile
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolveHostBash } from "./host-shell.mjs";
+import { applyProbelabEnvAliases } from "./runtime-paths.mjs";
 
 const LIB_DIR = dirname(fileURLToPath(import.meta.url));
-export const APODEX_PI_DEFAULT_CONFIG_PATH = resolve(LIB_DIR, "../config.defaults.json");
-export const APODEX_PI_CONFIG_SCHEMA_PATH = resolve(LIB_DIR, "../schemas/apodex_pi-config.schema.json");
-export const APODEX_PI_CONFIG_VERSION = 2;
-export const APODEX_PI_PROVIDER_CREDENTIALS = Object.freeze({
+export const PROBELAB_DEFAULT_CONFIG_PATH = resolve(LIB_DIR, "../config.defaults.json");
+export const PROBELAB_CONFIG_SCHEMA_PATH = resolve(LIB_DIR, "../schemas/probelab-config.schema.json");
+export const PROBELAB_CONFIG_VERSION = 2;
+export const PROBELAB_PROVIDER_CREDENTIALS = Object.freeze({
 	deepseek: "DEEPSEEK_API_KEY",
 	zai: "ZAI_API_KEY",
 	"opencode-go": "OPENCODE_API_KEY",
 });
-export const APODEX_PI_THEME_CHOICES = Object.freeze([
-	{ name: "apodex_pi", label: "Ocean", description: "Cool cyan, indigo, and violet for long research sessions." },
+export const PROBELAB_THEME_CHOICES = Object.freeze([
+	{ name: "probelab", label: "Ocean", description: "Cool cyan, indigo, and violet for long research sessions." },
 	{ name: "research-graphite", label: "Graphite", description: "Low-saturation graphite with restrained aqua accents." },
 	{ name: "research-ember", label: "Ember", description: "Warm copper and amber balanced by scientific teal." },
 	{ name: "dark", label: "Pi Dark", description: "Pi Core built-in dark palette." },
@@ -78,14 +79,21 @@ function validateCodexRole(role, value) {
 	if (!CODEX_EFFORTS.has(value.reasoningEffort)) throw new Error(`codex.${role}.reasoningEffort is invalid`);
 }
 
-export function validateApodexPiConfig(config) {
-	if (!plainObject(config)) throw new Error("Apodex_Pi config must be a JSON object");
+
+function migrateLegacyThemeNames(config) {
+	const theme = config?.pi?.settings?.theme;
+	if (theme === "apodex_pi") config.pi.settings.theme = "probelab";
+	return config;
+}
+
+export function validateProbelabConfig(config) {
+	if (!plainObject(config)) throw new Error("Probelab config must be a JSON object");
 	rejectSecretFields(config);
 	for (const key of Object.keys(config)) {
-		if (!TOP_LEVEL_KEYS.has(key)) throw new Error(`Unknown Apodex_Pi config key: ${key}`);
+		if (!TOP_LEVEL_KEYS.has(key)) throw new Error(`Unknown Probelab config key: ${key}`);
 	}
-	if (config.version !== APODEX_PI_CONFIG_VERSION) {
-		throw new Error(`Unsupported Apodex_Pi config version: ${config.version}`);
+	if (config.version !== PROBELAB_CONFIG_VERSION) {
+		throw new Error(`Unsupported Probelab config version: ${config.version}`);
 	}
 	validateCodexRole("advisor", config.codex?.advisor);
 	validateCodexRole("executor", config.codex?.executor);
@@ -129,8 +137,8 @@ export function validateApodexPiConfig(config) {
 	return config;
 }
 
-export function defaultApodexPiConfig() {
-	return validateApodexPiConfig(JSON.parse(readFileSync(APODEX_PI_DEFAULT_CONFIG_PATH, "utf8")));
+export function defaultProbelabConfig() {
+	return validateProbelabConfig(JSON.parse(readFileSync(PROBELAB_DEFAULT_CONFIG_PATH, "utf8")));
 }
 
 function migrateLegacyConfig(input = {}) {
@@ -151,63 +159,65 @@ function migrateLegacyConfig(input = {}) {
 		delete migrated.profiles;
 		delete migrated.providerCompat;
 		if (plainObject(migrated.ui)) delete migrated.ui.showProfileStatus;
-		migrated.version = APODEX_PI_CONFIG_VERSION;
+		migrated.version = PROBELAB_CONFIG_VERSION;
 	}
 	return { migrated, legacyModelDefault };
 }
 
-export function resolveApodexPiConfig(input = {}) {
-	const defaults = defaultApodexPiConfig();
+export function resolveProbelabConfig(input = {}) {
+	const defaults = defaultProbelabConfig();
 	const { migrated, legacyModelDefault } = migrateLegacyConfig(input);
-	const resolved = validateApodexPiConfig(merge(defaults, migrated));
+	migrateLegacyThemeNames(migrated);
+	const resolved = validateProbelabConfig(merge(defaults, migrated));
 	if (legacyModelDefault) {
 		Object.defineProperty(resolved, "legacyModelDefault", { value: legacyModelDefault, enumerable: false });
 	}
 	return resolved;
 }
 
-export function writeApodexPiConfig(path, config) {
-	const resolved = resolveApodexPiConfig(config);
+export function writeProbelabConfig(path, config) {
+	const resolved = resolveProbelabConfig(config);
 	mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
 	writeFileSync(path, `${JSON.stringify(resolved, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
 	chmodSync(path, 0o600);
 	return resolved;
 }
 
-export function ensureApodexPiConfig(path, options = {}) {
-	if (!existsSync(path)) writeApodexPiConfig(path, options.defaults ?? defaultApodexPiConfig());
+export function ensureProbelabConfig(path, options = {}) {
+	if (!existsSync(path)) writeProbelabConfig(path, options.defaults ?? defaultProbelabConfig());
 	const raw = JSON.parse(readFileSync(path, "utf8"));
-	const resolved = resolveApodexPiConfig(raw);
-	if (raw.version !== APODEX_PI_CONFIG_VERSION || Object.hasOwn(raw, "activeProfile") || Object.hasOwn(raw, "profiles")) {
+	const resolved = resolveProbelabConfig(raw);
+	const themeMigrated = (raw?.pi?.settings?.theme === "apodex_pi") && (resolved?.pi?.settings?.theme === "probelab");
+	if (raw.version !== PROBELAB_CONFIG_VERSION || Object.hasOwn(raw, "activeProfile") || Object.hasOwn(raw, "profiles") || themeMigrated) {
 		mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
 		writeFileSync(path, `${JSON.stringify(resolved, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
 		chmodSync(path, 0o600);
 	}
-	const schemaDestination = join(dirname(path), "schemas", "apodex_pi-config.schema.json");
+	const schemaDestination = join(dirname(path), "schemas", "probelab-config.schema.json");
 	mkdirSync(dirname(schemaDestination), { recursive: true, mode: 0o700 });
-	const schemaSource = resolve(options.schemaPath ?? APODEX_PI_CONFIG_SCHEMA_PATH);
+	const schemaSource = resolve(options.schemaPath ?? PROBELAB_CONFIG_SCHEMA_PATH);
 	if (schemaSource !== resolve(schemaDestination)) copyFileSync(schemaSource, schemaDestination);
 	return resolved;
 }
 
-export function readApodexPiConfig(path) {
+export function readProbelabConfig(path) {
 	let parsed;
 	try {
 		parsed = JSON.parse(readFileSync(path, "utf8"));
 	} catch (error) {
-		if (error?.code === "ENOENT") throw new Error(`Apodex_Pi config does not exist: ${path}`);
-		throw new Error(`Apodex_Pi config is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+		if (error?.code === "ENOENT") throw new Error(`Probelab config does not exist: ${path}`);
+		throw new Error(`Probelab config is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
 	}
-	return resolveApodexPiConfig(parsed);
+	return resolveProbelabConfig(parsed);
 }
 
-export function apodexPiCredentialEnvironmentNames(config) {
-	const names = new Set(Object.values(APODEX_PI_PROVIDER_CREDENTIALS));
+export function probelabCredentialEnvironmentNames(config) {
+	const names = new Set(Object.values(PROBELAB_PROVIDER_CREDENTIALS));
 	if (config.research.search.enabled !== "off") names.add("DEEPSEEK_API_KEY");
 	return [...names];
 }
 
-export function apodexPiDeepSeekSearchEnabled(config, environment = process.env) {
+export function probelabDeepSeekSearchEnabled(config, environment = process.env) {
 	const mode = config.research.search.enabled;
 	if (mode === "off") return false;
 	const available = Boolean(environment.DEEPSEEK_API_KEY?.trim());
@@ -217,7 +227,7 @@ export function apodexPiDeepSeekSearchEnabled(config, environment = process.env)
 	return available;
 }
 
-export function apodexPiCoreSettings(config, coreVersion, existing = {}) {
+export function probelabCoreSettings(config, coreVersion, existing = {}) {
 	const settings = merge(plainObject(existing) ? existing : {}, config.pi.settings);
 	if (config.legacyModelDefault) {
 		settings.defaultProvider ??= config.legacyModelDefault.provider;
@@ -237,9 +247,10 @@ export function apodexPiCoreSettings(config, coreVersion, existing = {}) {
 }
 
 function applyEvalRetry(settings, environment = process.env) {
-	const evalLike = Boolean(String(environment.APODEX_PI_TPM_GAP_MS || "").trim())
-		|| Boolean(String(environment.APODEX_PI_TPM_LIMIT || "").trim())
-		|| environment.APODEX_PI_FORCE_RETRY === "1";
+	environment = applyProbelabEnvAliases({ ...environment });
+	const evalLike = Boolean(String(environment.PROBELAB_TPM_GAP_MS || "").trim())
+		|| Boolean(String(environment.PROBELAB_TPM_LIMIT || "").trim())
+		|| environment.PROBELAB_FORCE_RETRY === "1";
 	if (!evalLike) return;
 	const current = plainObject(settings.retry) ? settings.retry : {};
 	const provider = plainObject(current.provider) ? current.provider : {};
@@ -256,7 +267,7 @@ function applyEvalRetry(settings, environment = process.env) {
 	};
 }
 
-export function writeApodexPiAgentConfig(agentDir, config, options = {}) {
+export function writeProbelabAgentConfig(agentDir, config, options = {}) {
 	mkdirSync(agentDir, { recursive: true, mode: 0o700 });
 	const settingsPath = join(agentDir, "settings.json");
 	let existingSettings = {};
@@ -267,42 +278,42 @@ export function writeApodexPiAgentConfig(agentDir, config, options = {}) {
 			throw new Error(`Pi native settings are not valid JSON: ${settingsPath}`);
 		}
 	}
-	const settings = apodexPiCoreSettings(config, options.coreVersion, existingSettings);
+	const settings = probelabCoreSettings(config, options.coreVersion, existingSettings);
 	writeFileSync(settingsPath, `${JSON.stringify(settings, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
 	chmodSync(settingsPath, 0o600);
 }
 
-export function apodexPiEnvironment(config) {
+export function probelabEnvironment(config) {
 	const compact = config.research.compaction;
 	const search = config.research.search;
 	return {
-		APODEX_PI_CODEX_ADVISOR_MODEL: config.codex.advisor.model,
-		APODEX_PI_CODEX_ADVISOR_EFFORT: config.codex.advisor.reasoningEffort,
-		APODEX_PI_CODEX_EXECUTOR_MODEL: config.codex.executor.model,
-		APODEX_PI_CODEX_EXECUTOR_EFFORT: config.codex.executor.reasoningEffort,
-		APODEX_PI_CODEX_RETENTION_DAYS: String(config.codex.retention.terminalDays),
-		APODEX_PI_CODEX_KEEP_TERMINAL_JOBS: String(config.codex.retention.keepTerminalJobs),
-		APODEX_PI_COMPACT_SOFT_TOKENS: String(compact.softTokens),
-		APODEX_PI_COMPACT_HARD_TOKENS: String(compact.hardTokens),
-		APODEX_PI_COMPACT_RECENT_TAIL_TOKENS: compact.recentTailTokens.join(","),
-		APODEX_PI_COMPACT_SUMMARY_TARGET_TOKENS: String(compact.summaryTargetTokens),
-		APODEX_PI_COMPACT_SUMMARY_MAX_TOKENS: String(compact.summaryMaxTokens),
-		APODEX_PI_SEARCH_MODEL: search.model,
-		APODEX_PI_SEARCH_ENABLED: search.enabled,
-		APODEX_PI_SEARCH_THINKING_BUDGET_TOKENS: String(search.thinkingBudgetTokens),
-		APODEX_PI_SEARCH_MAX_SOURCES: String(search.maxSources),
-		APODEX_PI_SEARCH_DEFAULT_MAX_USES: String(search.defaultMaxUses),
-		APODEX_PI_UI_DENSITY: config.ui.density,
-		APODEX_PI_UI_RUNTIME_STRIP: config.ui.runtimeStrip,
-		APODEX_PI_UI_CONFIG_PANEL_ROWS: String(config.ui.configPanelRows),
-		APODEX_PI_TRACE: config.diagnostics.trace ? "1" : "0",
+		PROBELAB_CODEX_ADVISOR_MODEL: config.codex.advisor.model,
+		PROBELAB_CODEX_ADVISOR_EFFORT: config.codex.advisor.reasoningEffort,
+		PROBELAB_CODEX_EXECUTOR_MODEL: config.codex.executor.model,
+		PROBELAB_CODEX_EXECUTOR_EFFORT: config.codex.executor.reasoningEffort,
+		PROBELAB_CODEX_RETENTION_DAYS: String(config.codex.retention.terminalDays),
+		PROBELAB_CODEX_KEEP_TERMINAL_JOBS: String(config.codex.retention.keepTerminalJobs),
+		PROBELAB_COMPACT_SOFT_TOKENS: String(compact.softTokens),
+		PROBELAB_COMPACT_HARD_TOKENS: String(compact.hardTokens),
+		PROBELAB_COMPACT_RECENT_TAIL_TOKENS: compact.recentTailTokens.join(","),
+		PROBELAB_COMPACT_SUMMARY_TARGET_TOKENS: String(compact.summaryTargetTokens),
+		PROBELAB_COMPACT_SUMMARY_MAX_TOKENS: String(compact.summaryMaxTokens),
+		PROBELAB_SEARCH_MODEL: search.model,
+		PROBELAB_SEARCH_ENABLED: search.enabled,
+		PROBELAB_SEARCH_THINKING_BUDGET_TOKENS: String(search.thinkingBudgetTokens),
+		PROBELAB_SEARCH_MAX_SOURCES: String(search.maxSources),
+		PROBELAB_SEARCH_DEFAULT_MAX_USES: String(search.defaultMaxUses),
+		PROBELAB_UI_DENSITY: config.ui.density,
+		PROBELAB_UI_RUNTIME_STRIP: config.ui.runtimeStrip,
+		PROBELAB_UI_CONFIG_PANEL_ROWS: String(config.ui.configPanelRows),
+		PROBELAB_TRACE: config.diagnostics.trace ? "1" : "0",
 		PI_CODEX_SQLITE_LOGS: config.diagnostics.codexSqliteLogs ? "1" : "0",
 	};
 }
 
-export function apodexPiConfigSummary(config, path) {
+export function probelabConfigSummary(config, path) {
 	return [
-		`Apodex_Pi config v${config.version}`,
+		`Probelab config v${config.version}`,
 		`Path: ${path}`,
 		"Leader model/auth: Pi Core native settings (/login, /model, /scoped-models, /settings)",
 		`Codex advisor: ${config.codex.advisor.model}/${config.codex.advisor.reasoningEffort}`,
@@ -310,6 +321,6 @@ export function apodexPiConfigSummary(config, path) {
 		`Codex retention: ${config.codex.retention.terminalDays} days · keep at least ${config.codex.retention.keepTerminalJobs} terminal jobs`,
 		`Research compact: ${config.research.compaction.softTokens}/${config.research.compaction.hardTokens} tokens · summary target/max ${config.research.compaction.summaryTargetTokens}/${config.research.compaction.summaryMaxTokens}`,
 		`Search: ${config.research.search.enabled} · deepseek/${config.research.search.model} · max ${config.research.search.maxSources} sources`,
-		`UI: theme ${config.pi.settings.theme ?? "apodex_pi"} · ${config.ui.density} · runtime strip ${config.ui.runtimeStrip}`,
+		`UI: theme ${config.pi.settings.theme ?? "probelab"} · ${config.ui.density} · runtime strip ${config.ui.runtimeStrip}`,
 	].join("\n");
 }

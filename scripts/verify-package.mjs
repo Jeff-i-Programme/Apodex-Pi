@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const cache = mkdtempSync(join(tmpdir(), "apodex_pi-npm-cache-"));
+const cache = mkdtempSync(join(tmpdir(), "probelab-npm-cache-"));
 let output;
 try {
 	output = execFileSync("npm", ["pack", "--dry-run", "--json", "--ignore-scripts"], {
@@ -21,15 +21,15 @@ const forbidden = files.filter((path) =>
 	/(?:^|\/)(?:\.env|auth\.json|models-store\.json|sessions|traces|memory\.sqlite|codex\/jobs|capabilities)(?:$|\/)/.test(path),
 );
 assert.deepEqual(forbidden, [], `Sensitive runtime files would enter the npm package: ${forbidden.join(", ")}`);
-assert.ok(!files.includes(".pi/config.json"), "The user-local Apodex_Pi config would enter the npm package");
+assert.ok(!files.includes(".pi/config.json"), "The user-local Probelab config would enter the npm package");
 assert.ok(!files.some((path) => path.startsWith(".pi/agent/")), "Generated Pi agent state would enter the npm package");
 for (const required of [
 	"bin/pi.mjs",
 	".pi/APPEND_SYSTEM.md",
 	".pi/config.defaults.json",
 	".pi/schemas/codex-advisor-result.json",
-	".pi/schemas/apodex_pi-config.schema.json",
-	".pi/themes/apodex_pi.json",
+	".pi/schemas/probelab-config.schema.json",
+	".pi/themes/probelab.json",
 	".pi/extensions/research-config.ts",
 	".pi/lib/research-config.mjs",
 	".pi/lib/research-analysis-bridge.mjs",

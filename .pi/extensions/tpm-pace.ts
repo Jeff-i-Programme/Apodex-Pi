@@ -13,10 +13,10 @@ export default function (pi: ExtensionAPI) {
 		const wait = combinedProviderWaitMs(
 			Date.now(),
 			lastEnd,
-			process.env.APODEX_PI_TPM_GAP_MS,
+			process.env.PROBELAB_TPM_GAP_MS,
 			stamps,
 			pendingTokens,
-			process.env.APODEX_PI_TPM_LIMIT,
+			process.env.PROBELAB_TPM_LIMIT,
 		);
 		if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait));
 	});
@@ -29,7 +29,7 @@ export default function (pi: ExtensionAPI) {
 		});
 		if (stamps.length > 80) stamps.splice(0, stamps.length - 80);
 		if (status === 429) {
-			stamps.push({ t: lastEnd, tokens: Number(process.env.APODEX_PI_TPM_LIMIT) || 100_000 });
+			stamps.push({ t: lastEnd, tokens: Number(process.env.PROBELAB_TPM_LIMIT) || 100_000 });
 		}
 	});
 }

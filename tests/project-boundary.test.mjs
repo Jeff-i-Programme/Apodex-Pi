@@ -23,7 +23,7 @@ import {
 	isAnalysisReadOnlySshCommand,
 	isProtectedProjectMutation,
 	permissionProfileDefinition,
-	apodexPiFullAccessEnabled,
+	probelabFullAccessEnabled,
 	resolveBoundaryPath,
 	resolveExecutablePath,
 	resolveProjectRoot,
@@ -54,11 +54,11 @@ test("project boundary exposes one opaque host-capability tool", () => {
 });
 
 test("full access bypasses direct-path approval for Leader but keeps the mode explicit in prompt and UI", async () => {
-	const previous = process.env.APODEX_PI_FULL_ACCESS;
+	const previous = process.env.PROBELAB_FULL_ACCESS;
 	const tools = [];
 	const handlers = {};
 	try {
-		process.env.APODEX_PI_FULL_ACCESS = "1";
+		process.env.PROBELAB_FULL_ACCESS = "1";
 		projectBoundaryExtension({
 			registerTool(tool) { tools.push(tool); },
 			registerCommand() {},
@@ -72,7 +72,7 @@ test("full access bypasses direct-path approval for Leader but keeps the mode ex
 		};
 		assert.equal(await handlers.tool_call({ toolName: "read", input: { path: "/outside/project.txt" } }, ctx), undefined);
 		const injected = handlers.before_agent_start({ systemPrompt: "base" }, ctx);
-		assert.match(injected.systemPrompt, /explicitly launched Apodex_Pi with full access/);
+		assert.match(injected.systemPrompt, /explicitly launched Probelab with full access/);
 		const wire = { messages: [{ role: "system", content: "base" }, { role: "user", content: "task" }] };
 		const normalized = handlers.before_provider_request({ payload: wire }, ctx);
 		assert.equal(normalized.messages[0].content, injected.systemPrompt, "mailbox continuation must retain the same permission explanation");
@@ -86,13 +86,13 @@ test("full access bypasses direct-path approval for Leader but keeps the mode ex
 		assert.equal(handlers.before_agent_start({ systemPrompt: "base" }, analysisCtx), undefined);
 		assert.deepEqual(handlers.before_provider_request({ payload: normalized }, analysisCtx), wire, "an explicit role change must not replay a stale full-access explanation");
 	} finally {
-		if (previous === undefined) delete process.env.APODEX_PI_FULL_ACCESS;
-		else process.env.APODEX_PI_FULL_ACCESS = previous;
+		if (previous === undefined) delete process.env.PROBELAB_FULL_ACCESS;
+		else process.env.PROBELAB_FULL_ACCESS = previous;
 	}
 });
 
 test("project boundary reuses an approved external-read grant", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-boundary-external-read-"));
+	const root = mkdtempSync(join(tmpdir(), "probelab-boundary-external-read-"));
 	const project = join(root, "project");
 	const outside = join(root, "outside");
 	const capabilityDir = join(root, "capabilities");
@@ -145,7 +145,7 @@ test("project boundary reuses an approved external-read grant", async () => {
 });
 
 test("path resolution accepts project paths and detects traversal plus symlink escapes", async () => {
-	const parent = mkdtempSync(join(tmpdir(), "apodex_pi-boundary-path-"));
+	const parent = mkdtempSync(join(tmpdir(), "probelab-boundary-path-"));
 	try {
 		const root = join(parent, "project");
 		const outside = join(parent, "outside");
@@ -167,8 +167,8 @@ test("path resolution accepts project paths and detects traversal plus symlink e
 	}
 });
 
-test("project-local Apodex_Pi state is idempotently excluded through shared Git metadata", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-local-exclude-"));
+test("project-local Probelab state is idempotently excluded through shared Git metadata", async () => {
+	const root = mkdtempSync(join(tmpdir(), "probelab-local-exclude-"));
 	try {
 		const main = join(root, "main");
 		const worktree = join(root, "worktree");
@@ -176,7 +176,7 @@ test("project-local Apodex_Pi state is idempotently excluded through shared Git 
 		execFileSync("git", ["init", "-q", main]);
 		writeFileSync(join(main, "README.md"), "fixture\n");
 		execFileSync("git", ["-C", main, "add", "README.md"]);
-		execFileSync("git", ["-C", main, "-c", "user.name=Apodex_Pi Test", "-c", "user.email=test@apodex_pi.invalid", "commit", "-q", "-m", "fixture"]);
+		execFileSync("git", ["-C", main, "-c", "user.name=Probelab Test", "-c", "user.email=test@probelab.invalid", "commit", "-q", "-m", "fixture"]);
 		execFileSync("git", ["-C", main, "worktree", "add", "-q", "-b", "fixture-worktree", worktree]);
 
 		const first = await ensureProjectLocalStateExcluded(worktree, { environment: { ...process.env } });
@@ -198,7 +198,7 @@ test("project-local Apodex_Pi state is idempotently excluded through shared Git 
 });
 
 test("Codex executable resolution pins the canonical target behind PATH symlinks", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-bin-"));
+	const root = mkdtempSync(join(tmpdir(), "probelab-codex-bin-"));
 	try {
 		const target = join(root, "codex-real");
 		const link = join(root, "codex");
@@ -215,14 +215,14 @@ test("Codex executable resolution pins the canonical target behind PATH symlinks
 });
 
 test("credential-like project paths require the same one-shot gate", async () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-boundary-secret-"));
+	const root = mkdtempSync(join(tmpdir(), "probelab-boundary-secret-"));
 	try {
 		assert.equal((await resolveBoundaryPath(root, ".env")).sensitive, true);
 		assert.equal((await resolveBoundaryPath(root, ".env.local")).sensitive, true);
 		assert.equal((await resolveBoundaryPath(root, ".npmrc")).sensitive, true);
 		assert.equal((await resolveBoundaryPath(root, ".codex/auth.json")).sensitive, true);
 		assert.equal((await resolveBoundaryPath(root, ".config/gh/hosts.yml")).sensitive, true);
-		assert.equal((await resolveBoundaryPath(root, ".config/apodex_pi/credentials.env")).sensitive, true);
+		assert.equal((await resolveBoundaryPath(root, ".config/probelab/credentials.env")).sensitive, true);
 		assert.equal((await resolveBoundaryPath(root, "src/model.ts")).sensitive, false);
 		assert.equal(directToolPath("grep", {}), ".");
 		assert.equal(directToolPath("bash", { path: ".." }), undefined);
@@ -246,7 +246,7 @@ test("Pi sandbox runtime is project-write, host-region-read-denied, and network-
 	assert.equal(config.network.strictAllowlist, false);
 	assert.equal(config.network.allowLocalBinding, true);
 	assert.deepEqual(config.filesystem.allowWrite.slice(0, 1), [root]);
-	assert.ok(config.filesystem.denyRead.includes("/Users"));
+	if (process.platform === "darwin") assert.ok(config.filesystem.denyRead.includes("/Users"));
 	assert.equal(config.filesystem.allowGitConfig, true);
 	assert.deepEqual(
 		config.credentials.envVars.map((item) => item.name).sort(),
@@ -256,7 +256,7 @@ test("Pi sandbox runtime is project-write, host-region-read-denied, and network-
 
 test("Analysis shell keeps the project read-only with only Runtime temp writable", () => {
 	const root = "/Users/example/research-project";
-	const runtimeTmp = `${root}/.git/apodex_pi/tmp`;
+	const runtimeTmp = `${root}/.git/probelab/tmp`;
 	const config = buildSandboxRuntimeConfig(root, { PATH: "/bin" }, undefined, {
 		access: "read",
 		runtimeTmp,
@@ -264,7 +264,7 @@ test("Analysis shell keeps the project read-only with only Runtime temp writable
 	assert.ok(config.filesystem.allowRead.includes(root));
 	assert.ok(config.filesystem.allowWrite.includes(runtimeTmp));
 	assert.ok(!config.filesystem.allowWrite.includes(root));
-	assert.ok(config.filesystem.denyRead.includes("/Users"));
+	if (process.platform === "darwin") assert.ok(config.filesystem.denyRead.includes("/Users"));
 	assert.equal(config.network.strictAllowlist, true);
 });
 
@@ -314,7 +314,7 @@ test("Analysis Session SSH accepts inspection commands and rejects remote side e
 });
 
 test("Codex executor profile keeps project and Git writable with public network", () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-codex-profile-"));
+	const root = mkdtempSync(join(tmpdir(), "probelab-codex-profile-"));
 	try {
 		mkdirSync(join(root, ".git"));
 		const profile = permissionProfileDefinition({ access: "write", workspaceRoot: root });
@@ -326,9 +326,9 @@ test("Codex executor profile keeps project and Git writable with public network"
 		assert.match(profile, /\.config\/gh\/hosts\.yml.*"deny"/);
 		assert.match(profile, /domains = \{ "\*" = "allow" \}/);
 
-		const args = codexPermissionConfigArguments("executor", root, `${root}/.git/apodex_pi/tmp`, {
-			name: "Apodex_Pi",
-			email: "apodex_pi@example.invalid",
+		const args = codexPermissionConfigArguments("executor", root, `${root}/.git/probelab/tmp`, {
+			name: "Probelab",
+			email: "probelab@example.invalid",
 		});
 		assert.ok(args.some((arg) => arg.includes(`default_permissions="${CODEX_EXECUTOR_PROFILE}"`)));
 		assert.ok(args.some((arg) => arg.includes("ignore_default_excludes=false")));
@@ -340,8 +340,8 @@ test("Codex executor profile keeps project and Git writable with public network"
 });
 
 test("explicit full access selects a root-write Codex executor profile without widening advisor", () => {
-	assert.equal(apodexPiFullAccessEnabled({ APODEX_PI_FULL_ACCESS: "1" }), true);
-	assert.equal(apodexPiFullAccessEnabled({ APODEX_PI_FULL_ACCESS: "0" }), false);
+	assert.equal(probelabFullAccessEnabled({ PROBELAB_FULL_ACCESS: "1" }), true);
+	assert.equal(probelabFullAccessEnabled({ PROBELAB_FULL_ACCESS: "0" }), false);
 	const profile = fullAccessPermissionProfileDefinition();
 	assert.match(profile, /":root" = "write"/);
 	assert.match(profile, /domains = \{ "\*" = "allow" \}/);
@@ -355,12 +355,12 @@ test("explicit full access selects a root-write Codex executor profile without w
 	const advisorArgs = codexPermissionConfigArguments("advisor", "/project", undefined, null, undefined, {
 		fullAccess: true,
 	});
-	assert.ok(advisorArgs.some((arg) => arg.includes('default_permissions="apodex_pi_advisor"')));
+	assert.ok(advisorArgs.some((arg) => arg.includes('default_permissions="probelab_advisor"')));
 	assert.ok(advisorArgs.some((arg) => arg.includes('":root" = "deny"')));
 });
 
 test("linked worktrees grant their real Git dir and common dir without making hooks writable", () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-linked-worktree-"));
+	const root = mkdtempSync(join(tmpdir(), "probelab-linked-worktree-"));
 	try {
 		const commonGit = join(root, "main", ".git");
 		const worktreeGit = join(commonGit, "worktrees", "feature");
@@ -379,7 +379,7 @@ test("linked worktrees grant their real Git dir and common dir without making ho
 });
 
 test("shared system runtime policy is read-only in both Pi and Codex sandboxes", () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-runtime-policy-"));
+	const root = mkdtempSync(join(tmpdir(), "probelab-runtime-policy-"));
 	try {
 		mkdirSync(join(root, ".git"));
 		const runtimePolicy = {
@@ -394,7 +394,7 @@ test("shared system runtime policy is read-only in both Pi and Codex sandboxes",
 		assert.ok(profile.includes('"/Users/example/.codex/skills" = "read"'));
 		assert.ok(!profile.includes('"/Users/example/.codex/skills" = "write"'));
 
-		const args = codexPermissionConfigArguments("executor", root, join(root, ".git", "apodex_pi", "tmp"), null, runtimePolicy);
+		const args = codexPermissionConfigArguments("executor", root, join(root, ".git", "probelab", "tmp"), null, runtimePolicy);
 		assert.ok(args.some((arg) => arg.includes("DEVELOPER_DIR")));
 		assert.ok(args.some((arg) => arg.includes("GIT_CONFIG_GLOBAL")));
 

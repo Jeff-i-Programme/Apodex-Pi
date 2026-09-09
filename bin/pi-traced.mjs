@@ -1,3 +1,5 @@
 #!/usr/bin/env node
-process.env.APODEX_PI_TRACE = "1";
+import { applyProbelabEnvAliases } from "../.pi/lib/runtime-paths.mjs";
+applyProbelabEnvAliases(process.env);
+process.env.PROBELAB_TRACE = "1";
 await import("./pi.mjs");

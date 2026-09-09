@@ -94,9 +94,9 @@ function stateRootForProject(projectRoot, explicitStateRoot) {
 	if (process.env.PI_RESEARCH_CAPABILITY_DIR) return resolve(process.env.PI_RESEARCH_CAPABILITY_DIR);
 	if (process.env.PI_CODING_AGENT_DIR) return resolve(dirname(process.env.PI_CODING_AGENT_DIR), "capabilities");
 	if (process.platform === "win32") {
-		return resolve(process.env.LOCALAPPDATA ?? join(homedir(), "AppData", "Local"), "Apodex_Pi", "state", "capabilities");
+		return resolve(process.env.LOCALAPPDATA ?? join(homedir(), "AppData", "Local"), "Probelab", "state", "capabilities");
 	}
-	return resolve(process.env.XDG_STATE_HOME ?? join(homedir(), ".local", "state"), "apodex_pi", "capabilities");
+	return resolve(process.env.XDG_STATE_HOME ?? join(homedir(), ".local", "state"), "probelab", "capabilities");
 }
 
 export async function resolveCapabilityContext(cwd, sessionId, options = {}) {

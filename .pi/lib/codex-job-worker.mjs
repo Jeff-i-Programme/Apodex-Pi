@@ -48,7 +48,7 @@ function fallbackStructuredResult(text, error, mode) {
 			evidence: [],
 			uncertainties: [error || "The final response did not parse as the required advisor schema."],
 			working_synthesis: "No validated working synthesis was returned.",
-			suggested_next_exchange: "Apodex_Pi should inspect the job log and decide whether to resume the consultation.",
+			suggested_next_exchange: "Probelab should inspect the job log and decide whether to resume the consultation.",
 		};
 	}
 	return {
@@ -63,7 +63,7 @@ function fallbackStructuredResult(text, error, mode) {
 		external_effects: [],
 		uncertainties: [error || "The final response did not parse as the required executor schema."],
 		remaining_work: ["Inspect the job log and determine whether the same Codex thread should resume."],
-		recommended_next_step: "Apodex_Pi should inspect the job log and decide whether to steer, resume, or rerun the delegation.",
+		recommended_next_step: "Probelab should inspect the job log and decide whether to steer, resume, or rerun the delegation.",
 	};
 }
 
@@ -362,7 +362,7 @@ async function main() {
 			responseLength: response.response?.length ?? JSON.stringify(response.answers ?? {}).length,
 			responseSha256: createHash("sha256").update(response.response || JSON.stringify(response.answers ?? {})).digest("hex"),
 		});
-		await enqueueJobUpdate({ status: "running", pendingRequest: null, progress: "Codex received Apodex_Pi response" });
+		await enqueueJobUpdate({ status: "running", pendingRequest: null, progress: "Codex received Probelab response" });
 	};
 
 	const waitForHumanResponse = async (record) => {
@@ -371,7 +371,7 @@ async function main() {
 		await enqueueJobUpdate({
 			status: "input_required",
 			pendingRequest: publicPendingRequest(record),
-			progress: record.secret ? "waiting for direct user secret setup" : "waiting for Apodex_Pi response",
+			progress: record.secret ? "waiting for direct user secret setup" : "waiting for Probelab response",
 		});
 		return await new Promise((resolve) => pendingHumanResponses.set(record.id, { resolve, record }));
 	};
@@ -381,7 +381,7 @@ async function main() {
 		const params = message.params ?? {};
 		const id = requestId(request.jobId, message.id, method);
 		try {
-			if (method === "item/tool/call" && params.tool === "submit_apodex_pi_result") {
+			if (method === "item/tool/call" && params.tool === "submit_probelab_result") {
 				const candidate = request.mode === "advisor"
 					? params.arguments
 					: normalizeExecutorResult(params.arguments);
@@ -396,12 +396,12 @@ async function main() {
 					id: message.id,
 					result: {
 						success: true,
-						contentItems: [{ type: "inputText", text: "Apodex_Pi accepted the structured final handoff. End the turn with a brief acknowledgement and no further work." }],
+						contentItems: [{ type: "inputText", text: "Probelab accepted the structured final handoff. End the turn with a brief acknowledgement and no further work." }],
 					},
 				});
 				return;
 			}
-			if (method === "item/tool/call" && params.tool === "apodex_pi_host") {
+			if (method === "item/tool/call" && params.tool === "probelab_host") {
 				if (!request.hostCapabilityContext) throw new Error("This Codex job has no Pi session capability ledger");
 				const args = params.arguments ?? {};
 				if (request.mode === "advisor" && args.action !== "read") {
@@ -460,7 +460,7 @@ async function main() {
 							id: message.id,
 							result: {
 								success: false,
-								contentItems: [{ type: "inputText", text: "Apodex_Pi did not approve the requested host capability." }],
+								contentItems: [{ type: "inputText", text: "Probelab did not approve the requested host capability." }],
 							},
 						});
 						return;
@@ -482,7 +482,7 @@ async function main() {
 				});
 				return;
 			}
-			if (method === "item/tool/call" && params.tool === "consult_apodex_pi") {
+			if (method === "item/tool/call" && params.tool === "consult_probelab") {
 				const args = params.arguments ?? {};
 				const record = {
 					version: 1,
@@ -554,7 +554,7 @@ async function main() {
 			if (!isOwnedServerRequest(message)) {
 				workerIo.foreignMessagesIgnored += 1;
 				try {
-					send({ id: message.id, error: { code: -32001, message: "Apodex_Pi rejected a server request from an unrelated Codex thread or turn" } });
+					send({ id: message.id, error: { code: -32001, message: "Probelab rejected a server request from an unrelated Codex thread or turn" } });
 				} catch {
 					// The unrelated requester may already have stopped.
 				}
@@ -802,7 +802,7 @@ async function main() {
 		const codexStateHome = join(dirname(dirname(jobDir)), "state");
 		await mkdir(codexStateHome, { recursive: true, mode: 0o700 });
 		const codexChildEnvironment = sanitizeCodexEnvironment(process.env);
-		// The worker retains the opaque SSH agent handle for apodex_pi_host;
+		// The worker retains the opaque SSH agent handle for probelab_host;
 		// the sandboxed Codex process itself must not even inherit its path.
 		delete codexChildEnvironment.SSH_AUTH_SOCK;
 		child = spawn(codexBin, appServerArgs, {
@@ -851,7 +851,7 @@ async function main() {
 		});
 
 		await rpcRequest("initialize", {
-			clientInfo: { name: "apodex_pi", title: "Apodex_Pi Harness", version: "0.1.0" },
+			clientInfo: { name: "probelab", title: "Probelab Harness", version: "0.1.0" },
 			capabilities: {
 				experimentalApi: true,
 				optOutNotificationMethods: ["item/agentMessage/delta"],
@@ -876,17 +876,17 @@ async function main() {
 		const dynamicTools = [
 			{
 				type: "function",
-				name: "submit_apodex_pi_result",
+				name: "submit_probelab_result",
 				description: request.mode === "advisor"
-					? "Submit the advisor working synthesis exactly once when the consultation turn is ready to hand back to Apodex_Pi. Do not use this for commentary or progress updates."
+					? "Submit the advisor working synthesis exactly once when the consultation turn is ready to hand back to Probelab. Do not use this for commentary or progress updates."
 					: "Submit the executor's structured final handoff exactly once, only after the delegated objective succeeds, reaches a genuine blocker, or irrecoverably fails. Do not use this for plans, preambles, audit checkpoints, or progress updates.",
 				inputSchema: resultInputSchema,
 			},
 			{
 				type: "function",
-				name: "apodex_pi_host",
+				name: "probelab_host",
 				description:
-					"Use Apodex_Pi host capabilities for justified SSH or host-user operations. Project-trusted SSH targets and command prefixes run automatically. For a listed command grant, pass grantId so its approved cwd is restored; do not switch capability kind or create a shell wrapper after a cwd mismatch. A missing grant pauses this same tool call for the Pi TUI decision; do not duplicate it through consult_apodex_pi. Normal uv/Python/shell commands stay in the project sandbox. Advisor mode may use read only.",
+					"Use Probelab host capabilities for justified SSH or host-user operations. Project-trusted SSH targets and command prefixes run automatically. For a listed command grant, pass grantId so its approved cwd is restored; do not switch capability kind or create a shell wrapper after a cwd mismatch. A missing grant pauses this same tool call for the Pi TUI decision; do not duplicate it through consult_probelab. Normal uv/Python/shell commands stay in the project sandbox. Advisor mode may use read only.",
 				inputSchema: {
 					type: "object",
 					additionalProperties: false,
@@ -907,11 +907,11 @@ async function main() {
 			},
 			{
 				type: "function",
-				name: "consult_apodex_pi",
+				name: "consult_probelab",
 				description:
 					request.mode === "advisor"
-						? "Continue the research dialogue with Apodex_Pi. Ask a focused clarification, assumption check, or interpretation choice when the answer would materially improve shared understanding; the discussion does not need to be completely blocked. Avoid performative or repetitive questions. Never request or transmit secrets."
-						: "Ask Apodex_Pi only when a missing research decision or user-only fact materially blocks progress. Resolve implementation details yourself. Never request or transmit secrets with this tool.",
+						? "Continue the research dialogue with Probelab. Ask a focused clarification, assumption check, or interpretation choice when the answer would materially improve shared understanding; the discussion does not need to be completely blocked. Avoid performative or repetitive questions. Never request or transmit secrets."
+						: "Ask Probelab only when a missing research decision or user-only fact materially blocks progress. Resolve implementation details yourself. Never request or transmit secrets with this tool.",
 				inputSchema: {
 					type: "object",
 					additionalProperties: false,
@@ -932,11 +932,11 @@ async function main() {
 			permissions: request.sandbox,
 		};
 		// Dynamic tools are a thread/start-only capability in the App Server
-		// protocol. Compatible Apodex_Pi threads retain the tools they were
+		// protocol. Compatible Probelab threads retain the tools they were
 		// created with; legacy threads are refreshed by resumeCodexJob.
 		const threadResponse = request.continuationThreadId
 			? await rpcRequest("thread/resume", { ...threadParams, threadId: request.continuationThreadId }, 60_000)
-			: await rpcRequest("thread/start", { ...threadParams, serviceName: "apodex_pi", dynamicTools }, 60_000);
+			: await rpcRequest("thread/start", { ...threadParams, serviceName: "probelab", dynamicTools }, 60_000);
 		registerRootThread(threadResponse?.thread?.id ?? request.continuationThreadId);
 		if (!threadId) throw new Error("Codex app-server did not return a thread id");
 		if (request.mode === "executor") {
@@ -1014,7 +1014,7 @@ async function main() {
 			progress: cancellationRequested ? "cancelled" : timedOut ? "timed out" : status,
 			gitAfter,
 			resultPath,
-			resultSource: submittedResult ? "submit_apodex_pi_result" : finalAgentText ? "final_answer" : unphasedAgentText ? "unphased_message" : "fallback",
+			resultSource: submittedResult ? "submit_probelab_result" : finalAgentText ? "final_answer" : unphasedAgentText ? "unphased_message" : "fallback",
 			error: status === "failed" ? lastError || "Codex turn failed" : null,
 			sideEffect: request.mode === "executor"
 				? { ...current.sideEffect, state: "settled", outcome: status, settledAt }

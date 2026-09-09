@@ -36,7 +36,7 @@ import {
 	runtimeDockNeedsClock,
 	runtimeDockVisible,
 } from "../lib/runtime-dock-ui.mjs";
-import { resolveApodexPiPaths } from "../lib/runtime-paths.mjs";
+import { resolveProbelabPaths } from "../lib/runtime-paths.mjs";
 import { createRuntimeMailboxWatcher } from "../lib/runtime-mailbox-watch.mjs";
 import {
 	RESEARCH_LEADER_ACTOR_ID,
@@ -105,9 +105,9 @@ const RECOVERABLE_ACTION_STATUSES = new Set([...ACTIVE_ACTION_STATUSES, "input_r
 const CODEX_TERMINAL_STATUSES = new Set(["completed", "failed", "cancelled", "outcome_unknown"]);
 const RUNTIME_DOCK_KEY = "research_runtime_dock";
 const RUNTIME_MAILBOX_WATCH_INTERVAL_MS = 250;
-const UI_DENSITY = process.env.APODEX_PI_UI_DENSITY === "compact" ? "compact" : "balanced";
-const UI_RUNTIME_STRIP = ["auto", "always", "off"].includes(process.env.APODEX_PI_UI_RUNTIME_STRIP ?? "")
-	? process.env.APODEX_PI_UI_RUNTIME_STRIP as "auto" | "always" | "off"
+const UI_DENSITY = process.env.PROBELAB_UI_DENSITY === "compact" ? "compact" : "balanced";
+const UI_RUNTIME_STRIP = ["auto", "always", "off"].includes(process.env.PROBELAB_UI_RUNTIME_STRIP ?? "")
+	? process.env.PROBELAB_UI_RUNTIME_STRIP as "auto" | "always" | "off"
 	: "auto";
 const ANALYSIS_SAFE_TOOLS = new Set([
 	"bash",
@@ -369,7 +369,7 @@ export function formatRuntimeHealth(health: ReturnType<typeof runtimeHealth>): s
 		`Rotation: ${health.ready ? "ready for /runtime rotate" : `blocked (${health.blockers.join("; ")})`}`,
 		`Recommendation: ${health.recommendation}`,
 		health.reason,
-		"Lifecycle remains manual: Apodex_Pi never rotates or reconciles automatically.",
+		"Lifecycle remains manual: Probelab never rotates or reconciles automatically.",
 	].join("\n");
 }
 
@@ -471,7 +471,7 @@ export default function researchRuntimeExtension(pi: ExtensionAPI) {
 	let sessionInheritancePolicy: SessionInheritancePolicy = "project";
 	let projectContextMode: ProjectContextMode = "project";
 	let requestedInitialSessionMode: SessionInheritancePolicy | undefined =
-		process.env.APODEX_PI_INITIAL_SESSION_MODE === "analysis" ? "analysis" : undefined;
+		process.env.PROBELAB_INITIAL_SESSION_MODE === "analysis" ? "analysis" : undefined;
 	let lastUserPrompt = "";
 	let projectWorkThisRun = false;
 	const projectToolsThisRun = new Set<string>();
@@ -543,7 +543,7 @@ export default function researchRuntimeExtension(pi: ExtensionAPI) {
 				migrationAttemptedProjects.add(activeRuntime.projectKey);
 				await migrateLatestProjectState({
 					runtime: activeRuntime,
-					sessionDir: resolveApodexPiPaths({ harnessRoot: HARNESS_ROOT }).sessionDir,
+					sessionDir: resolveProbelabPaths({ harnessRoot: HARNESS_ROOT }).sessionDir,
 					cwd: ctx.cwd,
 					leaderSessionId: sessionId,
 					attachmentEpoch: attachment.epoch,

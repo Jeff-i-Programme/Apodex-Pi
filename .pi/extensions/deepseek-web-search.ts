@@ -7,12 +7,12 @@ import {
 } from "../lib/deepseek-web-search.mjs";
 
 const DEEPSEEK_ANTHROPIC_BASE_URL = "https://api.deepseek.com/anthropic";
-const DEEPSEEK_SEARCH_MODEL = process.env.APODEX_PI_SEARCH_MODEL?.trim() || "deepseek-v4-flash";
-const configuredThinkingBudget = Number(process.env.APODEX_PI_SEARCH_THINKING_BUDGET_TOKENS);
+const DEEPSEEK_SEARCH_MODEL = process.env.PROBELAB_SEARCH_MODEL?.trim() || "deepseek-v4-flash";
+const configuredThinkingBudget = Number(process.env.PROBELAB_SEARCH_THINKING_BUDGET_TOKENS);
 const DEEPSEEK_SEARCH_THINKING_BUDGET = Number.isInteger(configuredThinkingBudget) && configuredThinkingBudget > 0
 	? configuredThinkingBudget
 	: 1_024;
-const configuredDefaultMaxUses = Number(process.env.APODEX_PI_SEARCH_DEFAULT_MAX_USES);
+const configuredDefaultMaxUses = Number(process.env.PROBELAB_SEARCH_DEFAULT_MAX_USES);
 const DEEPSEEK_SEARCH_DEFAULT_MAX_USES = Number.isInteger(configuredDefaultMaxUses)
 	? Math.max(1, Math.min(configuredDefaultMaxUses, 5))
 	: 3;

@@ -4,6 +4,7 @@ import { realpath } from "node:fs/promises";
 import { homedir } from "node:os";
 import { delimiter, isAbsolute, join, parse, relative, resolve, sep } from "node:path";
 import { promisify } from "node:util";
+import { applyProbelabEnvAliases } from "./runtime-paths.mjs";
 
 const execFileAsync = promisify(execFile);
 
@@ -39,13 +40,14 @@ async function activeDeveloperDirectory(environment, run = execFileAsync) {
 async function configuredRuntimeRoots(environment) {
 	const roots = [];
 	const home = resolve(homedir());
-	for (const value of String(environment.APODEX_PI_RUNTIME_ROOTS ?? "").split(delimiter)) {
+	environment = applyProbelabEnvAliases({ ...environment });
+	for (const value of String(environment.PROBELAB_RUNTIME_ROOTS ?? "").split(delimiter)) {
 		const root = await canonicalDirectory(value.trim());
 		if (!root) continue;
 		if (root === parse(root).root) throw new Error(`Refusing filesystem-root runtime grant: ${root}`);
-		if ((isWithin(home, root) || isWithin(root, home)) && environment.APODEX_PI_ALLOW_HOME_RUNTIME_ROOTS !== "1") {
+		if ((isWithin(home, root) || isWithin(root, home)) && environment.PROBELAB_ALLOW_HOME_RUNTIME_ROOTS !== "1") {
 			throw new Error(
-				`Refusing home-directory runtime root without APODEX_PI_ALLOW_HOME_RUNTIME_ROOTS=1: ${root}`,
+				`Refusing home-directory runtime root without PROBELAB_ALLOW_HOME_RUNTIME_ROOTS=1: ${root}`,
 			);
 		}
 		roots.push(root);
@@ -81,10 +83,10 @@ export async function resolveSystemRuntimePolicy(options = {}) {
 			const home = resolve(homedir());
 			if (
 				(isWithin(home, developerDirectory) || isWithin(developerDirectory, home)) &&
-				environment.APODEX_PI_ALLOW_HOME_RUNTIME_ROOTS !== "1"
+				environment.PROBELAB_ALLOW_HOME_RUNTIME_ROOTS !== "1"
 			) {
 				throw new Error(
-					`Refusing home-directory macOS developer runtime without APODEX_PI_ALLOW_HOME_RUNTIME_ROOTS=1: ${developerDirectory}`,
+					`Refusing home-directory macOS developer runtime without PROBELAB_ALLOW_HOME_RUNTIME_ROOTS=1: ${developerDirectory}`,
 				);
 			}
 			readRoots.add(developerDirectory);

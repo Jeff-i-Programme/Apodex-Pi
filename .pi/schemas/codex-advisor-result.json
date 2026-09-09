@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Apodex_Pi Codex advisor working synthesis",
+  "title": "Probelab Codex advisor working synthesis",
   "type": "object",
   "additionalProperties": false,
   "required": [

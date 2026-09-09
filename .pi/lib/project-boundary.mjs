@@ -5,16 +5,17 @@ import { homedir, tmpdir } from "node:os";
 import { basename, delimiter, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { promisify } from "node:util";
 import { normalizeSystemRuntimePolicy } from "./security-policy.mjs";
+import { applyProbelabEnvAliases } from "./runtime-paths.mjs";
 
 const execFileAsync = promisify(execFile);
 
-export const PROJECT_BOUNDARY_PROFILE = "apodex_pi_project";
-export const CODEX_EXECUTOR_PROFILE = "apodex_pi_executor";
-export const CODEX_ADVISOR_PROFILE = "apodex_pi_advisor";
-export const CODEX_FULL_ACCESS_PROFILE = "apodex_pi_full_access";
+export const PROJECT_BOUNDARY_PROFILE = "probelab_project";
+export const CODEX_EXECUTOR_PROFILE = "probelab_executor";
+export const CODEX_ADVISOR_PROFILE = "probelab_advisor";
+export const CODEX_FULL_ACCESS_PROFILE = "probelab_full_access";
 
-export function apodexPiFullAccessEnabled(environment = process.env) {
-	return environment.APODEX_PI_FULL_ACCESS === "1";
+export function probelabFullAccessEnabled(environment = process.env) {
+	return applyProbelabEnvAliases({ ...environment }).PROBELAB_FULL_ACCESS === "1";
 }
 
 export function codexPermissionProfile(mode, options = {}) {
@@ -37,9 +38,9 @@ export const CREDENTIAL_BASENAMES = Object.freeze([
 ]);
 export const CREDENTIAL_RELATIVE_PATHS = Object.freeze([
 	".pi/agent/auth.json", ".codex/auth.json", ".config/gh/hosts.yml",
-	".config/apodex_pi/credentials.env", ".aws/credentials", ".docker/config.json",
+	".config/probelab/credentials.env", ".aws/credentials", ".docker/config.json",
 ]);
-const REMOTE_CREDENTIAL_PATH_PATTERN = /(?:^|[\s'"/])(?:\.ssh|\.gnupg|\.aws|\.config\/gcloud|\.config\/gh|\.config\/apodex_pi|\.codex|\.docker|\.kube)(?:[\s'"/]|$)|(?:^|[\s'"/])(?:id_rsa|id_ed25519|auth\.json|credentials(?:\.json|\.env)?|\.env(?:\.[^\s/'"]*)?|\.npmrc|\.pypirc|\.netrc|_netrc|\.git-credentials|hosts\.yml|[^\s/'"]+\.(?:pem|key|p12|pfx))(?:[\s'"/]|$)|\/proc\/(?:self|\d+)\/environ|\/etc\/(?:shadow|gshadow)/i;
+const REMOTE_CREDENTIAL_PATH_PATTERN = /(?:^|[\s'"/])(?:\.ssh|\.gnupg|\.aws|\.config\/gcloud|\.config\/gh|\.config\/probelab|\.codex|\.docker|\.kube)(?:[\s'"/]|$)|(?:^|[\s'"/])(?:id_rsa|id_ed25519|auth\.json|credentials(?:\.json|\.env)?|\.env(?:\.[^\s/'"]*)?|\.npmrc|\.pypirc|\.netrc|_netrc|\.git-credentials|hosts\.yml|[^\s/'"]+\.(?:pem|key|p12|pfx))(?:[\s'"/]|$)|\/proc\/(?:self|\d+)\/environ|\/etc\/(?:shadow|gshadow)/i;
 
 function parseAnalysisShellWords(input) {
 	const words = [];
@@ -259,7 +260,7 @@ export function directToolPath(toolName, input) {
 export function boundaryWarning(info, operation, kindOverride) {
 	const kind = kindOverride ?? (info.sensitive ? "受保护的项目凭据文件" : "项目边界外路径");
 	return [
-		`Apodex_Pi 检测到 ${kind}，正在突破限制区。`,
+		`Probelab 检测到 ${kind}，正在突破限制区。`,
 		`操作：${operation}`,
 		`请求路径：${info.lexicalPath}`,
 		info.resolvedPath !== info.lexicalPath ? `真实路径：${info.resolvedPath}` : undefined,
@@ -384,7 +385,7 @@ function gitRules(workspaceRoot, access) {
 		gitPath,
 		...[
 			"COMMIT_EDITMSG", "FETCH_HEAD", "HEAD", "HEAD.lock", "MERGE_HEAD", "ORIG_HEAD", "config", "config.lock",
-			"index", "index.lock", "logs", "modules", "objects", "packed-refs", "packed-refs.lock", "refs", "apodex_pi", "rr-cache", "worktrees",
+			"index", "index.lock", "logs", "modules", "objects", "packed-refs", "packed-refs.lock", "refs", "probelab", "rr-cache", "worktrees",
 		].map((name) => join(gitPath, name)),
 	]);
 	return [
@@ -414,7 +415,7 @@ export function permissionProfileDefinition({ access = "write", workspaceRoot, r
 	if (access !== "read" && access !== "write") throw new Error(`Unsupported project access: ${access}`);
 	return [
 		"{",
-		`description = "Apodex_Pi project ${access} access boundary",`,
+		`description = "Probelab project ${access} access boundary",`,
 		workspaceRoot ? `workspace_roots = { ${JSON.stringify(workspaceRoot)} = true },` : undefined,
 		"filesystem = {",
 		`${filesystemBaseRules(workspaceRoot, access, runtimePolicy)},`,
@@ -430,7 +431,7 @@ export function permissionProfileDefinition({ access = "write", workspaceRoot, r
 export function fullAccessPermissionProfileDefinition() {
 	return [
 		"{",
-		'description = "Apodex_Pi explicit full host access",',
+		'description = "Probelab explicit full host access",',
 		'filesystem = { ":root" = "write" },',
 		'network = { enabled = true, allow_local_binding = true, domains = { "*" = "allow" } }',
 		"}",
@@ -514,11 +515,11 @@ export async function runCodexSandboxPreflight(options) {
 			'git init -q "$probe"',
 			'printf "permission probe\\n" > "$probe/probe.txt"',
 			'git -C "$probe" add probe.txt',
-			'git -C "$probe" -c user.name="Apodex_Pi Doctor" -c user.email="doctor@apodex_pi.invalid" commit -q -m "permission probe"',
+			'git -C "$probe" -c user.name="Probelab Doctor" -c user.email="doctor@probelab.invalid" commit -q -m "permission probe"',
 		);
 	}
 	commands.push('if command -v python3 >/dev/null 2>&1; then python3 --version >/dev/null; fi');
-	commands.push('printf "apodex_pi-codex-preflight=ok\\n"');
+	commands.push('printf "probelab-codex-preflight=ok\\n"');
 	const environment = {
 		...sanitizeBoundaryEnvironment(options.environment ?? process.env),
 		...runtimePolicy.environment,
@@ -707,13 +708,13 @@ export async function prepareBoundaryRuntime(root) {
 	try {
 		const gitDir = join(canonicalRoot, ".git");
 		if ((await stat(gitDir)).isDirectory()) {
-			runtimeTmp = await usableRuntimeCandidate(canonicalRoot, join(gitDir, "apodex_pi", "tmp"));
+			runtimeTmp = await usableRuntimeCandidate(canonicalRoot, join(gitDir, "probelab", "tmp"));
 		}
 	} catch {
 		// Non-Git repositories use a project-local fallback below.
 	}
 	if (!runtimeTmp) {
-		runtimeTmp = await usableRuntimeCandidate(canonicalRoot, join(canonicalRoot, ".pi", "apodex_pi-runtime", "tmp"));
+		runtimeTmp = await usableRuntimeCandidate(canonicalRoot, join(canonicalRoot, ".pi", "probelab-runtime", "tmp"));
 	}
 	if (!runtimeTmp) throw new Error("Could not create a project-local runtime directory without crossing the project boundary");
 
@@ -768,6 +769,6 @@ export async function ensureProjectLocalStateExcluded(root, options = {}) {
 		return { status: "already-excluded", changed: false, path: excludePath };
 	}
 	const prefix = current && !current.endsWith("\n") ? "\n" : "";
-	await appendFile(excludePath, `${prefix}# Apodex_Pi local runtime state\n/.pi/\n`, { encoding: "utf8", mode: 0o600 });
+	await appendFile(excludePath, `${prefix}# Probelab local runtime state\n/.pi/\n`, { encoding: "utf8", mode: 0o600 });
 	return { status: "added", changed: true, path: excludePath };
 }

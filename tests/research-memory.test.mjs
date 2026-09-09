@@ -16,7 +16,7 @@ function writeJsonl(path, entries) {
 }
 
 test("indexes Chinese text, short IDs, provenance, branch state, and redacts credentials", () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-memory-"));
+	const root = mkdtempSync(join(tmpdir(), "probelab-memory-"));
 	try {
 		const project = join(root, "project");
 		const sessions = join(root, "sessions");
@@ -148,7 +148,7 @@ test("indexes Chinese text, short IDs, provenance, branch state, and redacts cre
 });
 
 test("exact memory reads are project-qualified when Session identifiers collide", () => {
-	const root = mkdtempSync(join(tmpdir(), "apodex_pi-memory-project-scope-"));
+	const root = mkdtempSync(join(tmpdir(), "probelab-memory-project-scope-"));
 	try {
 		const sessions = join(root, "sessions");
 		mkdirSync(sessions, { recursive: true });

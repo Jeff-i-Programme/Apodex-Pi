@@ -121,7 +121,7 @@ export function compactCodexAuditEvent(message, options = {}) {
 				: safePath(args.path);
 		return {
 			timestamp: options.timestamp ?? now(),
-			category: tool === "consult_apodex_pi" ? "request" : "tool",
+			category: tool === "consult_probelab" ? "request" : "tool",
 			direction: "server_request",
 			id: message.id,
 			method,
@@ -130,8 +130,8 @@ export function compactCodexAuditEvent(message, options = {}) {
 			tool,
 			action: action || null,
 			target: target || null,
-			summary: tool === "consult_apodex_pi"
-				? "Codex requested Apodex_Pi input"
+			summary: tool === "consult_probelab"
+				? "Codex requested Probelab input"
 				: `${tool}${action ? ` ${action}` : ""}${target ? `: ${target}` : ""}`,
 		};
 	}

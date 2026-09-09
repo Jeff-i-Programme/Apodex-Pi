@@ -39,7 +39,7 @@ for (const [index, repetitions] of (compareOutput ? [15000, 15000, 15000, 15000]
 	};
 	const response = await fetch(`${model.baseUrl}/chat/completions`, {
 		method: "POST",
-		headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "User-Agent": "Apodex_Pi/0.2.0 cache-diagnostic", ...nativeHeaders },
+		headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "User-Agent": "Probelab/0.2.0 cache-diagnostic", ...nativeHeaders },
 		body: JSON.stringify(payload),
 		signal: AbortSignal.timeout(90_000),
 	});

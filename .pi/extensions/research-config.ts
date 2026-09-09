@@ -7,29 +7,29 @@ import { Container, type SelectItem, SelectList, Text } from "@earendil-works/pi
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-	ensureApodexPiConfig,
-	readApodexPiConfig,
-	apodexPiConfigSummary,
-	APODEX_PI_THEME_CHOICES,
-	writeApodexPiConfig,
+	ensureProbelabConfig,
+	readProbelabConfig,
+	probelabConfigSummary,
+	PROBELAB_THEME_CHOICES,
+	writeProbelabConfig,
 } from "../lib/research-config.mjs";
-import { resolveApodexPiPaths } from "../lib/runtime-paths.mjs";
+import { resolveProbelabPaths } from "../lib/runtime-paths.mjs";
 
 const EXTENSION_DIR = dirname(fileURLToPath(import.meta.url));
 const HARNESS_ROOT = resolve(EXTENSION_DIR, "../..");
-const paths = resolveApodexPiPaths({ harnessRoot: HARNESS_ROOT });
+const paths = resolveProbelabPaths({ harnessRoot: HARNESS_ROOT });
 
-type ResearchConfig = ReturnType<typeof readApodexPiConfig>;
+type ResearchConfig = ReturnType<typeof readProbelabConfig>;
 
 function loadConfig(): ResearchConfig {
-	return ensureApodexPiConfig(process.env.APODEX_PI_CONFIG_FILE ?? paths.configPath);
+	return ensureProbelabConfig(process.env.PROBELAB_CONFIG_FILE ?? paths.configPath);
 }
 
 export function themeSelectItems(config: ResearchConfig, available: Array<{ name: string; path?: string }> = []): SelectItem[] {
-	const active = String(config.pi.settings.theme ?? "apodex_pi");
-	const metadata = new Map(APODEX_PI_THEME_CHOICES.map((theme) => [theme.name, theme]));
+	const active = String(config.pi.settings.theme ?? "probelab");
+	const metadata = new Map(PROBELAB_THEME_CHOICES.map((theme) => [theme.name, theme]));
 	const availableNames = available.length ? new Set(available.map((theme) => theme.name)) : null;
-	const canonicalNames = APODEX_PI_THEME_CHOICES
+	const canonicalNames = PROBELAB_THEME_CHOICES
 		.map((theme) => theme.name)
 		.filter((name) => !availableNames || availableNames.has(name));
 	const additionalNames = availableNames
@@ -52,7 +52,7 @@ export function compactConfigPath(path: string): string {
 }
 
 export default function researchConfigExtension(pi: ExtensionAPI) {
-	const configPath = process.env.APODEX_PI_CONFIG_FILE ?? paths.configPath;
+	const configPath = process.env.PROBELAB_CONFIG_FILE ?? paths.configPath;
 
 	const activateTheme = async (name: string, ctx: ExtensionContext) => {
 		const available = ctx.ui.getAllThemes().map((theme) => theme.name);
@@ -60,7 +60,7 @@ export default function researchConfigExtension(pi: ExtensionAPI) {
 		const result = ctx.ui.setTheme(name);
 		if (!result.success) throw new Error(result.error || `Could not activate theme ${name}`);
 		const config = loadConfig();
-		writeApodexPiConfig(configPath, {
+		writeProbelabConfig(configPath, {
 			...config,
 			pi: { ...config.pi, settings: { ...config.pi.settings, theme: name } },
 		});
@@ -73,8 +73,8 @@ export default function researchConfigExtension(pi: ExtensionAPI) {
 		const selected = await ctx.ui.custom<string | null>((tui, theme, _keybindings, done) => {
 			const container = new Container();
 			container.addChild(new DynamicBorder((text) => theme.fg("borderAccent", text)));
-			container.addChild(new Text(theme.fg("customMessageLabel", theme.bold(" Apodex_Pi / Themes ")), 0, 0));
-			container.addChild(new Text(theme.fg("muted", ` current ${config.pi.settings.theme ?? "apodex_pi"}`), 0, 0));
+			container.addChild(new Text(theme.fg("customMessageLabel", theme.bold(" Probelab / Themes ")), 0, 0));
+			container.addChild(new Text(theme.fg("muted", ` current ${config.pi.settings.theme ?? "probelab"}`), 0, 0));
 			container.addChild(new Text("", 0, 0));
 			const list = new SelectList(items, Math.min(items.length, config.ui.configPanelRows), {
 				selectedPrefix: (text) => theme.fg("accent", text),
@@ -106,17 +106,17 @@ export default function researchConfigExtension(pi: ExtensionAPI) {
 	};
 
 	pi.registerCommand("config", {
-		description: "Inspect Apodex_Pi-only configuration and choose a theme; Pi Core owns models and authentication",
+		description: "Inspect Probelab-only configuration and choose a theme; Pi Core owns models and authentication",
 		handler: async (args, ctx) => {
 			try {
 				const input = args.trim();
 				if (!input) {
-					ctx.ui.notify(`${apodexPiConfigSummary(loadConfig(), configPath)}\n\nUse /login for provider authentication, /model to switch, /scoped-models to curate cycling, and /settings for thinking defaults.`, "info");
+					ctx.ui.notify(`${probelabConfigSummary(loadConfig(), configPath)}\n\nUse /login for provider authentication, /model to switch, /scoped-models to curate cycling, and /settings for thinking defaults.`, "info");
 					return;
 				}
 				const [action, name] = input.split(/\s+/, 2);
 				if (action === "show") {
-					ctx.ui.notify(apodexPiConfigSummary(loadConfig(), configPath), "info");
+					ctx.ui.notify(probelabConfigSummary(loadConfig(), configPath), "info");
 					return;
 				}
 				if (action === "path") {

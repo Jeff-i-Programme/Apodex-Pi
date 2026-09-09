@@ -5,7 +5,7 @@ description: How this agent finishes a scientific question in any setting: hidde
 
 # Scientific loop
 
-One agent. The Apodex_Pi contract still owns hypotheses, evidence, and Project memory. This skill is the **same method** when the instrument is an environment action or a program. It rewrites the old strategy loop (cheap probes, stall/failure recovery, submit-then-refine) and the embodied primitives (approach then act, matching key then open, instrument then sample). It is not a second agent and not a folder router.
+One agent. The Probelab contract still owns hypotheses, evidence, and Project memory. This skill is the **same method** when the instrument is an environment action or a program. It rewrites the old strategy loop (cheap probes, stall/failure recovery, submit-then-refine) and the embodied primitives (approach then act, matching key then open, instrument then sample). It is not a second agent and not a folder router.
 
 Completion is a **decision plus a verifiable artifact**: a submitted pick, a placed marker, a required output file, or a recorded measurement that actually updates the claim. Looking, touring, or printing is not completion.
 
@@ -77,10 +77,10 @@ Choose the next target from labels the instruments actually produced or from a p
 - If an import fails, rewrite with libraries that are already available (numeric/scientific stacks such as pandas, numpy, sklearn, matplotlib, h5py, PIL, rdkit when present). Do not pip-install a replacement stack.
 - Wrong path → reread the tree. Timeout → smaller sample. Non-Python or empty extract → one complete program, then stop explaining.
 
-## How this sits with Apodex_Pi
+## How this sits with Probelab
 
 - A successful command or a written file is work, not yet evidence. Use `record_experiment` when a reading or run actually changes the research judgment.
 - `science_note_measurement` is the working notebook of raw readings; it does not replace `record_experiment`.
 - `science_prepare_action` only rewrites the next verb (complete instrument×sample, key→open). You still execute it in the world and tick.
 - Codex remains the isolated executor. Pi remains responsible for what the result means and what to do next.
-- Apodex_Pi compaction already owns long context. Do not reread the whole workspace to compensate.
+- Probelab compaction already owns long context. Do not reread the whole workspace to compensate.

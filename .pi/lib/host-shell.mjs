@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { delimiter, dirname, join } from "node:path";
+import { applyProbelabEnvAliases } from "./runtime-paths.mjs";
 
 const SKIP_BASH = /[\\/](?:System32|SysWOW64|WindowsApps)[\\/]/i;
 
@@ -11,11 +12,12 @@ export function isUsableBash(path) {
 }
 
 export function candidateBashPaths(env = process.env) {
+	env = applyProbelabEnvAliases({ ...env });
 	const add = [];
 	const push = (value) => {
 		if (value && !add.includes(value)) add.push(value);
 	};
-	push(env.APODEX_PI_SHELL?.trim());
+	push(env.PROBELAB_SHELL?.trim());
 	push(env.PI_SHELL?.trim());
 	if (env.ProgramFiles) push(join(env.ProgramFiles, "Git", "bin", "bash.exe"));
 	if (env["ProgramFiles(x86)"]) push(join(env["ProgramFiles(x86)"], "Git", "bin", "bash.exe"));
@@ -56,7 +58,8 @@ export function resolveHostBash(env = process.env, existing = "") {
 }
 
 export function prependHostBinToPath(env = process.env) {
-	const bash = resolveHostBash(env, env.APODEX_PI_SHELL || "");
+	env = applyProbelabEnvAliases(env);
+	const bash = resolveHostBash(env, env.PROBELAB_SHELL || "");
 	if (!bash) return env;
 	const bin = dirname(bash);
 	const keys = Object.keys(env).filter((name) => name.toLowerCase() === "path");
@@ -86,7 +89,8 @@ export function applyHostPythonEnv(env = process.env) {
 }
 
 export function resolvePython(env = process.env) {
-	if (env.APODEX_PI_PYTHON?.trim()) return env.APODEX_PI_PYTHON.trim();
+	env = applyProbelabEnvAliases({ ...env });
+	if (env.PROBELAB_PYTHON?.trim()) return env.PROBELAB_PYTHON.trim();
 	const cmds = process.platform === "win32" ? ["python", "py", "python3"] : ["python3", "python"];
 	for (const cmd of cmds) {
 		try {
