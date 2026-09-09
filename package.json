@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jeff-i-Programme/Apodex-Pi.git"
+    "url": "git+https://github.com/Jeff-i-Programme/Probelab.git"
   },
   "bin": {
     "pi": "bin/pi.mjs",
